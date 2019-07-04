@@ -6,7 +6,6 @@ package main
 import (
 	"os"
 	"os/signal"
-	"regexp"
 	"strings"
 
 	"github.com/mattermost/mattermost-server/model"
@@ -15,15 +14,16 @@ import (
 const (
 	SAMPLE_NAME = "Mattermost Bot Sample"
 
-	USER_EMAIL    = "bot@example.com"
+	USER_EMAIL    = "bot2@example.com"
 	USER_PASSWORD = "password1"
-	USER_NAME     = "samplebot"
+	USER_NAME     = "samplebot2"
 	USER_FIRST    = "Sample"
 	USER_LAST     = "Bot"
 
-	TEAM_NAME        = "botsample"
-	CHANNEL_LOG_NAME = "debugging-for-sample-bot"
+	TEAM_NAME        = "Test"
+	CHANNEL_LOG_NAME = "Off-Topic"
 )
+var aliveCommands = [3]string{"$alive","$up","$running"}
 
 var client *model.Client4
 var webSocketClient *model.WebSocketClient
@@ -39,7 +39,7 @@ func main() {
 
 	SetupGracefulShutdown()
 
-	client = model.NewAPIv4Client("http://localhost:8065")
+	client = model.NewAPIv4Client("http://192.168.3.182:8065")
 
 	// Lets test to see if the mattermost server is up and running
 	MakeSureServerIsRunning()
@@ -61,10 +61,10 @@ func main() {
 
 	// Lets create a bot channel for logging debug messages into
 	CreateBotDebuggingChannelIfNeeded()
-	SendMsgToDebuggingChannel("_"+SAMPLE_NAME+" has **started** running_", "")
+	//SendMsg("_"+SAMPLE_NAME+" has **started** running_", "")
 
 	// Lets start listening to some channels via the websocket!
-	webSocketClient, err := model.NewWebSocketClient4("ws://localhost:8065", client.AuthToken)
+	webSocketClient, err := model.NewWebSocketClient4("ws://192.168.3.182:8065", client.AuthToken)
 	if err != nil {
 		println("We failed to connect to the web socket")
 		PrintError(err)
@@ -158,9 +158,9 @@ func CreateBotDebuggingChannelIfNeeded() {
 	}
 }
 
-func SendMsgToDebuggingChannel(msg string, replyToId string) {
+func SendMsg(msg string, replyToId, chId string) {
 	post := &model.Post{}
-	post.ChannelId = debuggingChannel.Id
+	post.ChannelId = chId
 	post.Message = msg
 
 	post.RootId = replyToId
@@ -175,11 +175,32 @@ func HandleWebSocketResponse(event *model.WebSocketEvent) {
 	HandleMsgFromDebuggingChannel(event)
 }
 
+func CheckAlive(msg , id, channelid string) {
+
+	if FindCommand(aliveCommands, msg){
+		SendMsg("Tak, żyję. <3", id, channelid)
+	} else {
+		SendMsg("Nie rozumiem :(", id, channelid)
+	}
+
+	return
+}
+
+func FindCommand(commands [3]string, msg string) bool {
+
+	for _,v := range commands{
+		if v == msg{
+			return true
+		}
+	}
+	return false
+}
+
 func HandleMsgFromDebuggingChannel(event *model.WebSocketEvent) {
 	// If this isn't the debugging channel then lets ingore it
-	if event.Broadcast.ChannelId != debuggingChannel.Id {
-		return
-	}
+	//if event.Broadcast.ChannelId != debuggingChannel.Id {
+	//	return
+	//}
 
 	// Lets only reponded to messaged posted events
 	if event.Event != model.WEBSOCKET_EVENT_POSTED {
@@ -195,33 +216,9 @@ func HandleMsgFromDebuggingChannel(event *model.WebSocketEvent) {
 		if post.UserId == botUser.Id {
 			return
 		}
+		CheckAlive(post.Message, post.Id, post.ChannelId)
 
-		// if you see any word matching 'alive' then respond
-		if matched, _ := regexp.MatchString(`(?:^|\W)alive(?:$|\W)`, post.Message); matched {
-			SendMsgToDebuggingChannel("Yes I'm running", post.Id)
-			return
-		}
-
-		// if you see any word matching 'up' then respond
-		if matched, _ := regexp.MatchString(`(?:^|\W)up(?:$|\W)`, post.Message); matched {
-			SendMsgToDebuggingChannel("Yes I'm running", post.Id)
-			return
-		}
-
-		// if you see any word matching 'running' then respond
-		if matched, _ := regexp.MatchString(`(?:^|\W)running(?:$|\W)`, post.Message); matched {
-			SendMsgToDebuggingChannel("Yes I'm running", post.Id)
-			return
-		}
-
-		// if you see any word matching 'hello' then respond
-		if matched, _ := regexp.MatchString(`(?:^|\W)hello(?:$|\W)`, post.Message); matched {
-			SendMsgToDebuggingChannel("Yes I'm running", post.Id)
-			return
-		}
 	}
-
-	SendMsgToDebuggingChannel("I did not understand you!", post.Id)
 }
 
 func PrintError(err *model.AppError) {
@@ -240,7 +237,7 @@ func SetupGracefulShutdown() {
 				webSocketClient.Close()
 			}
 
-			SendMsgToDebuggingChannel("_"+SAMPLE_NAME+" has **stopped** running_", "")
+			//SendMsg("_"+SAMPLE_NAME+" has **stopped** running_", "")
 			os.Exit(0)
 		}
 	}()
