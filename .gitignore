@@ -10,7 +10,7 @@ logs
 *.o
 *.a
 *.so
-
+*.xml
 # Folders
 _obj
 _test
@@ -18,7 +18,9 @@ _test
 # Log files
 *mattermost.log
 *npm-debug.log*
-
+*.yaml
+*.lock
+*.bat
 .tmp
 
 # Vim temporary files
