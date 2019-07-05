@@ -2,28 +2,18 @@ package main
 
 import (
 	"./bot"
+	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-server/model"
 	"os"
-)
-
-// authorization data of bot's user
-const (
-	USER_EMAIL    = "bot2@example.com"
-	USER_PASSWORD = "password1"
-	/*USER_NAME     = "samplebot2"
-	USER_FIRST    = "Sample"
-	USER_LAST     = "Bot"*/
-	TEAM_NAME        = "Test"
-	//CHANNEL_LOG_NAME = "Off-Topic"
 )
 
 // Mattermost API connection data
 /*var client *model.Client4
 var webSocketClient *model.WebSocketClient
 var botUser *model.User
-var botTeam *model.Team
+var botTeam *model.TeamName
 var debuggingChannel *model.Channel*/
-var botCfg bot.BotConfig
+var mmCfg bot.MMConfig
 
 // Documentation for the Go driver can be found
 // at https://godoc.org/github.com/mattermost/platform/model#Client
@@ -31,8 +21,15 @@ func main() {
 	// This is an important step.  Lets make sure we use the botTeam
 	// for all future web service requests that require a team.
 	// client.SetTeamId(botTeam.Id)
+	cfg, e := config.Read("config.json")
+	println(cfg.Name, cfg.Password, cfg.Email, cfg.TeamName, cfg.EnglishDay)
+	if e != nil{
+		//log
+		println(e)
+	}
+	socket := Connection(cfg)
 
-	Connection()
+	Listen(socket, cfg)
 
 }
 
@@ -44,7 +41,7 @@ func PrintError(err *model.AppError) {
 }
 
 func MakeSureServerIsRunning() {
-	if props, resp := botCfg.Client.GetOldClientConfig(""); resp.Error != nil {
+	if props, resp := mmCfg.Client.GetOldClientConfig(""); resp.Error != nil {
 		println("There was a problem pinging the Mattermost server.  Are you sure it's running?")
 		PrintError(resp.Error)
 		os.Exit(1)
@@ -54,30 +51,30 @@ func MakeSureServerIsRunning() {
 	}
 }
 
-func LoginAsTheBotUser() {
-	if user, resp := botCfg.Client.Login(USER_EMAIL, USER_PASSWORD); resp.Error != nil {
+func LoginAsTheBotUser(cfg *config.BotConfig) {
+	if user, resp := mmCfg.Client.Login(cfg.Email, cfg.Password); resp.Error != nil {
 		println("There was a problem logging into the Mattermost server.  Are you sure ran the setup steps from the README.md?")
 		PrintError(resp.Error)
 		os.Exit(1)
 	} else {
-		botCfg.BotUser = user
+		mmCfg.BotUser = user
 	}
 }
 
-func FindBotTeam() {
-	if team, resp := botCfg.Client.GetTeamByName(TEAM_NAME, ""); resp.Error != nil {
+func FindBotTeam(cfg *config.BotConfig) {
+	if team, resp := mmCfg.Client.GetTeamByName(cfg.TeamName, ""); resp.Error != nil {
 		println("We failed to get the initial load")
-		println("or we do not appear to be a member of the team '" + TEAM_NAME + "'")
+		println("or we do not appear to be a member of the team '" + cfg.TeamName + "'")
 		PrintError(resp.Error)
 		os.Exit(1)
 	} else {
-		botCfg.BotTeam = team
+		mmCfg.BotTeam = team
 	}
 }
 
-func Connection(){
+func Connection(cfg *config.BotConfig) *model.WebSocketClient{
 
-	botCfg.Client = model.NewAPIv4Client("http://192.168.3.182:8065")
+	mmCfg.Client = model.NewAPIv4Client("http://192.168.3.182:8065")
 
 	// test to see if the mattermost server is up and running
 	MakeSureServerIsRunning()
@@ -85,31 +82,30 @@ func Connection(){
 	// attempt to login to the Mattermost server as the bot user
 	// This will set the token required for all future calls
 	// You can get this token with client.AuthToken
-	LoginAsTheBotUser()
+	LoginAsTheBotUser(cfg)
 
 	// Lets find our bot team
-	FindBotTeam()
+	FindBotTeam(cfg)
 
 	// Lets start listening to some channels via the websocket!
 	var err *model.AppError
-	botCfg.WebSocketClient, err = model.NewWebSocketClient4("ws://192.168.3.182:8065", botCfg.Client.AuthToken)
+	mmCfg.WebSocketClient, err = model.NewWebSocketClient4("ws://192.168.3.182:8065", mmCfg.Client.AuthToken)
 	if err != nil {
 		println("We failed to connect to the web socket")
 		PrintError(err)
 	}
 
-
-	Listen(botCfg.WebSocketClient)
+	return mmCfg.WebSocketClient
 }
 
-func Listen(ws *model.WebSocketClient){
+func Listen(ws *model.WebSocketClient, botConfig *config.BotConfig){
 	ws.Listen()
 
 	go func() {
 		for {
 			select {
 			case resp := <-ws.EventChannel:
-				bot.Start(resp, &botCfg)
+				bot.Start(resp, &mmCfg, botConfig)
 			}
 		}
 	}()
