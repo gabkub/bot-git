@@ -1,0 +1,4 @@
+﻿Zwraca aktualną wersję bota.
+
+Pełna lista komend:
+_wersja, version, ver_

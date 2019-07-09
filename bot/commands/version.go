@@ -2,6 +2,7 @@ package commands
 
 import (
 	"../abstract"
+	"strings"
 )
 
 const VER = "1.0"
@@ -21,6 +22,13 @@ func (v *version) CanHandle(msg string) bool {
 	return abstract.FindCommand(v.commands, msg)
 }
 
-func (v *version) Handle() (string, error) {
+func (v *version) Handle(msg string) (string, error) {
+	if strings.Contains(msg, "-h") {
+		return v.GetHelp()
+	}
 	return VER, nil
+}
+
+func (v *version) GetHelp() (string, error) {
+	return abstract.Help("version_help.txt")
 }

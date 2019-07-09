@@ -1,0 +1,4 @@
+﻿Wyświetlenie ogólnej pomocy dla podstawowych komend
+
+Pełna lista komend:
+_help, pomoc, pomocy_

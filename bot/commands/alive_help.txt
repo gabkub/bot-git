@@ -1,0 +1,4 @@
+﻿Informacja, czy bot jest włączony i działa poprawnie.
+
+Pełna lista komend:
+_alive, up, running_

@@ -1,10 +1,7 @@
 package commands
 
 import (
-	"bufio"
 	"../abstract"
-	"os"
-	"strings"
 )
 
 type help struct {
@@ -14,7 +11,7 @@ type help struct {
 var H help
 
 func (h *help) New() abstract.Handler {
-	h.commands = []string{"help", "pomocy"}
+	h.commands = []string{"help", "pomocy", "pomoc"}
 	return h
 }
 
@@ -22,23 +19,13 @@ func (h *help) CanHandle(msg string) bool {
 	return abstract.FindCommand(h.commands, msg)
 }
 
-func (h *help) Handle() (string, error) {
-	return getHelp()
+func (h *help) Handle(msg string) (string, error) {
+	return abstract.Help("../help.txt")
 }
 
-func getHelp() (string, error) {
-	file, e := os.Open("../help.txt")
-
-	if e == nil {
-
-		builder := strings.Builder{}
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			builder.WriteString(scanner.Text() + "\n")
-		}
-
-		return builder.String(), nil
-	}
-	return "Brak pliku pomocy", e
+func (h *help) GetHelp() (string, error) {
+	return abstract.Help("../bot/commands/help_help.txt")
 }
+
+
 

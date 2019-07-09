@@ -1,0 +1,4 @@
+﻿Przywitanie :)
+
+Pełna lista komend:
+_cześć, hej, siema, siemanko, hejo, hejka_

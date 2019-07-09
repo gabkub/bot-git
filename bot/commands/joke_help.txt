@@ -1,0 +1,4 @@
+﻿Wysyła losowy dowcip. W dzień określony w pliku konfiguracyjnym żarty są w języku angielskim.
+
+Pełna lista komend:
+_joke, suchar, żart, hehe_

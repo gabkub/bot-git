@@ -2,6 +2,7 @@ package bot
 
 import (
 	"../config"
+	"fmt"
 	"github.com/mattermost/mattermost-server/model"
 	"strings"
 )
@@ -31,18 +32,23 @@ func HandleEvent(event *model.WebSocketEvent) {
 
 	// array of data from the event (user's message)
 	post := model.PostFromJson(strings.NewReader(event.Data["post"].(string)))
-	if post != nil {
+	prefix := fmt.Sprintf("@%s", config.BotCfg.Name)
 
-		// ignore my events
-		if post.UserId == config.MmCfg.BotUser.Id{
-			return
-		}
-
-		response := HandleMsg(post.Message)
-		SendMsg(response, post.ChannelId)
+	if !CanRespond(event, post, prefix) {
+		return
 	}
+
+	response := HandleMsg(strings.TrimSpace(strings.TrimPrefix(post.Message, prefix)))
+	SendMsg(response, post.ChannelId)
 }
 
+func CanRespond(event *model.WebSocketEvent, post *model.Post, prefix string) bool {
+	post.Message = strings.ToLower(post.Message)
+	if post == nil || post.UserId == config.MmCfg.BotUser.Id || !strings.Contains(post.Message, prefix) {
+		return false
+	}
+	return true
+}
 
 func SendMsg(msg, chId string) {
 	post := &model.Post{}
