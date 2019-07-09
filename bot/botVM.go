@@ -39,7 +39,7 @@ func HandleEvent(event *model.WebSocketEvent) {
 	}
 
 	response := HandleMsg(strings.TrimSpace(strings.TrimPrefix(post.Message, prefix)))
-	SendMsg(response, post.ChannelId)
+	SendMsg(post.ChannelId, response)
 }
 
 func CanRespond(event *model.WebSocketEvent, post *model.Post, prefix string) bool {
@@ -50,10 +50,24 @@ func CanRespond(event *model.WebSocketEvent, post *model.Post, prefix string) bo
 	return true
 }
 
-func SendMsg(msg, chId string) {
+func SendMsg(chId string, toSend config.Msg) {
 	post := &model.Post{}
+
+	if !toSend.Img.IsEmpty() {
+		post = &model.Post{
+			Props: map[string]interface{}{
+				"attachments": []model.SlackAttachment{
+					{
+						Color: "#7800FF",
+						ImageURL: toSend.Img.ImageUrl,
+						Title: toSend.Img.Header,
+					},
+				},
+			},
+	}}
+
 	post.ChannelId = chId
-	post.Message = msg
+	post.Message = toSend.Text
 
 	if _, ev := config.MmCfg.Client.CreatePost(post); ev.Error != nil {
 		// log

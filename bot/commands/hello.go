@@ -2,6 +2,8 @@ package commands
 
 import (
 	"../abstract"
+	"../../config"
+	"../../meme"
 	"math/rand"
 	"strings"
 )
@@ -21,14 +23,16 @@ func (h *hello) CanHandle(msg string) bool {
 	return abstract.FindCommand(h.commands, msg)
 }
 
-func (h *hello) Handle(msg string) (string, error) {
+func (h *hello) Handle(msg string) (config.Msg, error) {
 	if strings.Contains(msg, "-h") {
 		return h.GetHelp()
 	}
 	r := h.commands[rand.Intn(len(h.commands)-1)]
-	return strings.ToTitle(string(r[0])) + r[1:], nil
+	return config.Msg{strings.ToTitle(string(r[0])) + r[1:], meme.Meme{}}, nil
 }
 
-func (h *hello) GetHelp() (string, error) {
-	return abstract.Help("hello_help.txt")
+func (h *hello) GetHelp() (config.Msg, error) {
+	v, e :=	abstract.Help("../bot/commands/hello_help.txt")
+	toSend := config.Msg{v,meme.Meme{}}
+	return toSend, e
 }

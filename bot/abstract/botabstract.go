@@ -2,14 +2,15 @@ package abstract
 
 import (
 	"bufio"
+	"../../config"
 	"os"
 	"strings"
 )
 
 type Handler interface {
 	CanHandle(msg string) bool
-	Handle(msg string) (string, error)
-	GetHelp() (string, error)
+	Handle(msg string) (config.Msg, error)
+	GetHelp() (config.Msg, error)
 }
 
 func FindCommand(commands []string, msg string) bool {

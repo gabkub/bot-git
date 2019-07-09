@@ -16,8 +16,6 @@ func Perelki() string {
 		return ""
 	}
 
-	//joke := FindRandom(doc,"div.",)
-
 	div := doc.Find("div.container:first-child")
 
 	if div == nil{
@@ -30,3 +28,24 @@ func Perelki() string {
 
 	return result
 }
+
+/*func Gomeo() string {
+	doc, err := goquery.NewDocument("http://humor.gomeo.pl/krotkie-dowcipy")
+
+	if err != nil{
+		return ""
+	}
+
+
+	div := doc.Find("div.row div.joke-content headline-mag")
+
+	if div == nil{
+		return ""
+	}
+
+	result := div.Text()
+	result = strings.ReplaceAll(div.Text(), doc.Find("div.about").Text(), "")
+	result = strings.TrimSpace(result)
+
+	return result
+}*/

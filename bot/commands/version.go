@@ -2,6 +2,8 @@ package commands
 
 import (
 	"../abstract"
+	"../../config"
+	"../../meme"
 	"strings"
 )
 
@@ -22,13 +24,15 @@ func (v *version) CanHandle(msg string) bool {
 	return abstract.FindCommand(v.commands, msg)
 }
 
-func (v *version) Handle(msg string) (string, error) {
+func (v *version) Handle(msg string) (config.Msg, error) {
 	if strings.Contains(msg, "-h") {
 		return v.GetHelp()
 	}
-	return VER, nil
+	return config.Msg{VER, meme.Meme{}}, nil
 }
 
-func (v *version) GetHelp() (string, error) {
-	return abstract.Help("version_help.txt")
+func (v *version) GetHelp() (config.Msg, error) {
+	value, e :=	abstract.Help("../bot/commands/version_help.txt")
+	toSend := config.Msg{value,meme.Meme{}}
+	return toSend, e
 }

@@ -3,6 +3,8 @@ package bot
 import (
 	"./abstract"
 	"./commands"
+	"../config"
+	"../meme"
 	"strings"
 )
 
@@ -10,8 +12,7 @@ import (
 
 const DONTKNOW = "Nie rozumiem :( \nWpisz help, aby uzyskać listę komend."
 
-func HandleMsg(msg string) string {
-
+func HandleMsg(msg string) config.Msg {
 	handlers := []abstract.Handler{commands.A.New(), commands.Hey.New(), commands.H.New(),  commands.J.New(), commands.V.New()}
 	for _, hndl := range handlers {
 		if hndl.CanHandle(msg) {
@@ -23,7 +24,7 @@ func HandleMsg(msg string) string {
 			if v, e := hndl.Handle(msg); e == nil {
 				return v
 			}
-			return "Błąd"
+			return config.Msg{"Błąd", meme.Meme{}}
 		}
 	}
 	v, _ := commands.J.Handle(msg)

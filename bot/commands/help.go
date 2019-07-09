@@ -2,6 +2,8 @@ package commands
 
 import (
 	"../abstract"
+	"../../config"
+	"../../meme"
 )
 
 type help struct {
@@ -19,12 +21,16 @@ func (h *help) CanHandle(msg string) bool {
 	return abstract.FindCommand(h.commands, msg)
 }
 
-func (h *help) Handle(msg string) (string, error) {
-	return abstract.Help("../help.txt")
+func (h *help) Handle(msg string) (config.Msg, error) {
+	v, e :=	abstract.Help("../help.txt")
+	toSend := config.Msg{v,meme.Meme{}}
+	return toSend, e
 }
 
-func (h *help) GetHelp() (string, error) {
-	return abstract.Help("../bot/commands/help_help.txt")
+func (h *help) GetHelp() (config.Msg, error) {
+	v, e :=	abstract.Help("../bot/commands/help_help.txt")
+	toSend := config.Msg{v,meme.Meme{}}
+	return toSend, e
 }
 
 

@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"../meme"
 	"github.com/mattermost/mattermost-server/model"
 	"io/ioutil"
 )
@@ -27,6 +28,11 @@ type BotConfig struct {
 	Email      string `json:"Email"`
 	TeamName   string `json:"TeamName"`
 	EnglishDay string `json:"EnglishDay"`
+}
+
+type Msg struct {
+	Text string
+	Img meme.Meme
 }
 
 func Read(path string) BotConfig {
