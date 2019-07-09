@@ -10,7 +10,7 @@ import (
 
 const DONTKNOW = "Nie rozumiem :( \nWpisz help, aby uzyskać listę komend."
 
-func HandleMsg(msg string) string{
+func HandleMsg(msg string) string {
 
 	handlers := []abstract.Handler{commands.A.New(), commands.Hey.New(), commands.H.New(),  commands.J.New(), commands.V.New()}
 	for _, hndl := range handlers {
@@ -26,7 +26,8 @@ func HandleMsg(msg string) string{
 			return "Błąd"
 		}
 	}
-	return DONTKNOW
+	v, _ := commands.J.Handle(msg)
+	return v
 }
 
 
