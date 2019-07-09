@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// TODO
+// REFACTOR
 // which div contains a joke on a site
 var jokeDiv = map[string][]string{
 	"https://icanhazdadjoke.com/": []string{"div.card-content", ""},

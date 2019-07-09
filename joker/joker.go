@@ -18,7 +18,7 @@ var pl = []string{"https://perelki.net/random"}
 //	GetJoke()
 //}
 
-func Fetch(cfg *config.BotConfig) (string, error) {
+func Fetch() (string, error) {
 	//var j []Joker
 	//if isEnglish {
 	//	j = jokerEn
@@ -26,7 +26,7 @@ func Fetch(cfg *config.BotConfig) (string, error) {
 	//
 	// jj := j[randomindex]
 	//return jj.GetJoke()
-	url := getUrl(checkDay(cfg))
+	url := getUrl(checkDay())
 
 	joke, err := GetBody(url)
 
@@ -37,9 +37,9 @@ func Fetch(cfg *config.BotConfig) (string, error) {
 	return joke, nil
 }
 
-func checkDay(cfg *config.BotConfig) bool {
+func checkDay() bool {
 
-	if time.Now().Weekday().String() == cfg.EnglishDay {
+	if time.Now().Weekday().String() == config.BotCfg.EnglishDay {
 		return true
 	}
 	return false

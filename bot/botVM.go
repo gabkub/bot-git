@@ -1,24 +1,18 @@
 package bot
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"../config"
 	"github.com/mattermost/mattermost-server/model"
 	"strings"
 )
-var bcfg config.MMConfig
 
-func Start(ws *model.WebSocketClient, botConfig *config.BotConfig, mmCfg *config.MMConfig){
-
-
-	//mod := &model.WebSocketEvent{}
-	//Sets data
-	Initialize()
+func Start(ws *model.WebSocketClient){
 
 	go func() {
 		for {
 			select {
-			case resp := <-ws.EventChannel:
-				HandleEvent(resp, mmCfg, botConfig)
+			case ev := <-ws.EventChannel:
+				HandleEvent(ev)
 			}
 		}
 	}()
@@ -26,8 +20,7 @@ func Start(ws *model.WebSocketClient, botConfig *config.BotConfig, mmCfg *config
 	select {}
 }
 
-func HandleEvent(event *model.WebSocketEvent, bc *config.MMConfig, cfg *config.BotConfig) {
-	bcfg = *bc
+func HandleEvent(event *model.WebSocketEvent) {
 	// Lets only reponded to messaged posted events
 	if event.Event != model.WEBSOCKET_EVENT_POSTED {
 		return
@@ -41,11 +34,11 @@ func HandleEvent(event *model.WebSocketEvent, bc *config.MMConfig, cfg *config.B
 	if post != nil {
 
 		// ignore my events
-		if post.UserId == bc.BotUser.Id{
+		if post.UserId == config.MmCfg.BotUser.Id{
 			return
 		}
 
-		response := HandleMsg(post.Message, cfg)
+		response := HandleMsg(post.Message)
 		SendMsg(response, post.ChannelId)
 	}
 }
@@ -56,7 +49,7 @@ func SendMsg(msg, chId string) {
 	post.ChannelId = chId
 	post.Message = msg
 
-	if _, resp := bcfg.Client.CreatePost(post); resp.Error != nil {
+	if _, ev := config.MmCfg.Client.CreatePost(post); ev.Error != nil {
 		// log
 		println("We failed to send a message to the logging channel")
 		//PrintError(resp.Error)
