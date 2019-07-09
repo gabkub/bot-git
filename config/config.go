@@ -2,10 +2,19 @@ package config
 
 import (
 	"encoding/json"
+	"github.com/mattermost/mattermost-server/model"
 	"io/ioutil"
 )
+type MMConfig struct{
+	Client           *model.Client4
+	WebSocketClient  *model.WebSocketClient
+	BotUser          *model.User
+	BotTeam          *model.Team
+	BotConfig		 *model.Config
+}
 
 type BotConfig struct {
+	Server	   string `json:"Server"`
 	Name       string `json:"Name"`
 	Password   string `json:"Password"`
 	Email      string `json:"Email"`

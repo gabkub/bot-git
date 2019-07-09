@@ -1,0 +1,4 @@
+﻿LISTA KOMEND: 
+:arrow_right: joke, żart - losowy dowcip 
+:arrow_right: help, pomocy - pomoc
+:arrow_right: ver - moja wersja

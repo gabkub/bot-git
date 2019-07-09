@@ -1,0 +1,14 @@
+{
+  "pqMonitor": [{
+    "name": "local",
+    "server": "127.0.0.1",
+    "port": 5432,
+    "user": "postgres",
+    "password": "",
+    "connections_slack_chan": "joeytest",
+    "connections_warning": 50,
+    "connections_check_cron": "@every 1h",
+    "connections_log_cron": "@every 4h"
+  }
+  ]
+}

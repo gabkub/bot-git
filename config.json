@@ -1,7 +1,8 @@
 {
+	"Server": "http://192.168.3.182:8065",
 	"Name": "samplebot2",
 	"Password": "password1", 
 	"Email": "bot2@example.com",
 	"TeamName": "Test",
-	"EnglishDay": "Friday"
+	"EnglishDay": "Monday"
 }

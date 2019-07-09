@@ -25,18 +25,6 @@ func GetBody(url string) (string, error){
 	return joke, nil
 }
 
-/*func FindRandom(doc *goquery.Selection, param string) string {
-
-	div := doc.Find(param)
-
-	if div == nil {
-		return ""
-	}
-
-	div.Text() = strings.TrimSpace(div.Text())
-	return div.Text()
-}*/
-
 func FindRandom(doc *goquery.Document, tofind, except string) string{
 	div := doc.Find(tofind)
 

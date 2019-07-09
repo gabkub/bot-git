@@ -5,8 +5,28 @@ import (
 	"github.com/mattermost/mattermost-server/model"
 	"strings"
 )
-var bcfg MMConfig
-func Start(event *model.WebSocketEvent, bc *MMConfig, cfg *config.BotConfig) {
+var bcfg config.MMConfig
+
+func Start(ws *model.WebSocketClient, botConfig *config.BotConfig, mmCfg *config.MMConfig){
+
+
+	//mod := &model.WebSocketEvent{}
+	//Sets data
+	Initialize()
+
+	go func() {
+		for {
+			select {
+			case resp := <-ws.EventChannel:
+				HandleEvent(resp, mmCfg, botConfig)
+			}
+		}
+	}()
+	// You can block forever with
+	select {}
+}
+
+func HandleEvent(event *model.WebSocketEvent, bc *config.MMConfig, cfg *config.BotConfig) {
 	bcfg = *bc
 	// Lets only reponded to messaged posted events
 	if event.Event != model.WEBSOCKET_EVENT_POSTED {
@@ -26,16 +46,15 @@ func Start(event *model.WebSocketEvent, bc *MMConfig, cfg *config.BotConfig) {
 		}
 
 		response := HandleMsg(post.Message, cfg)
-		SendMsg(response, post.Id, post.ChannelId)
+		SendMsg(response, post.ChannelId)
 	}
 }
 
-func SendMsg(msg string, replyToId, chId string) {
+
+func SendMsg(msg, chId string) {
 	post := &model.Post{}
 	post.ChannelId = chId
 	post.Message = msg
-
-	post.RootId = replyToId
 
 	if _, resp := bcfg.Client.CreatePost(post); resp.Error != nil {
 		// log

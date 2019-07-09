@@ -1,19 +1,15 @@
 package main
 
 import (
-	"./bot"
+	//"fmt"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-server/model"
 	"os"
 )
 
 // Mattermost API connection data
-/*var client *model.Client4
-var webSocketClient *model.WebSocketClient
-var botUser *model.User
-var botTeam *model.TeamName
-var debuggingChannel *model.Channel*/
-var mmCfg bot.MMConfig
+var mmCfg config.MMConfig
 
 // Documentation for the Go driver can be found
 // at https://godoc.org/github.com/mattermost/platform/model#Client
@@ -22,17 +18,21 @@ func main() {
 	// for all future web service requests that require a team.
 	// client.SetTeamId(botTeam.Id)
 	cfg, e := config.Read("config.json")
-	println(cfg.Name, cfg.Password, cfg.Email, cfg.TeamName, cfg.EnglishDay)
+
 	if e != nil{
 		//log
 		println(e)
 	}
+
+	// inicjalizacja WebSocket
 	socket := Connection(cfg)
 
+	// rozpoczęcie nasłuchiwania na wszystkich kanałach
 	Listen(socket, cfg)
 
 }
 
+// wypisanie szczegółów błędu
 func PrintError(err *model.AppError) {
 	println("\tError Details:")
 	println("\t\t" + err.Message)
@@ -40,6 +40,7 @@ func PrintError(err *model.AppError) {
 	println("\t\t" + err.DetailedError)
 }
 
+// sprawdzenie
 func MakeSureServerIsRunning() {
 	if props, resp := mmCfg.Client.GetOldClientConfig(""); resp.Error != nil {
 		println("There was a problem pinging the Mattermost server.  Are you sure it's running?")
@@ -74,7 +75,7 @@ func FindBotTeam(cfg *config.BotConfig) {
 
 func Connection(cfg *config.BotConfig) *model.WebSocketClient{
 
-	mmCfg.Client = model.NewAPIv4Client("http://192.168.3.182:8065")
+	mmCfg.Client = model.NewAPIv4Client(cfg.Server)
 
 	// test to see if the mattermost server is up and running
 	MakeSureServerIsRunning()
@@ -101,54 +102,5 @@ func Connection(cfg *config.BotConfig) *model.WebSocketClient{
 func Listen(ws *model.WebSocketClient, botConfig *config.BotConfig){
 	ws.Listen()
 
-	go func() {
-		for {
-			select {
-			case resp := <-ws.EventChannel:
-				bot.Start(resp, &mmCfg, botConfig)
-			}
-		}
-	}()
-	// You can block forever with
-	select {}
+	bot.Start(ws,botConfig, &mmCfg)
 }
-
-/*func CreateBotDebuggingChannelIfNeeded() {
-	if rchannel, resp := client.GetChannelByName(CHANNEL_LOG_NAME, botTeam.Id, ""); resp.Error != nil {
-		println("We failed to get the channels")
-		PrintError(resp.Error)
-	} else {
-		debuggingChannel = rchannel
-		return
-	}
-
-	// Looks like we need to create the logging channel
-	channel := &model.Channel{}
-	channel.Name = CHANNEL_LOG_NAME
-	channel.DisplayName = "Debugging For Sample Bot"
-	channel.Purpose = "This is used as a test channel for logging bot debug messages"
-	channel.Type = model.CHANNEL_OPEN
-	channel.TeamId = botTeam.Id
-	if rchannel, resp := client.CreateChannel(channel); resp.Error != nil {
-		println("We failed to create the channel " + CHANNEL_LOG_NAME)
-		PrintError(resp.Error)
-	} else {
-		debuggingChannel = rchannel
-		println("Looks like this might be the first run so we've created the channel " + CHANNEL_LOG_NAME)
-	}
-}
-
-func SetupGracefulShutdown() {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		for _ = range c {
-			if webSocketClient != nil {
-				webSocketClient.Close()
-			}
-
-			//SendMsg("_"+SAMPLE_NAME+" has **stopped** running_", "")
-			os.Exit(0)
-		}
-	}()
-}*/
