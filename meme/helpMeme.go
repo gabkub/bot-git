@@ -18,10 +18,12 @@ func (h *helpFindMeme) randContainer () {
 
 	for{
 		lastID := h.mainContainerID
-		h.mainContainerID = rand.Intn(10)
+		h.mainContainerID = rand.Intn(30)
+		println(lastID)
+		println(h.mainContainerID)
 
 		if h.mainContainerID != 0 && h.mainContainerID != lastID{
-			h.mainContainer = fmt.Sprintf(h.mainContainer, h.mainContainerID)
+			h.mainContainer = fmt.Sprintf("article.gallery-item:nth-child(%d) div.item-aux-container", h.mainContainerID)
 			break
 		}
 	}

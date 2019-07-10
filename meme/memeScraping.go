@@ -3,49 +3,78 @@ package meme
 import (
 	"github.com/PuerkitoBio/goquery"
 	"strings"
+	"sync"
 )
 
 type meme struct{
 	header 		string
 	imageUrl 	string
-	lastMeme	int
+	blackList	[]string
 }
+
 
 func (result *meme) getMemedroid(url string) error {
 	doc, err := goquery.NewDocument(url)
 
 	var helper  = helpFindMeme{"article.gallery-item:nth-child(%d) div.item-aux-container", 1, "header.item-header h1",
-		"a.dyn-link:nth-child(2)"}
+		"a.dyn-link:nth-child(2)" }
 
 	if err != nil{
 		return  err
 	}
 
-	helper.randContainer()
+	result.random(doc, &helper)
 
-	result.header, result.imageUrl, result.lastMeme = findCommand(doc, helper)
-
-	for result.isEmpty() {
-		helper.randContainer()
-		result.header, result.imageUrl, result.lastMeme = findCommand(doc, helper)
-	}
 
 	return  nil
 }
 
 func (result meme) isEmpty() bool{
 
-	if result.lastMeme == 0 || result.header == "" || result.imageUrl == ""{
+	if result.header == "" || result.imageUrl == ""{
 		return true
 	}
 
 	return false
 }
-func findCommand(doc *goquery.Document, helper helpFindMeme) (string,string,int){
+
+func (result *meme) random(document *goquery.Document, help *helpFindMeme) {
+
+	help.randContainer()
+	result.findCommand(document, help)
+
+	//println(result.header)
+	//println(result.imageUrl)
+	if result.isEmpty() {
+		result.random(document,help)
+	}
+
+
+}
+
+func (result *meme) isOnBlackList(param string) bool {
+
+	if param == ""{
+		return true
+	}
+
+	var m  = &sync.Mutex{}
+	m.Lock()
+	defer m.Unlock()
+	for _, element := range result.blackList{
+		if param == element{
+			return true
+		}
+	}
+	
+	return false
+}
+func (result *meme)findCommand(doc *goquery.Document, helper *helpFindMeme){
 	div := doc.Find(helper.mainContainer)
 
 	if div == nil{
-		return "","",0
+		result = &meme{}
+		return
 	}
 	image := div.Find(helper.image)
 	header := div.Find(helper.header)
@@ -54,24 +83,25 @@ func findCommand(doc *goquery.Document, helper helpFindMeme) (string,string,int)
 	imageNode,_ := image.Html()
 	imageUrl := getImageUrlFromNode(imageNode)
 
-
-	if header != nil && imageUrl != ""{
-		return header.Text(),
-			imageUrl,
-			helper.mainContainerID
+	if !result.isOnBlackList(imageUrl){
+		result.header = header.Text()
+		result.imageUrl = imageUrl
+		result.blackList = append(result.blackList, imageUrl)
+		return
 	}
 
-	return "","",0
+	result.random(doc,helper)
+	return
 }
 
-func getImageUrlFromNode(imageHTML string) string {
+func getImageUrlFromNode(imageHTML string) string{
 
-	if strings.HasPrefix(imageHTML, "<img src=\"") {
-		imageHTML = strings.ReplaceAll(imageHTML, "<img src=\"", "")
+	if strings.HasPrefix(imageHTML,"<img src=\""){
+		imageHTML = strings.ReplaceAll(imageHTML,"<img src=\"","")
 
-		for i := 0; i < len(imageHTML); i++ {
+		for i := 0; i < len(imageHTML); i++{
 
-			if string(imageHTML[i]) == "\"" {
+			if string(imageHTML[i]) == "\""{
 				imageHTML = imageHTML[:i]
 
 				return imageHTML
@@ -80,5 +110,4 @@ func getImageUrlFromNode(imageHTML string) string {
 	}
 
 	return ""
-
 }
