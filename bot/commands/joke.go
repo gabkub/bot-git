@@ -31,8 +31,7 @@ func (j *joke) Handle(msg string) (config.Msg, error) {
 		v, e := joker.Fetch()
 		return config.Msg{v, meme.Meme{}}, e
 	}
-	return config.Msg{"", meme.Fetch()}, nil
-
+	//return config.Msg{"", meme.Fetch()}, nil
 }
 
 func (j *joke) GetHelp() (config.Msg, error) {
