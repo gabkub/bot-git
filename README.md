@@ -4,7 +4,7 @@
 
 This Bot is made mainly to make rekord employees laugh :)
 
-This Bot was tested with Mattermost server version 5.13.0.
+This Bot is using Go v.1.12.7
 
 ## Setup
 

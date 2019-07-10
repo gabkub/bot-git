@@ -53,18 +53,18 @@ func CanRespond(event *model.WebSocketEvent, post *model.Post, prefix string) bo
 func SendMsg(chId string, toSend config.Msg) {
 	post := &model.Post{}
 
-	if !toSend.Img.IsEmpty() {
-		post = &model.Post{
-			Props: map[string]interface{}{
-				"attachments": []model.SlackAttachment{
-					{
-						Color: "#7800FF",
-						ImageURL: toSend.Img.ImageUrl,
-						Title: toSend.Img.Header,
-					},
-				},
-			},
-	}}
+	//if !toSend.Img.IsEmpty() {
+	//	post = &model.Post{
+	//		Props: map[string]interface{}{
+	//			"attachments": []model.SlackAttachment{
+	//				{
+	//					Color: "#7800FF",
+	//					ImageURL: toSend.Img.ImageUrl,
+	//					Title: toSend.Img.Header,
+	//				},
+	//			},
+	//		},
+	//	}}
 
 	post.ChannelId = chId
 	post.Message = toSend.Text

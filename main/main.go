@@ -14,7 +14,6 @@ func main() {
 	// read bot configuration from the JSON file
 	// if failed BotCfg is empty
 	config.BotCfg = config.Read("../config.json")
-
 	// WebSocket initialization
 	websocket := Connection()
 

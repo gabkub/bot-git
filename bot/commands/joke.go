@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"../../joker"
-	"../abstract"
 	"../../config"
 	"../../meme"
+	"../../joker"
+	"../abstract"
 	"strings"
 )
 
@@ -15,7 +15,7 @@ type joke struct {
 var J joke
 
 func (j *joke) New() abstract.Handler {
-	j.commands = []string{"joke", "suchar", "żart", "hehe", "meme", "mem", "memik"} // TODO: dodać do helpa
+	j.commands = []string{"joke", "suchar", "żart", "hehe"} // TODO: dodać do helpa
 	return j
 }
 
@@ -27,11 +27,12 @@ func (j *joke) Handle(msg string) (config.Msg, error) {
 	if strings.Contains(msg, "-h") {
 		return j.GetHelp()
 	}
-	if abstract.FindCommand(j.commands[:3], msg) {
-		v, e := joker.Fetch()
-		return config.Msg{v, meme.Meme{}}, e
-	}
-	//return config.Msg{"", meme.Fetch()}, nil
+	//if abstract.FindCommand(j.commands[:3], msg) {
+	//	v, e := joker.Fetch()
+	//	return config.Msg{v, meme.Meme{}}, e
+	//}
+	v, e := joker.Fetch()
+	return config.Msg{v, meme.Meme{}}, e
 }
 
 func (j *joke) GetHelp() (config.Msg, error) {
