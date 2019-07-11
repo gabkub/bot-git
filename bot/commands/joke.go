@@ -2,7 +2,6 @@ package commands
 
 import (
 	"../../config"
-	"../../meme"
 	"../../joker"
 	"../abstract"
 	"strings"
@@ -29,14 +28,14 @@ func (j *joke) Handle(msg string) (config.Msg, error) {
 	}
 	//if abstract.FindCommand(j.commands[:3], msg) {
 	//	v, e := joker.Fetch()
-	//	return config.Msg{v, meme.Meme{}}, e
+	//	return config.Msg{v, meme.Image{}}, e
 	//}
 	v, e := joker.Fetch()
-	return config.Msg{v, meme.Meme{}}, e
+	return config.Msg{v, config.Image{}}, e
 }
 
 func (j *joke) GetHelp() (config.Msg, error) {
-	v, e := abstract.Help("../bot/commands/joke_help.txt")
-	toSend := config.Msg{v,meme.Meme{}}
+	v, e := abstract.Help("../../bot/commands/joke_help.txt")
+	toSend := config.Msg{v,config.Image{}}
 	return toSend, e
 }

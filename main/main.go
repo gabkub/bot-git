@@ -3,6 +3,8 @@ package main
 import (
 	"../bot"
 	"../config"
+	"fmt"
+	"../bot/commands"
 	"github.com/mattermost/mattermost-server/model"
 	"os"
 )
@@ -10,10 +12,10 @@ import (
 // Documentation for the Go driver can be found
 // at https://godoc.org/github.com/mattermost/platform/model#Client
 func main() {
-
+	fmt.Printf("Running bot v.%v...\n", commands.VER)
 	// read bot configuration from the JSON file
 	// if failed BotCfg is empty
-	config.BotCfg = config.Read("../config.json")
+	config.BotCfg = config.Read("../../config.json")
 	// WebSocket initialization
 	websocket := Connection()
 
@@ -39,11 +41,11 @@ func Connection () *model.WebSocketClient{
 	// test to see if the mattermost server is up and running
 	MakeSureServerIsRunning()
 
+
 	// attempt to login to the Mattermost server as the bot user
 	// This will set the token required for all future calls
 	// You can get this token with client.AuthToken
 	LoginAsTheBotUser()
-
 	// find the bot team
 	FindBotTeam()
 

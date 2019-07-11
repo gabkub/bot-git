@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"../abstract"
 	"../../config"
-	"../../meme"
+	"../abstract"
 	"strings"
 )
 
@@ -26,12 +25,12 @@ func (a *alive) Handle(msg string) (config.Msg, error) {
 	if strings.Contains(msg, "-h") {
 		return a.GetHelp()
 	}
-	toSend := config.Msg{"Żyję <3",meme.Meme{}}
+	toSend := config.Msg{"Żyję <3",config.Image{}}
 	return toSend, nil
 }
 
 func (a *alive) GetHelp() (config.Msg, error) {
-	v, e :=	abstract.Help("../bot/commands/alive_help.txt")
-	toSend := config.Msg{v,meme.Meme{}}
+	v, e :=	abstract.Help("../../bot/commands/alive_help.txt")
+	toSend := config.Msg{v,config.Image{}}
 	return toSend, e
 }

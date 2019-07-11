@@ -1,10 +1,9 @@
 package bot
 
 import (
+	"../config"
 	"./abstract"
 	"./commands"
-	"../config"
-	"../meme"
 	"strings"
 )
 
@@ -24,7 +23,7 @@ func HandleMsg(msg string) config.Msg {
 			if v, e := hndl.Handle(msg); e == nil {
 				return v
 			}
-			return config.Msg{"Błąd", meme.Meme{}}
+			return config.Msg{"Błąd", config.Image{}}
 		}
 	}
 	v, _ := commands.J.Handle(msg)

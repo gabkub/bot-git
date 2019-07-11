@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+
 type Handler interface {
 	CanHandle(msg string) bool
 	Handle(msg string) (config.Msg, error)

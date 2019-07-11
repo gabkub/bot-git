@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"../meme"
 	"github.com/mattermost/mattermost-server/model"
 	"io/ioutil"
 )
@@ -32,7 +31,20 @@ type BotConfig struct {
 
 type Msg struct {
 	Text string
-	Img meme.Meme
+	Img Image
+}
+
+type Image struct{
+	Header 		string
+	ImageUrl 	string
+}
+
+func (i Image) IsEmpty() bool{
+
+	if i.Header == "" && i.ImageUrl == ""{
+		return true
+	}
+	return false
 }
 
 func Read(path string) BotConfig {

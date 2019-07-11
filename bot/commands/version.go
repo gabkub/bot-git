@@ -3,7 +3,6 @@ package commands
 import (
 	"../abstract"
 	"../../config"
-	"../../meme"
 	"strings"
 )
 
@@ -28,11 +27,11 @@ func (v *version) Handle(msg string) (config.Msg, error) {
 	if strings.Contains(msg, "-h") {
 		return v.GetHelp()
 	}
-	return config.Msg{VER, meme.Meme{}}, nil
+	return config.Msg{VER, config.Image{}}, nil
 }
 
 func (v *version) GetHelp() (config.Msg, error) {
-	value, e :=	abstract.Help("../bot/commands/version_help.txt")
-	toSend := config.Msg{value,meme.Meme{}}
+	value, e :=	abstract.Help("../../bot/commands/version_help.txt")
+	toSend := config.Msg{value,config.Image{}}
 	return toSend, e
 }

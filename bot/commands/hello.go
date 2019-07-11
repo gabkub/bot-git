@@ -1,9 +1,8 @@
 package commands
 
 import (
-	"../abstract"
 	"../../config"
-	"../../meme"
+	"../abstract"
 	"math/rand"
 	"strings"
 )
@@ -28,11 +27,11 @@ func (h *hello) Handle(msg string) (config.Msg, error) {
 		return h.GetHelp()
 	}
 	r := h.commands[rand.Intn(len(h.commands)-1)]
-	return config.Msg{strings.ToTitle(string(r[0])) + r[1:], meme.Meme{}}, nil
+	return config.Msg{strings.ToTitle(string(r[0])) + r[1:], config.Image{}}, nil
 }
 
 func (h *hello) GetHelp() (config.Msg, error) {
-	v, e :=	abstract.Help("../bot/commands/hello_help.txt")
-	toSend := config.Msg{v,meme.Meme{}}
+	v, e :=	abstract.Help("../../bot/commands/hello_help.txt")
+	toSend := config.Msg{v,config.Image{}}
 	return toSend, e
 }
