@@ -3,6 +3,7 @@ package commands
 import (
 	"../../config"
 	"../abstract"
+	"strings"
 )
 
 type help struct {
@@ -21,15 +22,23 @@ func (h *help) CanHandle(msg string) bool {
 }
 
 func (h *help) Handle(msg string) (config.Msg, error) {
-	v, e :=	abstract.Help("../../help.txt")
-	toSend := config.Msg{v,config.Image{}}
-	return toSend, e
+	var sb strings.Builder
+	sb.WriteString("LISTA KOMEND:\n")
+	sb.WriteString(":arrow_right: _joke, żart_ - losowy dowcip\n")
+	sb.WriteString(":arrow_right: _help, pomocy_ - pomoc\n")
+	sb.WriteString(":arrow_right: _ver_ - wersja\n")
+	sb.WriteString("<komenda> -h_ zwraca szczegółowe informacje o komendzie\n")
+	toSend := config.Msg{sb.String(),config.Image{}}
+	return toSend, nil
 }
 
 func (h *help) GetHelp() (config.Msg, error) {
-	v, e :=	abstract.Help("../../bot/commands/help_help.txt")
-	toSend := config.Msg{v,config.Image{}}
-	return toSend, e
+	var sb strings.Builder
+	sb.WriteString("Wyświetlenie ogólnej pomocy dla podstawowych komend\n\n")
+	sb.WriteString("Pełna lista komend:\n")
+	sb.WriteString("_help, pomoc, pomocy_\n")
+	toSend := config.Msg{sb.String(),config.Image{}}
+	return toSend, nil
 }
 
 

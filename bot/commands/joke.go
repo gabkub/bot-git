@@ -35,7 +35,10 @@ func (j *joke) Handle(msg string) (config.Msg, error) {
 }
 
 func (j *joke) GetHelp() (config.Msg, error) {
-	v, e := abstract.Help("../../bot/commands/joke_help.txt")
-	toSend := config.Msg{v,config.Image{}}
-	return toSend, e
+	var sb strings.Builder
+	sb.WriteString("Wysyła losowy dowcip. W dzień określony w pliku konfiguracyjnym żarty są w języku angielskim.\n\n")
+	sb.WriteString("Pełna lista komend:\n")
+	sb.WriteString("_joke, suchar, żart, hehe_\n")
+	toSend := config.Msg{sb.String(),config.Image{}}
+	return toSend, nil
 }

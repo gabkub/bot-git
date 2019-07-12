@@ -30,7 +30,10 @@ func (a *alive) Handle(msg string) (config.Msg, error) {
 }
 
 func (a *alive) GetHelp() (config.Msg, error) {
-	v, e :=	abstract.Help("../../bot/commands/alive_help.txt")
-	toSend := config.Msg{v,config.Image{}}
-	return toSend, e
+	var sb strings.Builder
+	sb.WriteString("Informacja, czy bot jest włączony i działa poprawnie.\n\n")
+	sb.WriteString("Pełna lista komend:\n")
+	sb.WriteString("_alive, up, running_\n")
+	toSend := config.Msg{sb.String(),config.Image{}}
+	return toSend, nil
 }

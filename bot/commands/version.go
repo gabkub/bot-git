@@ -31,7 +31,10 @@ func (v *version) Handle(msg string) (config.Msg, error) {
 }
 
 func (v *version) GetHelp() (config.Msg, error) {
-	value, e :=	abstract.Help("../../bot/commands/version_help.txt")
-	toSend := config.Msg{value,config.Image{}}
-	return toSend, e
+	var sb strings.Builder
+	sb.WriteString("Zwraca aktualną wersję bota.\n\n")
+	sb.WriteString("Pełna lista komend:\n")
+	sb.WriteString("_wersja, version, ver_\n")
+	toSend := config.Msg{sb.String(),config.Image{}}
+	return toSend, nil
 }

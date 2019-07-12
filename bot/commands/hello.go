@@ -14,7 +14,7 @@ type hello struct {
 var Hey hello
 
 func (h *hello) New() abstract.Handler {
-	h.commands = []string{"cześć", "hej", "siema", "siemka", "siemanko", "hejo", "hejka"}
+	h.commands = []string{"cześć", "hej", "siema", "siemka", "siemanko", "hejo", "hejka", "elo"}
 	return h
 }
 
@@ -31,7 +31,10 @@ func (h *hello) Handle(msg string) (config.Msg, error) {
 }
 
 func (h *hello) GetHelp() (config.Msg, error) {
-	v, e :=	abstract.Help("../../bot/commands/hello_help.txt")
-	toSend := config.Msg{v,config.Image{}}
-	return toSend, e
+	var sb strings.Builder
+	sb.WriteString("Przywitanie :)\n\n")
+	sb.WriteString("Pełna lista komend:\n")
+	sb.WriteString("_cześć, hej, siema, siemanko, hejo, hejka, elo_\n")
+	toSend := config.Msg{sb.String(),config.Image{}}
+	return toSend, nil
 }
