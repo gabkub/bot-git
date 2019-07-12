@@ -7,6 +7,7 @@ import (
 	"../bot/commands"
 	"github.com/mattermost/mattermost-server/model"
 	"os"
+	"strings"
 )
 
 // Documentation for the Go driver can be found
@@ -36,7 +37,14 @@ func PrintError(err *model.AppError) {
 func Connection () *model.WebSocketClient{
 
 	// create new MatterMost client
-	config.MmCfg.Client = model.NewAPIv4Client("http://"+config.BotCfg.Server)
+	var port string
+	switch strings.ToLower(config.BotCfg.Protocol) {
+	case "http":
+		port = "80"
+	case "https":
+		port = "443"
+	}
+	config.MmCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s://%s:%s", config.BotCfg.Protocol, config.BotCfg.Server, port))
 
 	// test to see if the mattermost server is up and running
 	MakeSureServerIsRunning()
@@ -51,7 +59,7 @@ func Connection () *model.WebSocketClient{
 
 	// create new WebSocket client
 	var err *model.AppError
-	config.MmCfg.WebSocketClient, err = model.NewWebSocketClient4("ws://"+config.BotCfg.Server, config.MmCfg.Client.AuthToken)
+	config.MmCfg.WebSocketClient, err = model.NewWebSocketClient4("wss://"+config.BotCfg.Server, config.MmCfg.Client.AuthToken)
 	if err != nil {
 		println("We failed to connect to the web socket")
 		PrintError(err)
@@ -74,7 +82,7 @@ func MakeSureServerIsRunning() {
 
 // login to the chat as bot user using credentials from config
 func LoginAsTheBotUser() {
-	if user, resp := config.MmCfg.Client.Login(config.BotCfg.Email, config.BotCfg.Password); resp.Error != nil {
+	if user, resp := config.MmCfg.Client.Login(config.BotCfg.Name, config.BotCfg.Password); resp.Error != nil {
 		println("There was a problem logging into the Mattermost server.  Are you sure ran the setup steps from the README.md?")
 		PrintError(resp.Error)
 		os.Exit(1)
