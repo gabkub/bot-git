@@ -4,20 +4,21 @@ import (
 	"encoding/json"
 	"github.com/mattermost/mattermost-server/model"
 	"io/ioutil"
+	"log"
+	"os"
 )
 
 // Mattermost connection data
 var MmCfg MMConfig
 
 // bot user data
-var BotCfg BotConfig
+var BotCfg = Read()
 
 type MMConfig struct{
 	Client           *model.Client4
 	WebSocketClient  *model.WebSocketClient
 	BotUser          *model.User
 	BotTeam          *model.Team
-	BotConfig		 *model.Config
 }
 
 type BotConfig struct {
@@ -30,8 +31,9 @@ type BotConfig struct {
 }
 
 type Msg struct {
-	Text string
-	Img Image
+	Text   string
+	Img    Image
+	IsJoke bool
 }
 
 type Image struct{
@@ -47,15 +49,25 @@ func (i Image) IsEmpty() bool{
 	return false
 }
 
-func Read(path string) BotConfig {
+func Read() BotConfig {
+
+	var path string
+	if len(os.Args) < 2 {
+		path = "./config.json"
+	} else {
+		path = os.Args[1]
+	}
+
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
-		return BotConfig{}
+		log.Fatal("Error while opening the configuration file.")
+		os.Exit(1)
 	}
 	cfg := &BotConfig{}
 	e = json.Unmarshal([]byte(file), cfg)
 	if e != nil {
-		return BotConfig{}
+		log.Fatal("Error while reading the configuration file.")
+		os.Exit(1)
 	}
 	return *cfg
 }

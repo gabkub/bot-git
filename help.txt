@@ -1,5 +1,0 @@
-﻿LISTA KOMEND: 
-:arrow_right: _joke, żart_ - losowy dowcip 
-:arrow_right: _help, pomocy_ - pomoc
-:arrow_right: _ver_ - moja wersja
-_<komenda> -h_ zwraca szczegółowe informacje o komendzie

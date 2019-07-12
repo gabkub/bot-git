@@ -27,7 +27,7 @@ func (h *hello) Handle(msg string) (config.Msg, error) {
 		return h.GetHelp()
 	}
 	r := h.commands[rand.Intn(len(h.commands)-1)]
-	return config.Msg{strings.ToTitle(string(r[0])) + r[1:], config.Image{}}, nil
+	return config.Msg{strings.ToTitle(string(r[0])) + r[1:], config.Image{},false}, nil
 }
 
 func (h *hello) GetHelp() (config.Msg, error) {
@@ -35,6 +35,6 @@ func (h *hello) GetHelp() (config.Msg, error) {
 	sb.WriteString("Przywitanie :)\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_cześć, hej, siema, siemanko, hejo, hejka, elo_\n")
-	toSend := config.Msg{sb.String(),config.Image{}}
+	toSend := config.Msg{sb.String(),config.Image{},false}
 	return toSend, nil
 }

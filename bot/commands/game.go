@@ -31,6 +31,6 @@ func (g *game) Handle(msg string) (config.Msg, error) {
 
 func (g *game) GetHelp() (config.Msg, error) {
 	v, e := abstract.Help("../../bot/commands/game_help.txt")
-	toSend := config.Msg{v,config.Image{}}
+	toSend := config.Msg{v,config.Image{},false}
 	return toSend, e
 }

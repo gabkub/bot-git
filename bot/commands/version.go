@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const VER = "1.0.0.5"
+const VER = "1.0.1.0"
 
 type version struct {
 	commands []string
@@ -27,7 +27,7 @@ func (v *version) Handle(msg string) (config.Msg, error) {
 	if strings.Contains(msg, "-h") {
 		return v.GetHelp()
 	}
-	return config.Msg{VER, config.Image{}}, nil
+	return config.Msg{VER, config.Image{},false}, nil
 }
 
 func (v *version) GetHelp() (config.Msg, error) {
@@ -35,6 +35,6 @@ func (v *version) GetHelp() (config.Msg, error) {
 	sb.WriteString("Zwraca aktualną wersję bota.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_wersja, version, ver_\n")
-	toSend := config.Msg{sb.String(),config.Image{}}
+	toSend := config.Msg{sb.String(),config.Image{},false}
 	return toSend, nil
 }
