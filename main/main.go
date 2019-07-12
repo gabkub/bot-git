@@ -44,7 +44,7 @@ func Connection () *model.WebSocketClient{
 	case "https":
 		port = "443"
 	}
-	config.MmCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s://%s:%s", config.BotCfg.Protocol, config.BotCfg.Server, port))
+	config.MmCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s:%s", config.BotCfg.Server, port))
 
 	// test to see if the mattermost server is up and running
 	MakeSureServerIsRunning()
