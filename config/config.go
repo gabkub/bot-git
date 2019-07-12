@@ -21,10 +21,10 @@ type MMConfig struct{
 }
 
 type BotConfig struct {
-	Server	   string `json:"Server"`
-	Protocol   string `json:"Protocol"`
+	Server	   string `json:"Server:port"`
 	Name       string `json:"Name"`
 	Password   string `json:"Password"`
+	Email      string `json:"Email"`
 	TeamName   string `json:"TeamName"`
 	EnglishDay string `json:"EnglishDay"`
 }

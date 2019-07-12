@@ -29,10 +29,10 @@ user verify samplebot
 5 - modify the [configuration file](config.json) following the template below
 ```
 {
-	"Server": "Mattermost_server_IP/URL",
-	"Protocol": "http/https",
+	"Server:port": "Mattermost_server_IP:Mattermost_server_port",
 	"Name": "bot_username",
 	"Password": "bot_password", 
+	"Email": "bot_email",
 	"TeamName": "team_name",
 	"EnglishDay": "englishday_weekday"
 }

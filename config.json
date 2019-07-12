@@ -1,8 +1,8 @@
 {
-	"Server": "irc.rekord.com.pl",
-	"Protocol": "https",
-	"Name": "joey",
-	"Password": "12Joey34;", 
-	"TeamName": "Rekord",
+	"Server:port": "192.168.3.182:8065",
+	"Name": "samplebot2",
+	"Password": "password1", 
+	"Email": "bot2@example.com",
+	"TeamName": "Test",
 	"EnglishDay": "Tuesday"
 }
