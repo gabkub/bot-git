@@ -28,11 +28,10 @@ func (j *joke) CanHandle(msg string) bool {
 func (j *joke) Handle(msg string) config.Msg {
 	j.Lock()
 	defer j.Unlock()
-
 	if strings.Contains(msg, "-h") {
 		return j.GetHelp()
 	}
-	if strings.Contains(msg, "-r") {
+	if strings.Compare(msg, "suchar") == 0 {
 		return j.removeLast()
 	}
 	joke := jokes.Fetch()
@@ -42,9 +41,9 @@ func (j *joke) Handle(msg string) config.Msg {
 func (j *joke) GetHelp() config.Msg {
 	var sb strings.Builder
 	sb.WriteString("Wysyła losowy dowcip. W dzień określony w pliku konfiguracyjnym żarty są w języku angielskim.\n")
-	sb.WriteString("Atrybut -r usuwa ostatni żart.\n\n")
+	sb.WriteString("Komenda _suchar_ usuwa ostatni żart.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
-	sb.WriteString("_joke, suchar, żart, hehe_\n")
+	sb.WriteString("_joke, żart, hehe_\n")
 	return config.Msg{sb.String(),config.Image{}, true}
 }
 
