@@ -1,8 +1,10 @@
 package abstract
 
 import (
-	"bufio"
-	"../../config"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"log"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -10,8 +12,8 @@ import (
 
 type Handler interface {
 	CanHandle(msg string) bool
-	Handle(msg string) (config.Msg, error)
-	GetHelp() (config.Msg, error)
+	Handle(msg string) config.Msg
+	GetHelp() config.Msg
 }
 
 func FindCommand(commands []string, msg string) bool {
@@ -23,16 +25,28 @@ func FindCommand(commands []string, msg string) bool {
 	return false
 }
 
-func Help(path string) (string, error) {
-	file, e := os.Open(path)
-
-	if e == nil {
-		builder := strings.Builder{}
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			builder.WriteString(scanner.Text() + "\n")
-		}
-		return builder.String(), nil
+func GetDoc(url string) *goquery.Document {
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return "", e
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+
+	if err != nil{
+		log.Fatal("Error while opening the website. Error: " + err.Error())
+		os.Exit(1)
+	}
+
+	resp.Body.Close()
+	return doc
+}
+
+func GetDiv(d *goquery.Document, container string) *goquery.Selection {
+	// get the random joke website shows
+	div := d.Find(container)
+	if div == nil{
+		log.Fatal("Empty joke.")
+		os.Exit(1)
+	}
+	return div
 }

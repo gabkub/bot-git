@@ -1,60 +1,36 @@
 package bot
 
 import (
-	"../config"
-	"fmt"
-	"./commands"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
+	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-server/model"
+	"log"
 	"os"
-	"strings"
 )
 
 func Start(ws *model.WebSocketClient){
-	println("Bot is now able to respond.")
+
+	log.Println("Bot has started.")
+
 	go func() {
 		for {
 			select {
 			case ev := <-ws.EventChannel:
-				HandleEvent(ev)
+				if ev != nil {
+				handleEvent(ev)}
 			}
 		}
 	}()
-	// You can block forever with
+	// block to the go function
 	select {}
 }
 
-func HandleEvent(event *model.WebSocketEvent) {
-	// Lets only reponded to messaged posted events
-	if event.Event != model.WEBSOCKET_EVENT_POSTED {
-		return
-	}
-
-	// log
-	// println("responding to debugging channel msg")
-
-	// array of data from the event (user's message)
-	post := model.PostFromJson(strings.NewReader(event.Data["post"].(string)))
-	prefix := fmt.Sprintf("@%s", config.BotCfg.Name)
-
-	if !CanRespond(event, post, prefix) {
-		return
-	}
-
-	response := HandleMsg(strings.TrimSpace(strings.TrimPrefix(post.Message, prefix)))
-	SendMsg(post.ChannelId, response)
-}
-
-func CanRespond(event *model.WebSocketEvent, post *model.Post, prefix string) bool {
-	post.Message = strings.ToLower(post.Message)
-	if post == nil || post.UserId == config.MmCfg.BotUser.Id || !strings.Contains(post.Message, prefix) {
-		return false
-	}
-	return true
-}
-
-func SendMsg(chId string, toSend config.Msg) {
+func sendMsg(chId string, toSend config.Msg) {
+	// create new post
 	post := &model.Post{}
-	if !toSend.Img.IsEmpty() {
+
+	// add attachments if needed
+	if toSend.Img.ToAttach() {
 		post = &model.Post{
 			Props: map[string]interface{}{
 				"attachments": []model.SlackAttachment{
@@ -68,14 +44,13 @@ func SendMsg(chId string, toSend config.Msg) {
 
 	post.ChannelId = chId
 	post.Message = toSend.Text
-	p, ev := config.MmCfg.Client.CreatePost(post)
-	if ev.Error != nil {
-		// log
-		println("We failed to send a message to the logging channel")
+	p, er := config.MmCfg.Client.CreatePost(post)
+	if er.Error != nil {
+		log.Fatal("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
 		os.Exit(1)
-		//PrintError(resp.Error)
 	}
+	// helper function for the removing of last joke functionality
 	if toSend.IsJoke {
-		commands.LastJoke = p.Id
+		commands.SetLastJoke(p.Id)
 	}
 }

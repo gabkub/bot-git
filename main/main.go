@@ -1,9 +1,9 @@
 package main
 
 import (
-	"../bot"
-	"../bot/commands"
-	"../config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
+	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"fmt"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
@@ -17,7 +17,7 @@ func main() {
 	log.Printf("Running bot v.%v...\n", commands.VER)
 
 	// WebSocket initialization
-	websocket := Connection()
+	websocket := connection()
 
 	// start listening on all channels
 	websocket.Listen()
@@ -27,15 +27,15 @@ func main() {
 }
 
 // print details of an error
-func PrintError(err *model.AppError) {
-	println("\tError Details:")
-	println("\t\t" + err.Message)
-	println("\t\t" + err.Id)
-	println("\t\t" + err.DetailedError)
-}
+//func PrintError(err *model.AppError) {
+//	println("\tError Details:")
+//	println("\t\t" + err.Message)
+//	println("\t\t" + err.Id)
+//	println("\t\t" + err.DetailedError)
+//}
 
 // connect with the Mattermost server
-func Connection () *model.WebSocketClient{
+func connection() *model.WebSocketClient{
 
 	var port string
 	secure := false
@@ -55,7 +55,7 @@ func Connection () *model.WebSocketClient{
 	config.MmCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s://%s:%s", strings.ToLower(config.BotCfg.Protocol), config.BotCfg.Server, port))
 
 	// test to see if the mattermost server is up and running
-	//MakeSureServerIsRunning()
+
 	checkProtocol()
 	makeSureServerIsRunning()
 	// attempt to login to the Mattermost server as the bot user

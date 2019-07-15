@@ -42,11 +42,11 @@ type Image struct{
 }
 
 func (i Image) IsEmpty() bool{
+	return i.Header == "" || i.ImageUrl == ""
+}
 
-	if i.Header == "" && i.ImageUrl == ""{
-		return true
-	}
-	return false
+func (i Image) ToAttach() bool {
+	return i.Header != "" || i.ImageUrl != ""
 }
 
 func Read() BotConfig {

@@ -1,31 +1,24 @@
 package jokes
 
 import (
-	"github.com/PuerkitoBio/goquery"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
 	"strings"
 )
 
 var jokerEn = []getJoke{
-	ICanHazDadJoke,
+	iCanHazDadJoke,
 }
 
-func ICanHazDadJoke() string {
-	doc, err := goquery.NewDocument("https://icanhazdadjoke.com/")
-
-	if err != nil{
-		return ""
-	}
-
-	//joke := FindRandom(doc,"div.",)
-
-	div := doc.Find("div.card-content")
-
-	if div == nil{
-		return ""
-	}
+func iCanHazDadJoke() string {
+	blacklist.New("DadJokeBL")
+	doc := abstract.GetDoc("https://icanhazdadjoke.com/")
+	div := abstract.GetDiv(doc, "div.card-content")
 
 	result := div.Text()
 	result = strings.TrimSpace(result)
+
+	handleBL(iCanHazDadJoke, result)
 
 	return result
 }

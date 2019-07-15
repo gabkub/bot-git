@@ -13,4 +13,3 @@ GO=go
 
 run: .prebuild
 	$(GO) run $(GOFLAGS) $(GO_LINKER_FLAGS) *.go
-

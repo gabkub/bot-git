@@ -1,51 +1,26 @@
 package jokes
 
 import (
-	"github.com/PuerkitoBio/goquery"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
 	"strings"
 )
 
 var jokerPl = []getJoke{
-	Perelki,
+	perelki,
 }
 
-func Perelki() string {
-	doc, err := goquery.NewDocument("https://perelki.net/random")
+func perelki() string {
+	blacklist.New("perelkiBL")
 
-	if err != nil{
-		return ""
-	}
-
-	div := doc.Find("div.container:first-child")
-
-	if div == nil{
-		return ""
-	}
+	doc := abstract.GetDoc("https://perelki.net/random")
+	div := abstract.GetDiv(doc, "div.container:first-child")
 
 	result := div.Text()
 	result = strings.ReplaceAll(div.Text(), doc.Find("div.about").Text(), "")
 	result = strings.TrimSpace(result)
 
+	handleBL(perelki, result)
+
 	return result
 }
-
-/*func Gomeo() string {
-	doc, err := goquery.NewDocument("http://humor.gomeo.pl/krotkie-dowcipy")
-
-	if err != nil{
-		return ""
-	}
-
-
-	div := doc.Find("div.row div.joke-content headline-mag")
-
-	if div == nil{
-		return ""
-	}
-
-	result := div.Text()
-	result = strings.ReplaceAll(div.Text(), doc.Find("div.about").Text(), "")
-	result = strings.TrimSpace(result)
-
-	return result
-}*/
