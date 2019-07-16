@@ -2,20 +2,22 @@ package bot
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"os"
 )
 
-func Start(ws *model.WebSocketClient){
+func Start(websocket *model.WebSocketClient){
 
+	limit.Start()
 	log.Println("Bot has started.")
 
 	go func() {
 		for {
 			select {
-			case ev := <-ws.EventChannel:
+			case ev := <-websocket.EventChannel:
 				if ev != nil {
 				handleEvent(ev)}
 			}
@@ -25,7 +27,7 @@ func Start(ws *model.WebSocketClient){
 	select {}
 }
 
-func sendMsg(chId string, toSend config.Msg) {
+func sendMessage(channelId string, toSend config.Msg) {
 	// create new post
 	post := &model.Post{}
 
@@ -42,7 +44,7 @@ func sendMsg(chId string, toSend config.Msg) {
 			},
 		}}
 
-	post.ChannelId = chId
+	post.ChannelId = channelId
 	post.Message = toSend.Text
 	p, er := config.MmCfg.Client.CreatePost(post)
 	if er.Error != nil {

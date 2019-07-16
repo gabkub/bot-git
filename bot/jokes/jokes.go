@@ -1,11 +1,14 @@
 package jokes
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
+	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"math/rand"
 	"reflect"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -17,6 +20,7 @@ type getJoke func() string
 // 3. get rid of unnecessary text and whitespace
 
 func Fetch() string {
+	limit.AddRequest(abstract.GetUserId(), "joke")
 	jokers := jokerPl
 	if checkDay() {
 		jokers = jokerEn
@@ -29,16 +33,30 @@ func checkDay() bool {
 	return time.Now().Weekday().String() == config.BotCfg.EnglishDay
 }
 
-func getFunctionName(f getJoke) string {
-	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
+func getFunctionName(functionReturningJoke getJoke) string {
+	return runtime.FuncForPC(reflect.ValueOf(functionReturningJoke).Pointer()).Name()
 }
 
-func handleBL(f getJoke, joke string) {
-	bl := blacklist.MapBL[getFunctionName(f)]
+func handleBlacklist(functionReturningJoke getJoke, joke string) {
+	blacklist := blacklist.MapBL[getFunctionName(functionReturningJoke)]
 
-	if bl.Contains(joke) {
-		f()
+	if blacklist.Contains(joke) {
+		functionReturningJoke()
 	}
 
-	bl.Add(joke)
+	blacklist.Add(joke)
+}
+
+func fixFormat(toFormatHTML string) string {
+
+	formattedString := strings.ReplaceAll(toFormatHTML, "<br>", "\n")
+	formattedString = strings.ReplaceAll(formattedString, "<br/>", "\n")
+
+	// markdown escape
+	formattedString = strings.ReplaceAll(formattedString, "-", "\\-")
+	formattedString = strings.ReplaceAll(formattedString, "*", "\\*")
+
+	formattedString = strings.TrimSpace(formattedString)
+
+	return formattedString
 }

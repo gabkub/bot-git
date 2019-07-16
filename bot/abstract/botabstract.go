@@ -4,11 +4,21 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
 )
 
+var limitMessages = []string{
+	"Do roboty!", "Hej ho, hej ho, do pracy by się szło...", "Już się zmęczyłem.", "Zostaw mnie w spokoju.",
+	"Koniec śmieszków...", "Foch.", "Nie.", "Zaraz wracam. Albo i nie...", "A może by tak popracować?", "~~żart~~",
+}
+
+func LimitMsg() config.Msg {
+	limitMsg := limitMessages[rand.Intn(len(limitMessages))]
+	return config.Msg{limitMsg, config.Image{}, false}
+}
 
 type Handler interface {
 	CanHandle(msg string) bool
@@ -49,4 +59,14 @@ func GetDiv(d *goquery.Document, container string) *goquery.Selection {
 		os.Exit(1)
 	}
 	return div
+}
+
+var userId string
+
+func GetUserId() string {
+	return userId
+}
+
+func SetUserId(id string) {
+	userId = id
 }

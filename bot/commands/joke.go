@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/jokes"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"strings"
 	"sync"
@@ -34,8 +35,11 @@ func (j *joke) Handle(msg string) config.Msg {
 	if strings.Compare(msg, "suchar") == 0 {
 		return j.removeLast()
 	}
-	joke := jokes.Fetch()
-	return config.Msg{joke, config.Image{}, true}
+	if limit.CanSend(abstract.GetUserId(),"joke") {
+		joke := jokes.Fetch()
+		return config.Msg{joke, config.Image{}, true}
+	}
+	return abstract.LimitMsg()
 }
 
 func (j *joke) GetHelp() config.Msg {

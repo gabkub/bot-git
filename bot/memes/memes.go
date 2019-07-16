@@ -1,7 +1,9 @@
 package memes
 
 import (
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"math/rand"
 	"reflect"
@@ -13,33 +15,34 @@ type getMeme func() []config.Image
 var MemeList []config.Image
 
 func Fetch() config.Image {
-	var memeF getMeme
+	limit.AddRequest(abstract.GetUserId(), "meme")
+	var memeFunction getMeme
 	if len(MemeList)==0 {
-		memeF = memSources[rand.Intn(len(memSources))]
-		MemeList = memeF()
+		memeFunction = memSources[rand.Intn(len(memSources))]
+		MemeList = memeFunction()
 	}
 
-	m := MemeList[rand.Intn(len(MemeList))]
-	handleBL(memeF, m.ImageUrl)
+	meme := MemeList[rand.Intn(len(MemeList))]
+	handleBL(memeFunction, meme.ImageUrl)
 
-	return m
+	return meme
 }
 
-func getFunctionName(f getMeme) string {
-	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
+func getFunctionName(functionReturningMeme getMeme) string {
+	return runtime.FuncForPC(reflect.ValueOf(functionReturningMeme).Pointer()).Name()
 }
 
-func handleBL(f getMeme, meme string) {
-	bl := blacklist.MapBL[getFunctionName(f)]
+func handleBL(functionReturningMeme getMeme, memeReturned string) {
+	bl := blacklist.MapBL[getFunctionName(functionReturningMeme)]
 
-	if bl.Contains(meme) {
+	if bl.Contains(memeReturned) {
 		return
 	}
 
-	bl.Add(meme)
+	bl.Add(memeReturned)
 
 	for i,v := range MemeList {
-		if v.ImageUrl == meme {
+		if v.ImageUrl == memeReturned {
 			MemeList[i] = MemeList[len(MemeList)-1]
 			MemeList = MemeList[:len(MemeList)-1]
 			return

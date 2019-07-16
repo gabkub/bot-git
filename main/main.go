@@ -1,16 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"fmt"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"os"
 	"strings"
 )
 
+const VER = "1.0.2.0"
 // Documentation for the Go driver can be found
 // at https://godoc.org/github.com/mattermost/platform/model#Client
 func main() {
@@ -65,7 +67,7 @@ func connection() *model.WebSocketClient{
 
 	// find the bot team
 	findBotTeam()
-
+	limit.SetTeamMembers()
 	// create new WebSocket client
 	var err *model.AppError
 	ws := "ws"
