@@ -71,3 +71,4 @@ func Read() BotConfig {
 	}
 	return *cfg
 }
+

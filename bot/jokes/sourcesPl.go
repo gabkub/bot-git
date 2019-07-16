@@ -14,13 +14,17 @@ func perelki() string {
 	blacklist.New("perelkiBL")
 
 	doc := abstract.GetDoc("https://perelki.net/random")
-	div := abstract.GetDiv(doc, "div.container:first-child")
 
-	result := div.Text()
-	result = strings.ReplaceAll(div.Text(), doc.Find("div.about").Text(), "")
-	result = strings.TrimSpace(result)
+	div := abstract.GetDiv(doc, "div.content div.container:first-child")
+	resultHTML, _ := div.Html()
 
-	handleBL(perelki, result)
+	// cleaning the text
+	toRemove, _ := doc.Find("div.about").Html()
+	result := strings.ReplaceAll(resultHTML, toRemove, "")
+	result = strings.ReplaceAll(result, "<div class=\"about\"></div>", "")
+	result = fixFormat(result)
+
+	handleBlacklist(perelki, result)
 
 	return result
 }

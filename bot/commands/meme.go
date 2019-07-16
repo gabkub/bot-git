@@ -2,8 +2,9 @@ package commands
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/memes"
+	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"strings"
 	"sync"
 )
@@ -31,9 +32,11 @@ func (m *meme) Handle(msg string) config.Msg {
 	if strings.Contains(msg, "-h") {
 		return m.GetHelp()
 	}
-
-	meme := memes.Fetch()
-	return config.Msg{"", meme, false}
+	if limit.CanSend(abstract.GetUserId(),"meme") {
+		meme := memes.Fetch()
+		return config.Msg{"", meme, false}
+	}
+	return abstract.LimitMsg()
 }
 
 func (m *meme) GetHelp() config.Msg {

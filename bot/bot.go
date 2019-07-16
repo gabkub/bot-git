@@ -14,7 +14,8 @@ import (
 
 func handleMsg(msg string) config.Msg {
 	// initialize the handlers
-	handlers := []abstract.Handler{commands.A.New(), commands.Hey.New(), commands.H.New(),  commands.J.New(), commands.V.New(), commands.M.New()}
+	handlers := []abstract.Handler{commands.A.New(), commands.Hey.New(), commands.H.New(),  commands.J.New(),
+		commands.V.New(), commands.M.New()}
 	for _, hndl := range handlers {
 		if msg == "" {
 			gifs := []string{
@@ -41,7 +42,7 @@ func handleEvent(event *model.WebSocketEvent) {
 
 	// array of data from the event (user's message)
 	post := model.PostFromJson(strings.NewReader(event.Data["post"].(string)))
-
+	abstract.SetUserId(post.UserId)
 	// ignore messages that are:
 	// - empty
 	// - bot's
@@ -52,12 +53,10 @@ func handleEvent(event *model.WebSocketEvent) {
 	}
 	// respond to the message
 	response := handleMsg(strings.TrimSpace(strings.TrimPrefix(post.Message, prefix)))
-	sendMsg(post.ChannelId, response)
+	sendMessage(post.ChannelId, response)
 }
 
 func canRespond(post *model.Post, prefix string) bool {
 	post.Message = strings.ToLower(post.Message)
 	return post != nil && post.UserId != config.MmCfg.BotUser.Id && strings.Contains(post.Message, prefix)
 }
-
-

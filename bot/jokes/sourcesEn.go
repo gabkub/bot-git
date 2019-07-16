@@ -3,7 +3,6 @@ package jokes
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
-	"strings"
 )
 
 var jokerEn = []getJoke{
@@ -15,10 +14,9 @@ func iCanHazDadJoke() string {
 	doc := abstract.GetDoc("https://icanhazdadjoke.com/")
 	div := abstract.GetDiv(doc, "div.card-content")
 
-	result := div.Text()
-	result = strings.TrimSpace(result)
+	result := fixFormat(div.Text())
 
-	handleBL(iCanHazDadJoke, result)
+	handleBlacklist(iCanHazDadJoke, result)
 
 	return result
 }

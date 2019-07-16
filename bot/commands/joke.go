@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/jokes"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"strings"
 	"sync"
@@ -32,19 +33,22 @@ func (j *joke) Handle(msg string) config.Msg {
 	if strings.Contains(msg, "-h") {
 		return j.GetHelp()
 	}
-	if strings.Contains(msg, "-r") {
+	if strings.Compare(msg, "suchar") == 0 {
 		return j.removeLast()
 	}
-	joke := jokes.Fetch()
-	return config.Msg{joke, config.Image{}, true}
+	if limit.CanSend(abstract.GetUserId(),"joke") {
+		joke := jokes.Fetch()
+		return config.Msg{joke, config.Image{}, true}
+	}
+	return abstract.LimitMsg()
 }
 
 func (j *joke) GetHelp() config.Msg {
 	var sb strings.Builder
 	sb.WriteString("Wysyła losowy dowcip. W dzień określony w pliku konfiguracyjnym żarty są w języku angielskim.\n")
-	sb.WriteString("Atrybut -r usuwa ostatni żart.\n\n")
+	sb.WriteString("Komenda _suchar_ usuwa ostatni żart.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
-	sb.WriteString("_joke, suchar, żart, hehe_\n")
+	sb.WriteString("_joke, żart, hehe_\n")
 	return config.Msg{sb.String(),config.Image{}, true}
 }
 
