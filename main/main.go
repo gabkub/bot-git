@@ -12,7 +12,6 @@ import (
 	"strings"
 )
 
-const VER = "1.0.2.0"
 // Documentation for the Go driver can be found
 // at https://godoc.org/github.com/mattermost/platform/model#Client
 func main() {
