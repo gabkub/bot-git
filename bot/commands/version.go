@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-const VER = "1.0.2.2"
+const VER = "1.0.2.3"
 
 type version struct {
 	commands []string
