@@ -4,9 +4,5 @@
 	"Name": "samplebot2",
 	"Password": "password1", 
 	"TeamName": "Test",
-<<<<<<< HEAD
-	"EnglishDay": "Wednesday"
-=======
 	"EnglishDay": "Tuesday"
->>>>>>> test
 }

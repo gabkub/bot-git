@@ -7,11 +7,7 @@ import (
 	"sync"
 )
 
-<<<<<<< HEAD
-const VER = "1.0.1.1"
-=======
 const VER = "1.0.2.0"
->>>>>>> test
 
 type version struct {
 	commands []string
