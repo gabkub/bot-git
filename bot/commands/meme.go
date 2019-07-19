@@ -4,7 +4,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/memes"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"strings"
 	"sync"
 )
@@ -25,7 +25,7 @@ func (m *meme) CanHandle(msg string) bool {
 	return abstract.FindCommand(m.commands, msg)
 }
 
-func (m *meme) Handle(msg string) config.Msg {
+func (m *meme) Handle(msg string) messages.Message {
 	m.Lock()
 	defer m.Unlock()
 
@@ -34,20 +34,21 @@ func (m *meme) Handle(msg string) config.Msg {
 	}
 	if limit.CanSend(abstract.GetUserId(),"meme") {
 		meme := memes.Fetch()
-		return config.Msg{"", meme, false}
+		messages.Response.Img = meme
+		return messages.Response
 	}
 	return abstract.LimitMsg()
 }
 
-func (m *meme) GetHelp() config.Msg {
+func (m *meme) GetHelp() messages.Message {
 	var sb strings.Builder
-	sb.WriteString("Wysyła losowy śmieszny obrazek.\n")
-	sb.WriteString("Atrybut -r usuwa ostatni mem.\n\n")
+	sb.WriteString("Wysyła losowy śmieszny obrazek.\n\n")
 	sb.WriteString("Limity:\n")
 	sb.WriteString("7:00-8:59 - 3 memy\n")
 	sb.WriteString("9:00-14:59 - 1 mem na godzinę\n")
 	sb.WriteString("15:00-6:59 - brak limitów\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_meme, mem_\n")
-	return config.Msg{sb.String(),config.Image{}, false}
+	messages.Response.Text = sb.String()
+	return messages.Response
 }

@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"math/rand"
 	"strings"
 	"sync"
@@ -24,20 +24,24 @@ func (h *hello) CanHandle(msg string) bool {
 	return abstract.FindCommand(h.commands, msg)
 }
 
-func (h *hello) Handle(msg string) config.Msg {
+
+func (h *hello) Handle(msg string) messages.Message {
 	h.Lock()
 	defer h.Unlock()
+
 	if strings.Contains(msg, "-h") {
 		return h.GetHelp()
 	}
-	r := h.commands[rand.Intn(len(h.commands)-1)]
-	return config.Msg{strings.ToTitle(string(r[0])) + r[1:], config.Image{},false}
+	helloMsg := h.commands[rand.Intn(len(h.commands)-1)]
+	messages.Response.Text = strings.ToTitle(string(helloMsg[0])) + helloMsg[1:]
+	return messages.Response
 }
 
-func (h *hello) GetHelp() config.Msg {
+func (h *hello) GetHelp() messages.Message {
 	var sb strings.Builder
 	sb.WriteString("Przywitanie :)\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_cześć, hej, siema, siemanko, hejo, hejka, elo_\n")
-	return config.Msg{sb.String(),config.Image{},false}
+	messages.Response.Text = sb.String()
+	return messages.Response
 }

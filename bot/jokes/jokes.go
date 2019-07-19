@@ -2,7 +2,7 @@ package jokes
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"math/rand"
@@ -38,7 +38,7 @@ func getFunctionName(functionReturningJoke getJoke) string {
 }
 
 func handleBlacklist(functionReturningJoke getJoke, joke string) {
-	blacklist := blacklist.MapBL[getFunctionName(functionReturningJoke)]
+	blacklist := blacklists.MapBL[getFunctionName(functionReturningJoke)]
 
 	if blacklist.Contains(joke) {
 		functionReturningJoke()

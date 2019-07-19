@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"strings"
 	"sync"
 )
@@ -23,21 +23,22 @@ func (a *alive) CanHandle(msg string) bool {
 	return abstract.FindCommand(a.commands, msg)
 }
 
-func (a *alive) Handle(msg string) config.Msg {
+func (a *alive) Handle(msg string) messages.Message {
 	a.Lock()
 	defer a.Unlock()
 
 	if strings.Contains(msg, "-h") {
 		return a.GetHelp()
 	}
-	toSend := config.Msg{"",config.Image{"Żyję!","https://media.giphy.com/media/6lK3ocoEWLFOo/giphy.gif"}, false}
-	return toSend
+	messages.Response.Text = "Żyję!"
+	return messages.Response
 }
 
-func (a *alive) GetHelp() config.Msg {
+func (a *alive) GetHelp() messages.Message {
 	var sb strings.Builder
 	sb.WriteString("Informacja, czy bot jest włączony i działa poprawnie.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_alive, up, running, żyjesz_\n")
-	return config.Msg{sb.String(),config.Image{}, false}
+	messages.Response.Text = sb.String()
+	return messages.Response
 }

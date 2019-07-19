@@ -2,7 +2,7 @@ package jokes
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 )
 
 var jokerEn = []getJoke{
@@ -10,7 +10,7 @@ var jokerEn = []getJoke{
 }
 
 func iCanHazDadJoke() string {
-	blacklist.New("DadJokeBL")
+	blacklists.New("DadJokeBL")
 	doc := abstract.GetDoc("https://icanhazdadjoke.com/")
 	div := abstract.GetDiv(doc, "div.card-content")
 

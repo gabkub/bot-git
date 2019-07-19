@@ -2,19 +2,19 @@ package memes
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"math/rand"
 	"reflect"
 	"runtime"
 )
 
-type getMeme func() []config.Image
+type getMeme func() []messages.Image
 
-var MemeList []config.Image
+var MemeList []messages.Image
 
-func Fetch() config.Image {
+func Fetch() messages.Image {
 	limit.AddRequest(abstract.GetUserId(), "meme")
 	var memeFunction getMeme
 	if len(MemeList)==0 {
@@ -33,7 +33,7 @@ func getFunctionName(functionReturningMeme getMeme) string {
 }
 
 func handleBL(functionReturningMeme getMeme, memeReturned string) {
-	bl := blacklist.MapBL[getFunctionName(functionReturningMeme)]
+	bl := blacklists.MapBL[getFunctionName(functionReturningMeme)]
 
 	if bl.Contains(memeReturned) {
 		return

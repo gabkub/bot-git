@@ -2,11 +2,10 @@ package abstract
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -15,15 +14,19 @@ var limitMessages = []string{
 	"Koniec śmieszków...", "Foch.", "Nie.", "Zaraz wracam. Albo i nie...", "A może by tak popracować?", "~~żart~~",
 }
 
-func LimitMsg() config.Msg {
-	limitMsg := limitMessages[rand.Intn(len(limitMessages))]
-	return config.Msg{limitMsg, config.Image{}, false}
+
+func LimitMsg() messages.Message {
+	var msg messages.Message
+	msg.New()
+	msg.Text = limitMessages[rand.Intn(len(limitMessages))]
+	return msg
 }
+
 
 type Handler interface {
 	CanHandle(msg string) bool
-	Handle(msg string) config.Msg
-	GetHelp() config.Msg
+	Handle(msg string) messages.Message
+	GetHelp() messages.Message
 }
 
 func FindCommand(commands []string, msg string) bool {
@@ -40,14 +43,11 @@ func GetDoc(url string) *goquery.Document {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer resp.Body.Close()
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
 	if err != nil{
 		log.Fatal("Error while opening the website. Error: " + err.Error())
-		os.Exit(1)
 	}
-
-	resp.Body.Close()
 	return doc
 }
 
@@ -56,7 +56,6 @@ func GetDiv(d *goquery.Document, container string) *goquery.Selection {
 	div := d.Find(container)
 	if div == nil{
 		log.Fatal("Empty joke.")
-		os.Exit(1)
 	}
 	return div
 }

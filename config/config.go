@@ -31,26 +31,6 @@ type BotConfig struct {
 	TeamName   string `json:"TeamName"`
 	EnglishDay string `json:"EnglishDay"`
 }
-
-type Msg struct {
-	Text   string
-	Img    Image
-	IsJoke bool
-}
-
-type Image struct{
-	Header 		string
-	ImageUrl 	string
-}
-
-func (i Image) IsEmpty() bool{
-	return i.Header == "" || i.ImageUrl == ""
-}
-
-func (i Image) ToAttach() bool {
-	return i.Header != "" || i.ImageUrl != ""
-}
-
 func Read() BotConfig {
 
 	var path string

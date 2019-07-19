@@ -39,4 +39,5 @@ user verify bot_username
 }
 ```
 
-6 - Run the bot and enjoy it!
+6 - Run the bot and enjoy it! Use template:
+`@bot_username <command>`

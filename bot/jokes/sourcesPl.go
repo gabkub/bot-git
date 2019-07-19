@@ -2,7 +2,7 @@ package jokes
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklist"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 	"strings"
 )
 
@@ -11,7 +11,7 @@ var jokerPl = []getJoke{
 }
 
 func perelki() string {
-	blacklist.New("perelkiBL")
+	blacklists.New("perelkiBL")
 
 	doc := abstract.GetDoc("https://perelki.net/random")
 

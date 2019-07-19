@@ -3,8 +3,10 @@ package schedule
 import (
 	"fmt"
 	"github.com/carlescere/scheduler"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"log"
 )
 
@@ -17,7 +19,7 @@ func Start() {
 	scheduler.Every().Day().At("13").NotImmediately().Run(resetRequests)
 	scheduler.Every().Day().At("14").NotImmediately().Run(resetRequests)
 	scheduler.Every().Day().At("15").NotImmediately().Run(resetRequests)
-	scheduler.Every(10).Minutes().NotImmediately().Run(checkConnection)
+	scheduler.Every(1).Minutes().NotImmediately().Run(checkConnection)
 }
 
 func resetRequests() {
@@ -30,9 +32,10 @@ func resetRequests() {
 }
 
 func checkConnection() {
-
 	if ping, resp := config.MmCfg.Client.GetPing(); resp.Error != nil {
-		log.Fatal("Server not responding.")
+		log.Println("Server not responding. Connecting again.")
+		connection.Connect()
+		bot.Start(connection.Websocket)
 	} else {
 		log.Println(fmt.Sprintf("Server ping: %v", ping))
 	}

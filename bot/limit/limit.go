@@ -63,3 +63,4 @@ func mustBlock(limit Limitation) bool {
 func CanSend(userId, command string) bool {
 	return !Users[userId][command].LimitReached
 }
+

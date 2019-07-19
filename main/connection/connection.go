@@ -9,10 +9,9 @@ import (
 	"strings"
 )
 var Websocket *model.WebSocketClient
-var ActualSession *model.Session
 
 // connect with the Mattermost server
-func Connection() {
+func Connect() {
 	protocol := "http"
 	secure := false
 
@@ -68,8 +67,6 @@ func revokePreviousSessions() {
 		for i,session := range sessions {
 			if i != 0 {
 				config.MmCfg.Client.RevokeSession(config.MmCfg.BotUser.Id, session.Id)
-			} else {
-				ActualSession = session
 			}
 		}
 	}

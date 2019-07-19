@@ -2,12 +2,12 @@ package commands
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"strings"
 	"sync"
 )
 
-const VER = "1.0.3.1"
+const VER = "1.0.3.3"
 
 type version struct {
 	commands []string
@@ -25,20 +25,21 @@ func (v *version) CanHandle(msg string) bool {
 	return abstract.FindCommand(v.commands, msg)
 }
 
-func (v *version) Handle(msg string) config.Msg {
+func (v *version) Handle(msg string) messages.Message {
 	v.Lock()
 	defer v.Unlock()
-
 	if strings.Contains(msg, "-h") {
 		return v.GetHelp()
 	}
-	return config.Msg{VER, config.Image{},false}
+	messages.Response.Text = VER
+	return messages.Response
 }
 
-func (v *version) GetHelp() config.Msg {
+func (v *version) GetHelp() messages.Message {
 	var sb strings.Builder
 	sb.WriteString("Zwraca aktualną wersję bota.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_wersja, version, ver_\n")
-	return config.Msg{sb.String(),config.Image{},false}
+	messages.Response.Text = sb.String()
+	return messages.Response
 }

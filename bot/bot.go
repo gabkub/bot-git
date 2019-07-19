@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-server/model"
 	"math/rand"
@@ -12,8 +13,9 @@ import (
 
 // returns a response to the user if the command is one of the predefined commands
 
-func handleMsg(msg string) config.Msg {
+func handleMsg(msg string) messages.Message {
 	// initialize the handlers
+	messages.Response.New()
 	handlers := []abstract.Handler{commands.A.New(), commands.Hey.New(), commands.H.New(),  commands.J.New(),
 		commands.V.New(), commands.M.New()}
 	for _, hndl := range handlers {
@@ -24,7 +26,8 @@ func handleMsg(msg string) config.Msg {
 				"https://media.giphy.com/media/uL0pJDdA6fQ08/giphy.gif",
 				"https://media.giphy.com/media/xzoXvpBoYTSKY/giphy.gif",
 			}
-			return config.Msg{"", config.Image{"Hello",gifs[rand.Intn(len(gifs))]},false}
+			messages.Response.Img = messages.Image{Header: "Hello",ImageUrl: gifs[rand.Intn(len(gifs))]}
+			return messages.Response
 		}
 		if hndl.CanHandle(msg) {
 			return hndl.Handle(msg)

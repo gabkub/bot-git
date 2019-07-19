@@ -4,6 +4,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/jokes"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"strings"
 	"sync"
@@ -26,9 +27,12 @@ func (j *joke) CanHandle(msg string) bool {
 	return abstract.FindCommand(j.commands, msg)
 }
 
-func (j *joke) Handle(msg string) config.Msg {
+func (j *joke) Handle(msg string) messages.Message {
 	j.Lock()
 	defer j.Unlock()
+
+	messages.Response.IsJoke = true
+
 	if strings.Contains(msg, "-h") {
 		return j.GetHelp()
 	}
@@ -37,12 +41,13 @@ func (j *joke) Handle(msg string) config.Msg {
 	}
 	if limit.CanSend(abstract.GetUserId(),"joke") {
 		joke := jokes.Fetch()
-		return config.Msg{joke, config.Image{}, true}
+		messages.Response.Text = joke
+		return messages.Response
 	}
 	return abstract.LimitMsg()
 }
 
-func (j *joke) GetHelp() config.Msg {
+func (j *joke) GetHelp() messages.Message {
 	var sb strings.Builder
 	sb.WriteString("Wysyła losowy dowcip. W dzień określony w pliku konfiguracyjnym żarty są w języku angielskim.\n")
 	sb.WriteString("Komenda _suchar_ usuwa ostatni żart.\n\n")
@@ -52,15 +57,18 @@ func (j *joke) GetHelp() config.Msg {
 	sb.WriteString("15:00-6:59 - brak limitów\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_joke, żart, hehe_\n")
-	return config.Msg{sb.String(),config.Image{}, true}
+	messages.Response.Text = sb.String()
+	return messages.Response
 }
 
-func (j *joke) removeLast() config.Msg {
+func (j *joke) removeLast() messages.Message {
 	if lastJoke == "" {
-		return config.Msg{"Nie ma żartów do usunięcia...", config.Image{},false}
+		messages.Response.Text = "Brak żartów do usunięcia..."
+		return messages.Response
 	}
 	config.MmCfg.Client.DeletePost(lastJoke)
-	return config.Msg{"", config.Image{"Done", "https://media.giphy.com/media/11lwLvxnaWobcc/giphy.gif"},false}
+	messages.Response.Img.ImageUrl = "https://media.giphy.com/media/11lwLvxnaWobcc/giphy.gif"
+	return messages.Response
 }
 
 func SetLastJoke(last string) {

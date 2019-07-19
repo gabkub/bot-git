@@ -2,15 +2,13 @@ package bot
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/config/schedule"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 )
 
 func Start(websocket *model.WebSocketClient){
-
-	schedule.Start()
 	log.Println("Bot has started.")
 
 	go func() {
@@ -31,31 +29,38 @@ func Start(websocket *model.WebSocketClient){
 	select {}
 }
 
-func sendMessage(channelId string, toSend config.Msg) {
+func sendMessage(channelId string, msg messages.Message) {
 	// create new post
-	post := &model.Post{}
-
-	// add attachments if needed
-	if toSend.Img.ToAttach() {
-		post = &model.Post{
+	var toSend *model.Post
+	switch msg.GetType() {
+	case "Text":
+		toSend = &model.Post{
+			Message: msg.Text,
+		}
+	case "Image":
+		toSend = &model.Post{
+			Message: msg.Text,
 			Props: map[string]interface{}{
 				"attachments": []model.SlackAttachment{
 					{
-						ImageURL: toSend.Img.ImageUrl,
-						Title: toSend.Img.Header,
-					},
+						ImageURL: msg.Img.ImageUrl,
+						Title: msg.Img.Header,},
 				},
 			},
-		}}
-
-	post.ChannelId = channelId
-	post.Message = toSend.Text
-	p, er := config.MmCfg.Client.CreatePost(post)
-	if er.Error != nil {
-		log.Fatal("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
+		}
 	}
-	// helper function for the removing of last joke functionality
-	if toSend.IsJoke {
-		commands.SetLastJoke(p.Id)
+	if toSend != nil {
+		toSend.ChannelId = channelId
+
+		sentPost, er := config.MmCfg.Client.CreatePost(toSend)
+		if er.Error != nil {
+			log.Fatal("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
+		}
+
+		if msg.IsJoke {
+			commands.SetLastJoke(sentPost.Id)
+		}
+	} else {
+		log.Fatal("Error creating the respond message.")
 	}
 }
