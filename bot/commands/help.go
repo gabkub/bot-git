@@ -32,7 +32,7 @@ func (h *help) Handle(msg string) config.Msg {
 	sb.WriteString(":arrow_right: _meme, mem_ - losowy mem\n")
 	sb.WriteString(":arrow_right: _help, pomocy_ - pomoc\n")
 	sb.WriteString(":arrow_right: _ver_ - wersja\n")
-	sb.WriteString("<komenda> -h_ zwraca szczegółowe informacje o komendzie\n")
+	sb.WriteString("_<komenda> -h_ zwraca szczegółowe informacje o komendzie\n")
 	toSend := config.Msg{sb.String(),config.Image{},false}
 	return toSend
 }

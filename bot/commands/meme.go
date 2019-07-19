@@ -43,6 +43,10 @@ func (m *meme) GetHelp() config.Msg {
 	var sb strings.Builder
 	sb.WriteString("Wysyła losowy śmieszny obrazek.\n")
 	sb.WriteString("Atrybut -r usuwa ostatni mem.\n\n")
+	sb.WriteString("Limity:\n")
+	sb.WriteString("7:00-8:59 - 3 memy\n")
+	sb.WriteString("9:00-14:59 - 1 mem na godzinę\n")
+	sb.WriteString("15:00-6:59 - brak limitów\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_meme, mem_\n")
 	return config.Msg{sb.String(),config.Image{}, false}

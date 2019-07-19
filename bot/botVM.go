@@ -2,22 +2,26 @@ package bot
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/config/schedule"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
-	"os"
 )
 
 func Start(websocket *model.WebSocketClient){
 
-	limit.Start()
+	schedule.Start()
 	log.Println("Bot has started.")
 
 	go func() {
 		for {
 			select {
+			case <- websocket.PingTimeoutChannel:
+				log.Fatal("Ping timeout.")
 			case ev := <-websocket.EventChannel:
+				if websocket.ListenError != nil {
+					log.Fatal("Event listening error. Details: "+ websocket.ListenError.DetailedError)
+				}
 				if ev != nil {
 				handleEvent(ev)}
 			}
@@ -49,7 +53,6 @@ func sendMessage(channelId string, toSend config.Msg) {
 	p, er := config.MmCfg.Client.CreatePost(post)
 	if er.Error != nil {
 		log.Fatal("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
-		os.Exit(1)
 	}
 	// helper function for the removing of last joke functionality
 	if toSend.IsJoke {

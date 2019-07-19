@@ -1,10 +1,10 @@
 package bot
 
 import (
+	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"fmt"
 	"github.com/mattermost/mattermost-server/model"
 	"math/rand"
 	"strings"
@@ -47,7 +47,7 @@ func handleEvent(event *model.WebSocketEvent) {
 	// - empty
 	// - bot's
 	// - not to the bot
-	prefix := fmt.Sprintf("@%s", config.BotCfg.Name)
+	prefix := fmt.Sprintf("@%s", config.BotCfg.BotName)
 	if !canRespond(post, prefix) {
 		return
 	}

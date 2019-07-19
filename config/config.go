@@ -16,15 +16,17 @@ var BotCfg = Read()
 
 type MMConfig struct{
 	Client           *model.Client4
+	Team 			 *model.Team
 	WebSocketClient  *model.WebSocketClient
 	BotUser          *model.User
 	BotTeam          *model.Team
+	Session			 *model.Session
 }
 
 type BotConfig struct {
 	Server	   string `json:"Server"`
-	Protocol   string `json:"Protocol"`
-	Name       string `json:"Name"`
+	Port   	   string `json:"Port"`
+	BotName    string `json:"BotName"`
 	Password   string `json:"Password"`
 	TeamName   string `json:"TeamName"`
 	EnglishDay string `json:"EnglishDay"`
@@ -55,19 +57,21 @@ func Read() BotConfig {
 	if len(os.Args) < 2 {
 		path = "./config.json"
 	} else {
-		path = os.Args[1]
+		if os.Args[1]=="-test.v" {
+			path = "./config.json"
+		} else {
+			path = os.Args[1]
+		}
 	}
 
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
-		log.Fatal("Error while opening the configuration file.")
-		os.Exit(1)
+		log.Fatal("Error while opening the configuration file. Path: "+path)
 	}
 	cfg := &BotConfig{}
 	e = json.Unmarshal([]byte(file), cfg)
 	if e != nil {
 		log.Fatal("Error while reading the configuration file.")
-		os.Exit(1)
 	}
 	return *cfg
 }
