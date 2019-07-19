@@ -5,12 +5,10 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"math/rand"
 	"strings"
-	"sync"
 )
 
 type hello struct {
 	commands []string
-	sync.Mutex
 }
 
 var Hey hello
@@ -26,8 +24,6 @@ func (h *hello) CanHandle(msg string) bool {
 
 
 func (h *hello) Handle(msg string) messages.Message {
-	h.Lock()
-	defer h.Unlock()
 
 	if strings.Contains(msg, "-h") {
 		return h.GetHelp()

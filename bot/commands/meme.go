@@ -6,12 +6,10 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/memes"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"strings"
-	"sync"
 )
 
 type meme struct {
 	commands []string
-	sync.Mutex
 }
 
 var M meme
@@ -26,9 +24,6 @@ func (m *meme) CanHandle(msg string) bool {
 }
 
 func (m *meme) Handle(msg string) messages.Message {
-	m.Lock()
-	defer m.Unlock()
-
 	if strings.Contains(msg, "-h") {
 		return m.GetHelp()
 	}

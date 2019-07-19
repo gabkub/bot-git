@@ -31,6 +31,19 @@ type BotConfig struct {
 	TeamName   string `json:"TeamName"`
 	EnglishDay string `json:"EnglishDay"`
 }
+
+type DbConfig struct {
+	Name                 string `json:"Name"`
+	Server               string `json:"Server"`
+	Port                 int    `json:"Port"`
+	User                 string `json:"User"`
+	Password             string `json:"Password"`
+	ConnectionsSlackCh	 string `json:"connections_slack_chan"`
+	ConnectionsWarning   int    `json:"connections_warning"`
+	ConnectionsCheckCron string `json:"connections_check_cron"`
+	ConnectionsLogCron   string `json:"connections_log_cron"`
+}
+
 func Read() BotConfig {
 
 	var path string

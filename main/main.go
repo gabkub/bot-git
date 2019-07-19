@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
-	"github.com/mattermost/mattermost-bot-sample-golang/config/schedule"
 	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
+	"github.com/mattermost/mattermost-bot-sample-golang/schedule"
 	"log"
 	"os"
 	"os/signal"
@@ -26,7 +26,7 @@ func main() {
 			os.Exit(0)
 		}
 	}()
-	connection.Connect()
+	connection.ConnectServer()
 	schedule.Start()
 	bot.Start(connection.Websocket)
 }

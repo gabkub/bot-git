@@ -7,6 +7,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-server/model"
+	"log"
 	"math/rand"
 	"strings"
 )
@@ -15,7 +16,6 @@ import (
 
 func handleMsg(msg string) messages.Message {
 	// initialize the handlers
-	messages.Response.New()
 	handlers := []abstract.Handler{commands.A.New(), commands.Hey.New(), commands.H.New(),  commands.J.New(),
 		commands.V.New(), commands.M.New()}
 	if msg == "-h"{
@@ -57,9 +57,10 @@ func handleEvent(event *model.WebSocketEvent) {
 	if !canRespond(post, prefix) {
 		return
 	}
-	// respond to the message
+
 	response := handleMsg(strings.TrimSpace(strings.TrimPrefix(post.Message, prefix)))
 	sendMessage(post.ChannelId, response)
+	log.Println("Message sent.")
 }
 
 func canRespond(post *model.Post, prefix string) bool {

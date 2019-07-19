@@ -4,8 +4,10 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
+	"sync"
 )
 
 func Start(websocket *model.WebSocketClient){
@@ -17,11 +19,15 @@ func Start(websocket *model.WebSocketClient){
 			case <- websocket.PingTimeoutChannel:
 				log.Fatal("Ping timeout.")
 			case ev := <-websocket.EventChannel:
+				mux := &sync.Mutex{}
+				mux.Lock()
 				if websocket.ListenError != nil {
-					log.Fatal("Event listening error. Details: "+ websocket.ListenError.DetailedError)
+					log.Println("ListenError occurred. Reconnecting to websocket.")
+					connection.ConnectWebsocket()
 				}
 				if ev != nil {
 				handleEvent(ev)}
+				mux.Unlock()
 			}
 		}
 	}()

@@ -9,11 +9,10 @@ import (
 	"strings"
 )
 var Websocket *model.WebSocketClient
-
+var secure = false
 // connect with the Mattermost server
-func Connect() {
+func ConnectServer() {
 	protocol := "http"
-	secure := false
 
 	config.BotCfg.Port = strings.ToLower(config.BotCfg.Port)
 
@@ -41,6 +40,15 @@ func Connect() {
 
 	limit.SetTeamMembers()
 	// create new WebSocket client
+
+	ConnectWebsocket()
+}
+
+func ConnectWebsocket() {
+	if Websocket != nil {
+		Websocket.Close()
+	}
+
 	var err *model.AppError
 	ws := "ws"
 	if secure {
@@ -54,7 +62,6 @@ func Connect() {
 
 	Websocket.Listen()
 }
-
 // check the mattermost server
 func makeSureServerIsRunning() {
 	if _, resp := config.MmCfg.Client .GetPing(); resp.Error != nil {

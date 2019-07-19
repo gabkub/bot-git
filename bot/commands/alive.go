@@ -4,12 +4,10 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"strings"
-	"sync"
 )
 
 type alive struct {
 	commands []string
-	sync.Mutex
 }
 
 var A alive
@@ -24,9 +22,6 @@ func (a *alive) CanHandle(msg string) bool {
 }
 
 func (a *alive) Handle(msg string) messages.Message {
-	a.Lock()
-	defer a.Unlock()
-
 	if strings.Contains(msg, "-h") {
 		return a.GetHelp()
 	}

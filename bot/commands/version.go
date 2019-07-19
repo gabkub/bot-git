@@ -4,14 +4,12 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"strings"
-	"sync"
 )
 
-const VER = "1.0.3.4"
+const VER = "1.0.4.0"
 
 type version struct {
 	commands []string
-	sync.Mutex
 }
 
 var V version
@@ -26,8 +24,6 @@ func (v *version) CanHandle(msg string) bool {
 }
 
 func (v *version) Handle(msg string) messages.Message {
-	v.Lock()
-	defer v.Unlock()
 	if strings.Contains(msg, "-h") {
 		return v.GetHelp()
 	}

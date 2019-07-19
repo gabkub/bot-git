@@ -7,12 +7,10 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"strings"
-	"sync"
 )
 
 type joke struct {
 	commands []string
-	sync.Mutex
 }
 
 var J joke
@@ -28,9 +26,6 @@ func (j *joke) CanHandle(msg string) bool {
 }
 
 func (j *joke) Handle(msg string) messages.Message {
-	j.Lock()
-	defer j.Unlock()
-
 	messages.Response.IsJoke = true
 
 	if strings.Contains(msg, "-h") {

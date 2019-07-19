@@ -4,12 +4,10 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"strings"
-	"sync"
 )
 
 type help struct {
 	commands []string
-	sync.Mutex
 }
 
 var H help
@@ -24,8 +22,6 @@ func (h *help) CanHandle(msg string) bool {
 }
 
 func (h *help) Handle(msg string) messages.Message {
-	h.Lock()
-	defer h.Unlock()
 	var sb strings.Builder
 	sb.WriteString("LISTA KOMEND:\n")
 	sb.WriteString(":arrow_right: _joke, żart_ - losowy dowcip\n")
