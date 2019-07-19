@@ -27,17 +27,17 @@ user verify bot_username
 ```
 5 - Ask colleagues when they want the English Day to be or just choose a random one.
 
-5 - modify the [configuration file](bin/config.json) following the template below
+6 - modify the [configuration file](bin/config.json) following the template below
 ```
 {
 	"Server": "Mattermost_server_IP",
-	"Port": "80(HTTP) / 443(HTTPS) / Mattermost listening port (default is 8065)",
-	"Name": "bot_username",
+	"Port": "Mattermost_server_port", (HTTP=80/HTTPS=443/default=8065)
+	"BotName": "bot_username",
 	"Password": "bot_password", 
 	"TeamName": "team_name",
 	"EnglishDay": "englishday_weekday"
 }
 ```
 
-6 - Run the bot and enjoy it! Use template:
+7 - Run the bot and enjoy it! Use template:
 `@bot_username <command>`
