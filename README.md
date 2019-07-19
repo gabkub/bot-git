@@ -2,9 +2,10 @@
 
 ## Overview
 
-This Bot is made mainly to make rekord employees laugh :)
+This Bot is made mainly to make Rekord SI employees laugh :)
 
-This Bot is using Go v.1.12.7
+Go version: 1.12.7
+
 
 ## Setup
 
@@ -22,15 +23,15 @@ team add team_name bot_username
 
 4 - Verify bot's e-mail address.
 ```
-user verify samplebot
+user verify bot_username
 ```
 5 - Ask colleagues when they want the English Day to be or just choose a random one.
 
-5 - modify the [configuration file](config.json) following the template below
+5 - modify the [configuration file](bin/config.json) following the template below
 ```
 {
 	"Server": "Mattermost_server_IP",
-	"Protocol": "http/https/mattermost",
+	"Port": "80(HTTP) / 443(HTTPS) / Mattermost listening port (default is 8065)",
 	"Name": "bot_username",
 	"Password": "bot_password", 
 	"TeamName": "team_name",
