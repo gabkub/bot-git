@@ -18,17 +18,20 @@ func handleMsg(msg string) messages.Message {
 	messages.Response.New()
 	handlers := []abstract.Handler{commands.A.New(), commands.Hey.New(), commands.H.New(),  commands.J.New(),
 		commands.V.New(), commands.M.New()}
-	for _, hndl := range handlers {
-		if msg == "" {
-			gifs := []string{
-				"https://media.giphy.com/media/pcOHEAG38BUaY/giphy.gif",
-				"https://media.giphy.com/media/g7shkYchjuRBm/giphy.gif",
-				"https://media.giphy.com/media/uL0pJDdA6fQ08/giphy.gif",
-				"https://media.giphy.com/media/xzoXvpBoYTSKY/giphy.gif",
-			}
-			messages.Response.Img = messages.Image{Header: "Hello",ImageUrl: gifs[rand.Intn(len(gifs))]}
-			return messages.Response
+	if msg == "-h"{
+		return commands.H.Handle(msg)
+	}
+	if msg == "" {
+		gifs := []string{
+			"https://media.giphy.com/media/pcOHEAG38BUaY/giphy.gif",
+			"https://media.giphy.com/media/g7shkYchjuRBm/giphy.gif",
+			"https://media.giphy.com/media/uL0pJDdA6fQ08/giphy.gif",
+			"https://media.giphy.com/media/xzoXvpBoYTSKY/giphy.gif",
 		}
+		messages.Response.Img = messages.Image{Header: "Hello",ImageUrl: gifs[rand.Intn(len(gifs))]}
+		return messages.Response
+	}
+	for _, hndl := range handlers {
 		if hndl.CanHandle(msg) {
 			return hndl.Handle(msg)
 		}

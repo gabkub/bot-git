@@ -23,6 +23,9 @@ func Connect() {
 	}
 
 	config.MmCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s://%s:%s", protocol, config.BotCfg.Server, config.BotCfg.Port))
+	if config.MmCfg.Client == nil {
+
+	}
 
 	// test to see if the mattermost server is up and running
 	makeSureServerIsRunning()
