@@ -45,10 +45,6 @@ func ConnectServer() {
 }
 
 func ConnectWebsocket() {
-	if Websocket != nil {
-		Websocket.Close()
-	}
-
 	var err *model.AppError
 	ws := "ws"
 	if secure {

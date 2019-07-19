@@ -4,7 +4,6 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"sync"
@@ -22,8 +21,7 @@ func Start(websocket *model.WebSocketClient){
 				mux := &sync.Mutex{}
 				mux.Lock()
 				if websocket.ListenError != nil {
-					log.Println("ListenError occurred. Reconnecting to websocket.")
-					connection.ConnectWebsocket()
+					log.Fatal("ListenError occurred. Reconnecting to websocket.")
 				}
 				if ev != nil {
 				handleEvent(ev)}
