@@ -18,6 +18,7 @@ func perelki() string {
 	div := abstract.GetDiv(doc, "div.content div.container:first-child")
 	resultHTML, _ := div.Html()
 
+
 	// cleaning the text
 	toRemove, _ := doc.Find("div.about").Html()
 	result := strings.ReplaceAll(resultHTML, toRemove, "")
@@ -27,4 +28,21 @@ func perelki() string {
 	handleBlacklist(perelki, result)
 
 	return result
+}/*
+func jeja() []string{
+	resp, err := http.Get("https://dowcipy.jeja.pl/losowe")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	doc, _ := goquery.NewDocumentFromReader(resp.Body)
+
+	var jokes []string
+	doc.Find("div.dow-left-text:first-child").Each(func(i int, s *goquery.Selection) {
+		println(strings.TrimSpace(s.Text()))
+		jokes = append(jokes, s.Text())
+	})
+
+	return jokes
 }
+*/

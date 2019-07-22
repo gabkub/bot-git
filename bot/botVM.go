@@ -6,6 +6,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"github.com/mattermost/mattermost-server/model"
 	"sync"
 )
@@ -15,8 +16,9 @@ func Start(websocket *model.WebSocketClient){
 	go func() {
 		for {
 			select {
-			case <- websocket.PingTimeoutChannel:
-				logs.WriteToFile("Ping timeout.")
+			case <-websocket.PingTimeoutChannel:
+				logs.WriteToFile("Ping timeout. Connecting Websocket again.")
+				connection.ConnectWebsocket()
 			case event := <-websocket.EventChannel:
 				mux := &sync.Mutex{}
 				mux.Lock()

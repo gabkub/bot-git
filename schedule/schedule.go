@@ -34,7 +34,6 @@ func resetRequests() {
 func checkConnection() {
 	if ping, resp := config.MmCfg.Client.GetPing(); resp.Error != nil {
 		logs.WriteToFile("Server not responding. Connecting again.")
-		connection.ConnectWebsocket()
 		bot.Start(connection.Websocket)
 	} else {
 		logs.WriteToFile(fmt.Sprintf("Server ping: %v", ping))
