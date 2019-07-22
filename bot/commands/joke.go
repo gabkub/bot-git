@@ -26,7 +26,6 @@ func (j *joke) CanHandle(msg string) bool {
 }
 
 func (j *joke) Handle(msg string) messages.Message {
-	messages.Response.IsJoke = true
 
 	if strings.Contains(msg, "-h") {
 		return j.GetHelp()
@@ -35,6 +34,7 @@ func (j *joke) Handle(msg string) messages.Message {
 		return j.removeLast()
 	}
 	if limit.CanSend(abstract.GetUserId(),"joke") {
+		messages.Response.IsJoke = true
 		joke := jokes.Fetch()
 		messages.Response.Text = joke
 		return messages.Response

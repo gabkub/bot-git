@@ -27,6 +27,7 @@ func main() {
 			os.Exit(0)
 		}
 	}()
+	os.Remove("./logs.log")
 	connection.ConnectServer()
 	connection.ConnectWebsocket()
 	connection.Websocket.Listen()

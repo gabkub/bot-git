@@ -12,7 +12,6 @@ import (
 
 func Start(websocket *model.WebSocketClient){
 	logs.WriteToFile("Bot has started.")
-
 	go func() {
 		for {
 			select {
@@ -21,11 +20,13 @@ func Start(websocket *model.WebSocketClient){
 			case event := <-websocket.EventChannel:
 				mux := &sync.Mutex{}
 				mux.Lock()
-				if websocket.ListenError != nil {
+				if websocket.ListenError != nil && websocket.ListenError.StatusCode != 500 {
 					logs.WriteToFile(fmt.Sprintf("ListenError occurred.\nWhere: %s\nStatus code: %v", websocket.ListenError.Where, websocket.ListenError.StatusCode))
 				}
-				if event.IsValid() && isMessage(event.Event) {
-					handleEvent(event)
+				if event != nil {
+					if event.IsValid() && isMessage(event.Event) {
+						handleEvent(event)
+					}
 				}
 				mux.Unlock()
 			}

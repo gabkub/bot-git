@@ -16,6 +16,7 @@ import (
 
 func handleMsg(msg string) messages.Message {
 	// initialize the handlers
+	messages.Response.New()
 	handlers := []abstract.Handler{commands.A.New(), commands.Hey.New(), commands.H.New(),  commands.J.New(),
 		commands.V.New(), commands.M.New()}
 	if msg == "-h"{
