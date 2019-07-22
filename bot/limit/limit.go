@@ -2,6 +2,7 @@ package limit
 
 import (
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/logs"
 	"log"
 	"time"
 )
@@ -26,7 +27,7 @@ func getTeamId() string {
 func SetTeamMembers () {
 	teamMembers, resp := config.MmCfg.Client.GetTeamMembers(getTeamId(),0,150,"")
 	if resp.Error != nil {
-		log.Fatal("Error while getting team members'. Details: " + resp.Error.DetailedError)
+		logs.WriteToFile("Error while getting team members'. Details: " + resp.Error.DetailedError)
 	}
 
 	Users = make(map[string]map[string]*Limitation)

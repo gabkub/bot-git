@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/logs"
 	"github.com/mattermost/mattermost-server/model"
-	"log"
+	"os"
 	"strings"
 )
 var Websocket *model.WebSocketClient
@@ -40,30 +41,30 @@ func ConnectServer() {
 
 	limit.SetTeamMembers()
 	// create new WebSocket client
-
-	ConnectWebsocket()
 }
 
 func ConnectWebsocket() {
-	var err *model.AppError
+
 	ws := "ws"
 	if secure {
 		ws = "wss"
 	}
 
-	Websocket, err = model.NewWebSocketClient4(fmt.Sprintf("%s://%s:%s", ws, config.BotCfg.Server, config.BotCfg.Port), config.MmCfg.Client.AuthToken)
+	websocket, err := model.NewWebSocketClient4(fmt.Sprintf("%s://%s:%s", ws, config.BotCfg.Server, config.BotCfg.Port), config.MmCfg.Client.AuthToken)
 	if err != nil {
-		log.Fatal("Error connecting to the web socket. Details: " + err.DetailedError)
+		logs.WriteToFile("Error connecting to the web socket. Details: " + err.DetailedError)
+		os.Exit(1)
+	} else {
+		Websocket = websocket
 	}
-
-	Websocket.Listen()
 }
+
 // check the mattermost server
 func makeSureServerIsRunning() {
 	if _, resp := config.MmCfg.Client .GetPing(); resp.Error != nil {
-		log.Fatal(fmt.Sprintf("Error pinging the Mattermost server %s. Details: %s", config.MmCfg.Client.Url, resp.Error.Message))
+		logs.WriteToFile(fmt.Sprintf("Error pinging the Mattermost server %s. Details: %s", config.MmCfg.Client.Url, resp.Error.Message))
 	} else {
-		log.Println(fmt.Sprintf("Mattermost server %s detected and running ver. %s.", config.MmCfg.Client.Url, resp.ServerVersion))
+		logs.WriteToFile(fmt.Sprintf("Mattermost server %s detected and running ver. %s.", config.MmCfg.Client.Url, resp.ServerVersion))
 	}
 }
 
@@ -81,10 +82,10 @@ func revokePreviousSessions() {
 // login to the chat as bot user using credentials from config
 func loginAsTheBotUser() {
 	if 	user,resp := config.MmCfg.Client.Login(config.BotCfg.BotName, config.BotCfg.Password); resp.Error != nil {
-		log.Fatal("There was a problem logging into the Mattermost server. Details: " + resp.Error.Message)
+		logs.WriteToFile("There was a problem logging into the Mattermost server. Details: " + resp.Error.Message)
 	} else {
 		//
-		log.Println("Bot logged into the Mattermost server successfully.")
+		logs.WriteToFile("Bot logged into the Mattermost server successfully.")
 		config.MmCfg.BotUser = user
 	}
 }
@@ -92,7 +93,7 @@ func loginAsTheBotUser() {
 // check whether the bot user is a member of the team specified in config
 func findBotTeam() {
 	if team, resp := config.MmCfg.Client.GetTeamByName(config.BotCfg.TeamName,""); resp.Error != nil {
-		log.Fatal(fmt.Sprintf("Team '%s' does not exist.",config.BotCfg.TeamName))
+		logs.WriteToFile(fmt.Sprintf("Team '%s' does not exist.",config.BotCfg.TeamName))
 	} else {
 		config.MmCfg.BotTeam = team
 	}

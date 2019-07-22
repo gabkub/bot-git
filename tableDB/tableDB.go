@@ -8,30 +8,6 @@ import (
 	"time"
 )
 
-func CreateTableDB(){
-	db, err := bolt.Open("footballTable.db", 0600, nil)
-
-	if err != nil{
-		log.Fatal(err)
-	}
-
-	createError := db.Update(func(tx *bolt.Tx) error{
-		_, err = tx.CreateBucketIfNotExists([]byte(strings.TrimSpace("RESERVATION")))
-
-		if err != nil{
-			return fmt.Errorf("create bucket error: %s", err)
-		}
-
-		return nil
-	})
-
-	if createError != nil{
-		//db.Close()
-		log.Fatal(createError)
-	}
-
-	//defer db.Close()
-}
 type TimeReservation struct{
 	userName	string
 	startTime	string
@@ -58,6 +34,7 @@ func openConnectionDB(readOnly bool) *bolt.DB{
 
 	return db
 }
+
 func closeConnection(database *bolt.DB){
 	err := database.Close()
 
@@ -81,12 +58,42 @@ func convertStringToTime(paramTime string) time.Time{
 
 	return resultTime
 }
+func roundToMinute(paramTime time.Time) time.Time{
+	hour, minute, _ := paramTime.Clock()
 
+	newTime := time.Date(paramTime.Year(),paramTime.Month(),paramTime.Day(),hour,minute,0,0,paramTime.Location())
+
+	return newTime
+}
+
+func CreateTableDB(){
+	db, err := bolt.Open("footballTable.db", 0600, nil)
+
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	createError := db.Update(func(tx *bolt.Tx) error{
+		_, err = tx.CreateBucketIfNotExists([]byte(strings.TrimSpace("RESERVATION")))
+
+		if err != nil{
+			return fmt.Errorf("create bucket error: %s", err)
+		}
+
+		return nil
+	})
+
+	if createError != nil{
+		log.Fatal(createError)
+		//db.Close()
+		//defer db.Close()
+	}
+}
 func SetReservation(userName string, startTime time.Time){
 	db := openConnectionDB(false)
 	defer closeConnection(db)
 
-	tempTime := convertOnlyTimeToString(startTime)
+	tempTime := convertOnlyTimeToString(roundToMinute(startTime))
 
 	updateError := db.Update(func(tx *bolt.Tx) error{
 		b := tx.Bucket([]byte(strings.TrimSpace("RESERVATION")))
@@ -169,4 +176,5 @@ func GetAllReservationByStartTime(startTime time.Time) []TimeReservation{
 
 	return reservations
 }
+
 
