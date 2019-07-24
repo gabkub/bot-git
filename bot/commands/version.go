@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-const VER = "1.0.5.6"
+const VER = "1.0.6.0"
 
 type version struct {
 	commands []string
 }
 
-var V version
+var VersionHandler version
 
 func (v *version) New() abstract.Handler {
 	v.commands = []string{"wersja", "version", "ver"}

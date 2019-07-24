@@ -13,7 +13,7 @@ type joke struct {
 	commands []string
 }
 
-var J joke
+var JokeHandler joke
 var lastJoke string
 
 func (j *joke) New() abstract.Handler {
@@ -39,7 +39,7 @@ func (j *joke) Handle(msg string) messages.Message {
 		messages.Response.Text = joke
 		return messages.Response
 	}
-	return abstract.LimitMsg()
+	return abstract.RandomLimitMsg()
 }
 
 func (j *joke) GetHelp() messages.Message {
@@ -61,7 +61,7 @@ func (j *joke) removeLast() messages.Message {
 		messages.Response.Text = "Brak żartów do usunięcia..."
 		return messages.Response
 	}
-	config.MmCfg.Client.DeletePost(lastJoke)
+	config.ConnectionCfg.Client.DeletePost(lastJoke)
 	messages.Response.Img.ImageUrl = "https://media.giphy.com/media/11lwLvxnaWobcc/giphy.gif"
 	return messages.Response
 }

@@ -9,16 +9,14 @@ import (
 )
 
 var memSources = []getMeme{
-	getMemedroid,
+	memedroid,
 }
 
 var countMemedroid = 1
+func memedroid() []messages.Image {
 
-func getMemedroid() []messages.Image {
-	countMemedroid++
 	blacklists.New("getMemedroidBL")
-
-	doc := abstract.GetDoc(fmt.Sprintf("https://www.memedroid.com/memes/top/day/%v", countMemedroid))
+	doc := abstract.GetDoc(fmt.Sprintf("https://www.memedroid.com/memes/top/week/%v", countMemedroid))
 	div := abstract.GetDiv(doc, "article.gallery-item")
 
 	var memes []messages.Image
@@ -35,5 +33,6 @@ func getMemedroid() []messages.Image {
 			memes = append(memes,temp)
 		}
 	})
+	countMemedroid++
 	return memes
 }

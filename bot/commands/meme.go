@@ -12,7 +12,7 @@ type meme struct {
 	commands []string
 }
 
-var M meme
+var MemeHandler meme
 
 func (m *meme) New() abstract.Handler {
 	m.commands = []string{"meme", "mem"}
@@ -32,7 +32,7 @@ func (m *meme) Handle(msg string) messages.Message {
 		messages.Response.Img = meme
 		return messages.Response
 	}
-	return abstract.LimitMsg()
+	return abstract.RandomLimitMsg()
 }
 
 func (m *meme) GetHelp() messages.Message {

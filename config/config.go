@@ -8,13 +8,10 @@ import (
 	"os"
 )
 
-// Mattermost connection data
-var MmCfg MMConfig
+var ConnectionCfg connectionConfig
+var BotCfg = ReadConfig()
 
-// bot user data
-var BotCfg = Read()
-
-type MMConfig struct{
+type connectionConfig struct{
 	Client           *model.Client4
 	Team 			 *model.Team
 	WebSocketClient  *model.WebSocketClient
@@ -32,7 +29,7 @@ type BotConfig struct {
 	EnglishDay string `json:"EnglishDay"`
 }
 
-type DbConfig struct {
+type DatabaseConfig struct {
 	Name                 string `json:"Name"`
 	Server               string `json:"Server"`
 	Port                 int    `json:"Port"`
@@ -44,7 +41,7 @@ type DbConfig struct {
 	ConnectionsLogCron   string `json:"connections_log_cron"`
 }
 
-func Read() BotConfig {
+func ReadConfig() BotConfig {
 
 	var path string
 	if len(os.Args) < 2 {

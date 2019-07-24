@@ -17,15 +17,15 @@ type Limitation struct {
 var Users map[string]map[string]*Limitation
 
 func getTeamId() string {
-	team, resp := config.MmCfg.Client.GetTeamByName(config.BotCfg.TeamName, "")
+	team, resp := config.ConnectionCfg.Client.GetTeamByName(config.BotCfg.TeamName, "")
 	if resp.Error != nil {
 		log.Fatal("Error while getting team's ID. Details: " + resp.Error.DetailedError)
 	}
 	return team.Id
 }
 
-func SetTeamMembers () {
-	teamMembers, resp := config.MmCfg.Client.GetTeamMembers(getTeamId(),0,150,"")
+func SetUsersList() {
+	teamMembers, resp := config.ConnectionCfg.Client.GetTeamMembers(getTeamId(),0,150,"")
 	if resp.Error != nil {
 		logs.WriteToFile("Error while getting team members'. Details: " + resp.Error.DetailedError)
 	}

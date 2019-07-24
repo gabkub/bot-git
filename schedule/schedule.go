@@ -7,7 +7,6 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-bot-sample-golang/logs"
-	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 )
 
 func Start() {
@@ -32,9 +31,9 @@ func resetRequests() {
 }
 
 func checkConnection() {
-	if ping, resp := config.MmCfg.Client.GetPing(); resp.Error != nil {
+	if ping, resp := config.ConnectionCfg.Client.GetPing(); resp.Error != nil {
 		logs.WriteToFile("Server not responding. Connecting again.")
-		bot.Start(connection.Websocket)
+		bot.Start()
 	} else {
 		logs.WriteToFile(fmt.Sprintf("Server ping: %v", ping))
 	}

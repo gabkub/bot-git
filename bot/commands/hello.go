@@ -11,7 +11,7 @@ type hello struct {
 	commands []string
 }
 
-var Hey hello
+var HelloHandler hello
 
 func (h *hello) New() abstract.Handler {
 	h.commands = []string{"cześć", "hej", "siema", "siemka", "siemanko", "hejo", "hejka", "elo"}

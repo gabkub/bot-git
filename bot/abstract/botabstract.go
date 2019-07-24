@@ -3,6 +3,7 @@ package abstract
 import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
+	"github.com/mattermost/mattermost-bot-sample-golang/logs"
 	"log"
 	"math/rand"
 	"net/http"
@@ -14,14 +15,12 @@ var limitMessages = []string{
 	"Koniec śmieszków...", "Foch.", "Nie.", "Zaraz wracam. Albo i nie...", "A może by tak popracować?", "~~żart~~",
 }
 
-
-func LimitMsg() messages.Message {
+func RandomLimitMsg() messages.Message {
 	var msg messages.Message
 	msg.New()
 	msg.Text = limitMessages[rand.Intn(len(limitMessages))]
 	return msg
 }
-
 
 type Handler interface {
 	CanHandle(msg string) bool
@@ -46,6 +45,7 @@ func GetDoc(url string) *goquery.Document {
 	defer resp.Body.Close()
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil{
+		logs.WriteToFile("Error opening the joke/meme website.")
 		log.Fatal("Error while opening the website. Error: " + err.Error())
 	}
 	return doc
@@ -55,7 +55,9 @@ func GetDiv(d *goquery.Document, container string) *goquery.Selection {
 	// get the random joke website shows
 	div := d.Find(container)
 	if div == nil{
-		log.Fatal("Empty joke.")
+		logs.WriteToFile("Error scraping the jokes/memes.")
+		log.Fatal("Error scraping the jokes/memes.")
+
 	}
 	return div
 }

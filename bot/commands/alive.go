@@ -10,7 +10,7 @@ type alive struct {
 	commands []string
 }
 
-var A alive
+var AliveHandler alive
 
 func (a *alive) New() abstract.Handler {
 	a.commands = []string{"alive","up","running", "żyjesz"}

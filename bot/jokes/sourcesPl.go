@@ -1,48 +1,41 @@
 package jokes
 
 import (
+	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
-	"strings"
 )
 
-var jokerPl = []getJoke{
-	perelki,
+var jokersPl = []getJoke{
+	suchary,
+	jeja,
+	gomeo,
 }
 
-func perelki() string {
-	blacklists.New("perelkiBL")
-
-	doc := abstract.GetDoc("https://perelki.net/random")
-
-	div := abstract.GetDiv(doc, "div.content div.container:first-child")
-	resultHTML, _ := div.Html()
-
-
-	// cleaning the text
-	toRemove, _ := doc.Find("div.about").Html()
-	result := strings.ReplaceAll(resultHTML, toRemove, "")
-	result = strings.ReplaceAll(result, "<div class=\"about\"></div>", "")
-	result = fixFormat(result)
-
-	handleBlacklist(perelki, result)
-
-	return result
-}/*
-func jeja() []string{
-	resp, err := http.Get("https://dowcipy.jeja.pl/losowe")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-	doc, _ := goquery.NewDocumentFromReader(resp.Body)
-
-	var jokes []string
-	doc.Find("div.dow-left-text:first-child").Each(func(i int, s *goquery.Selection) {
-		println(strings.TrimSpace(s.Text()))
-		jokes = append(jokes, s.Text())
-	})
-
-	return jokes
+var countersPl = map[string]int {
+	"suchary": 1,
+	"gomeo": 1,
 }
-*/
+
+func suchary() []string {
+	blacklists.New("sucharyBL")
+	doc := abstract.GetDoc(fmt.Sprintf("https://suchary.jakubchmura.pl/?page=%v", countersPl["suchary"]))
+	div := abstract.GetDiv(doc, "div.panel-body p")
+	countersPl["suchary"]++
+	return getJokesList(div)
+}
+
+func jeja() []string {
+	blacklists.New("jejaBL")
+	doc := abstract.GetDoc("https://dowcipy.jeja.pl/losowe")
+	div := abstract.GetDiv(doc, "div.dow-left-text p")
+	return getJokesList(div)
+}
+
+func gomeo() []string {
+	blacklists.New("gomeoBL")
+	doc := abstract.GetDoc(fmt.Sprintf("http://humor.gomeo.pl/krotkie-dowcipy/strona/%v", countersPl["gomeo"]))
+	div := abstract.GetDiv(doc,"div.row")
+	countersPl["gomeo"]++
+	return getJokesList(div)
+}

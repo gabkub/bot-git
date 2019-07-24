@@ -12,18 +12,18 @@ import (
 
 type getMeme func() []messages.Image
 
-var MemeList []messages.Image
+var memeList []messages.Image
 
 func Fetch() messages.Image {
 	limit.AddRequest(abstract.GetUserId(), "meme")
 	var memeFunction getMeme
-	if len(MemeList)==0 {
+	if len(memeList)==0 {
 		memeFunction = memSources[rand.Intn(len(memSources))]
-		MemeList = memeFunction()
+		memeList = memeFunction()
 	}
 
-	meme := MemeList[rand.Intn(len(MemeList))]
-	handleBL(memeFunction, meme.ImageUrl)
+	meme := memeList[rand.Intn(len(memeList))]
+	handleBlacklist(memeFunction, meme.ImageUrl)
 
 	return meme
 }
@@ -32,19 +32,23 @@ func getFunctionName(functionReturningMeme getMeme) string {
 	return runtime.FuncForPC(reflect.ValueOf(functionReturningMeme).Pointer()).Name()
 }
 
-func handleBL(functionReturningMeme getMeme, memeReturned string) {
-	bl := blacklists.MapBL[getFunctionName(functionReturningMeme)]
+func handleBlacklist(functionReturningMeme getMeme, memeReturned string) {
+	bl := blacklists.BlacklistsMap[getFunctionName(functionReturningMeme)]
 
 	if bl.Contains(memeReturned) {
 		return
 	}
 
-	bl.Add(memeReturned)
+	bl.AddElement(memeReturned)
 
-	for i,v := range MemeList {
-		if v.ImageUrl == memeReturned {
-			MemeList[i] = MemeList[len(MemeList)-1]
-			MemeList = MemeList[:len(MemeList)-1]
+	removeFromMemeList(memeReturned)
+}
+
+func removeFromMemeList(meme string) {
+	for i,v := range memeList {
+		if v.ImageUrl == meme {
+			memeList[i] = memeList[len(memeList)-1]
+			memeList = memeList[:len(memeList)-1]
 			return
 		}
 	}

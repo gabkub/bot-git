@@ -5,28 +5,27 @@ import (
 	"sync"
 )
 
-type Blist struct {
+type Blacklist struct {
 	Values [][20]byte
 	sync.Mutex
 }
 
-var MapBL = map[string]Blist{}
+var BlacklistsMap = map[string]Blacklist{}
 
 func sha(s string) [20]byte {
 	return sha1.Sum([]byte(s))
 }
 
 func New(name string) {
-	for k,_ := range MapBL {
+	for k,_ := range BlacklistsMap {
 		if k == name {
 			return
 		}
 	}
-	MapBL[name] = Blist{}
+	BlacklistsMap[name] = Blacklist{}
 }
 
-
-func (b *Blist) Add(s string) {
+func (b *Blacklist) AddElement(s string) {
 	b.Lock()
 	defer b.Unlock()
 
@@ -37,7 +36,7 @@ func (b *Blist) Add(s string) {
 	b.Values = append(b.Values, sha(s))
 }
 
-func (b *Blist) Contains(s string) bool {
+func (b *Blacklist) Contains(s string) bool {
 	b.Lock()
 	defer b.Unlock()
 
@@ -50,13 +49,6 @@ func (b *Blist) Contains(s string) bool {
 	return false
 }
 
-func (b *Blist) Remove() {
-	b.Lock()
-	defer b.Unlock()
+func (b *Blacklist) RemoveElement(s string) {
 
-	l := len(b.Values)
-
-	b.Values = append(b.Values[:l-1])
 }
-
-

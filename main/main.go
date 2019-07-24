@@ -15,7 +15,6 @@ import (
 // at https://godoc.org/github.com/mattermost/platform/model#Client
 
 func main() {
-	logs.WriteToFile(fmt.Sprintf("Running bot v.%v...\n", commands.VER))
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go func() {
@@ -28,10 +27,10 @@ func main() {
 		}
 	}()
 	os.Remove("./logs.log")
-	connection.ConnectServer()
-	connection.ConnectWebsocket()
+	logs.WriteToFile(fmt.Sprintf("Running bot v.%v...\n", commands.VER))
+	connection.Connect()
 	connection.Websocket.Listen()
 	schedule.Start()
-	bot.Start(connection.Websocket)
+	bot.Start()
 }
 

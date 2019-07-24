@@ -11,7 +11,7 @@ var msgAlive = config.Msg{"",config.Image{"Żyję!","https://media.giphy.com/med
 
 
 func TestAlive(t *testing.T) {
-	msg := commands.A.Handle("alive")
+	msg := commands.AliveHandler.Handle("alive")
 	if msg != msgAlive {
 		t.Error(fmt.Sprintf("Wrong response to 'alive'. Got:\nText: %s\nImage header: %s\nImage URL: %s\nIsJoke: %v",
 			msg.Text, msg.Img.Header, msg.Img.ImageUrl,msg.IsJoke))
@@ -19,21 +19,21 @@ func TestAlive(t *testing.T) {
 }
 
 func TestUp(t *testing.T) {
-	msg := commands.A.Handle("up")
+	msg := commands.AliveHandler.Handle("up")
 	if msg != msgAlive {
 		t.Error(fmt.Sprintf("Wrong response to 'up'. Got:\nText: %s\nImage header: %s\nImage URL: %s\nIsJoke: %v",
 			msg.Text, msg.Img.Header, msg.Img.ImageUrl,msg.IsJoke))
 	}
 }
 func TestRunning(t *testing.T) {
-	msg := commands.A.Handle("running")
+	msg := commands.AliveHandler.Handle("running")
 	if msg != msgAlive {
 		t.Error(fmt.Sprintf("Wrong response to 'running'. Got:\nText: %s\nImage header: %s\nImage URL: %s\nIsJoke: %v",
 			msg.Text, msg.Img.Header, msg.Img.ImageUrl,msg.IsJoke))
 	}
 }
 func TestZyjesz(t *testing.T) {
-	msg := commands.A.Handle("żyjesz")
+	msg := commands.AliveHandler.Handle("żyjesz")
 	if msg != msgAlive {
 		t.Error(fmt.Sprintf("Wrong response to 'żyjesz'. Got:\nText: %s\nImage header: %s\nImage URL: %s\nIsJoke: %v",
 			msg.Text, msg.Img.Header, msg.Img.ImageUrl,msg.IsJoke))

@@ -10,7 +10,7 @@ type help struct {
 	commands []string
 }
 
-var H help
+var HelpHandler help
 
 func (h *help) New() abstract.Handler {
 	h.commands = []string{"help", "pomocy", "pomoc"}

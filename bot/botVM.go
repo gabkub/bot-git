@@ -1,32 +1,37 @@
 package bot
 
 import (
-	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-bot-sample-golang/logs"
 	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"github.com/mattermost/mattermost-server/model"
+	"log"
 	"sync"
 )
+var mux = &sync.Mutex{}
 
-func Start(websocket *model.WebSocketClient){
+func Start(){
+
 	logs.WriteToFile("Bot has started.")
+	log.Println("Bot has started.")
+
 	go func() {
 		for {
 			select {
-			case <-websocket.PingTimeoutChannel:
-				logs.WriteToFile("Ping timeout. Connecting Websocket again.")
-				connection.ConnectWebsocket()
-			case event := <-websocket.EventChannel:
-				mux := &sync.Mutex{}
+
+			case <-connection.Websocket.PingTimeoutChannel:
+				logs.WriteToFile("Websocket ping timeout. Connecting again.")
+				log.Println("Websocket ping timeout. Connecting again.")
 				mux.Lock()
-				if websocket.ListenError != nil && websocket.ListenError.StatusCode != 500 {
-					logs.WriteToFile(fmt.Sprintf("ListenError occurred.\nWhere: %s\nStatus code: %v", websocket.ListenError.Where, websocket.ListenError.StatusCode))
-				}
+				connection.Connect()
+				mux.Unlock()
+
+			case event := <-connection.Websocket.EventChannel:
+				mux.Lock()
 				if event != nil {
-					if event.IsValid() && isMessage(event.Event) {
+					if event.IsValid() && isMessage(event.Event){
 						handleEvent(event)
 					}
 				}
@@ -68,7 +73,7 @@ func sendMessage(channelId string, msg messages.Message) {
 	if toSend != nil {
 		toSend.ChannelId = channelId
 
-		sentPost, er := config.MmCfg.Client.CreatePost(toSend)
+		sentPost, er := config.ConnectionCfg.Client.CreatePost(toSend)
 		if er.Error != nil {
 			logs.WriteToFile("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
 		}
