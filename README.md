@@ -30,12 +30,24 @@ user verify bot_username
 6 - modify the [configuration file](bin/config.json) following the template below
 ```
 {
-	"Server": "Mattermost_server_IP",
-	"Port": "Mattermost_server_port", (HTTP=80/HTTPS=443/default=8065)
-	"BotName": "bot_username",
-	"Password": "bot_password", 
-	"TeamName": "team_name",
-	"EnglishDay": "englishday_weekday"
+    "BotConfig": {
+            "Server": "Mattermost_server",
+            "Port": "Mattermost_server_port", (HTTP=80/HTTPS=443/default=8065)
+            "BotName": "bot_username",
+            "Password": "bot_password", 
+            "TeamName": "team_name",
+            "EnglishDay": "englishday_weekday"
+            },
+    "DbConfig": {
+            "Name": "database_name",
+            "Server": "database_server",
+            "Port": database_port,
+            "User": "database_username",
+            "Password": "database_user_password", (set in aes/cmd)
+            "Connections_warning": 50,
+            "Connections_check_cron": "@every 1h",
+            "Connections_log_cron": "@every 4h"
+            } 
 }
 ```
 
