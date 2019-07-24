@@ -1,0 +1,20 @@
+{
+	"BotConfig": {
+			"Server": "192.168.3.182",
+			"Port": "8065",
+			"BotName": "samplebot2",
+			"Password": "password1",
+			"TeamName": "Test",
+			"EnglishDay": "Tuesday"
+		},
+	"DbConfig": {
+			"Name": "local",
+			"Server": "127.0.0.1",
+			"Port": 5432,
+			"User": "postgres",
+			"Password": "",
+			"Connections_warning": 50,
+			"Connections_check_cron": "@every 1h",
+			"Connections_log_cron": "@every 4h"
+		}
+}

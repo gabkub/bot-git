@@ -21,10 +21,10 @@ type connection struct {
 
 type Connections []*connection
 
-func checkDBConnections(dbConfig *config.DatabaseConfig) {
+func checkDBConnections(dbConfig *config.DbConfig) {
 	//connections, err := getConnections(dbConfig)
 }
 
-func getConnections(dbConfig *config.DatabaseConfig) (Connections, error) {
+func getConnections(dbConfig *config.DbConfig) (Connections, error) {
 
 }

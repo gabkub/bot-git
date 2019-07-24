@@ -12,17 +12,17 @@ func (i Image) IsEmpty() bool{
 }
 
 type Message struct {
-	Text 	string
-	Img 	Image
-	Buttons []*model.PostAction
-	IsJoke	bool
+	Text           string
+	Img            Image
+	Buttons        []*model.PostAction
+	IsFunnyMessage bool
 }
 
 func (msg *Message) New() {
 	msg.Text = ""
 	msg.Img = Image{}
 	msg.Buttons = nil
-	msg.IsJoke = false
+	msg.IsFunnyMessage = false
 }
 
 func (msg *Message) GetType() string {

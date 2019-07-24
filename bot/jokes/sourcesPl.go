@@ -35,7 +35,7 @@ func jeja() []string {
 func gomeo() []string {
 	blacklists.New("gomeoBL")
 	doc := abstract.GetDoc(fmt.Sprintf("http://humor.gomeo.pl/krotkie-dowcipy/strona/%v", countersPl["gomeo"]))
-	div := abstract.GetDiv(doc,"div.row")
+	div := abstract.GetDiv(doc,"div.joke-content")
 	countersPl["gomeo"]++
 	return getJokesList(div)
 }

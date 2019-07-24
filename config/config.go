@@ -9,7 +9,8 @@ import (
 )
 
 var ConnectionCfg connectionConfig
-var BotCfg = ReadConfig()
+var BotCfg *BotConfig
+var DbCfg *DbConfig
 
 type connectionConfig struct{
 	Client           *model.Client4
@@ -18,6 +19,11 @@ type connectionConfig struct{
 	BotUser          *model.User
 	BotTeam          *model.Team
 	Session			 *model.Session
+}
+
+type Data struct {
+	BotConfig *BotConfig `json:"BotConfig"`
+	DbConfig *DbConfig   `json:"DbConfig"`
 }
 
 type BotConfig struct {
@@ -29,20 +35,18 @@ type BotConfig struct {
 	EnglishDay string `json:"EnglishDay"`
 }
 
-type DatabaseConfig struct {
+type DbConfig struct {
 	Name                 string `json:"Name"`
 	Server               string `json:"Server"`
 	Port                 int    `json:"Port"`
 	User                 string `json:"User"`
 	Password             string `json:"Password"`
-	ConnectionsSlackCh	 string `json:"connections_slack_chan"`
-	ConnectionsWarning   int    `json:"connections_warning"`
-	ConnectionsCheckCron string `json:"connections_check_cron"`
-	ConnectionsLogCron   string `json:"connections_log_cron"`
+	ConnectionsWarning   int    `json:"Connections_warning"`
+	ConnectionsCheckCron string `json:"Connections_check_cron"`
+	ConnectionsLogCron   string `json:"Connections_log_cron"`
 }
 
-func ReadConfig() BotConfig {
-
+func ReadConfig() {
 	var path string
 	if len(os.Args) < 2 {
 		path = "./config.json"
@@ -58,11 +62,17 @@ func ReadConfig() BotConfig {
 	if e != nil {
 		log.Fatal("Error while opening the configuration file. Path: "+path)
 	}
-	cfg := &BotConfig{}
+	cfg := &Data{}
 	e = json.Unmarshal([]byte(file), cfg)
 	if e != nil {
 		log.Fatal("Error while reading the configuration file.")
 	}
-	return *cfg
-}
+	BotCfg = cfg.BotConfig
+	DbCfg = cfg.DbConfig
 
+	//cfg.DbConfig.Password, e = aesCrypt.DecryptFromBase64(cfg.DbConfig.Password, []byte(aesKey))
+
+	//if e != nil {
+	//	logs.WriteToFile("Error reading password in database config.")
+	//log.Fatal("Error reading password in database config.")}
+}

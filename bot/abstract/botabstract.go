@@ -57,7 +57,6 @@ func GetDiv(d *goquery.Document, container string) *goquery.Selection {
 	if div == nil{
 		logs.WriteToFile("Error scraping the jokes/memes.")
 		log.Fatal("Error scraping the jokes/memes.")
-
 	}
 	return div
 }

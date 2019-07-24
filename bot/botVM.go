@@ -8,6 +8,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
+	"os"
 	"sync"
 )
 var mux = &sync.Mutex{}
@@ -23,10 +24,8 @@ func Start(){
 
 			case <-connection.Websocket.PingTimeoutChannel:
 				logs.WriteToFile("Websocket ping timeout. Connecting again.")
-				log.Println("Websocket ping timeout. Connecting again.")
-				mux.Lock()
-				connection.Connect()
-				mux.Unlock()
+				log.Println("Websocket ping timeout.")
+				os.Exit(1)
 
 			case event := <-connection.Websocket.EventChannel:
 				mux.Lock()
@@ -65,7 +64,10 @@ func sendMessage(channelId string, msg messages.Message) {
 				"attachments": []model.SlackAttachment{
 					{
 						ImageURL: msg.Img.ImageUrl,
-						Title: msg.Img.Header,},
+						Title: msg.Img.Header,
+						TitleLink: msg.Img.ImageUrl,
+					},
+
 				},
 			},
 		}
@@ -78,9 +80,10 @@ func sendMessage(channelId string, msg messages.Message) {
 			logs.WriteToFile("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
 		}
 
-		if msg.IsJoke {
-			commands.SetLastJoke(sentPost.Id)
+		if msg.IsFunnyMessage {
+			commands.SetLast(sentPost.Id)
 		}
+
 	} else {
 		logs.WriteToFile("Error creating the respond message.")
 	}

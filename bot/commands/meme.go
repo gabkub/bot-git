@@ -28,6 +28,7 @@ func (m *meme) Handle(msg string) messages.Message {
 		return m.GetHelp()
 	}
 	if limit.CanSend(abstract.GetUserId(),"meme") {
+		messages.Response.IsFunnyMessage = true
 		meme := memes.Fetch()
 		messages.Response.Img = meme
 		return messages.Response
@@ -37,7 +38,7 @@ func (m *meme) Handle(msg string) messages.Message {
 
 func (m *meme) GetHelp() messages.Message {
 	var sb strings.Builder
-	sb.WriteString("Wysyła losowy śmieszny obrazek.\n\n")
+	sb.WriteString("Wysyła losowy śmieszny obrazek. Odnośnik w tytule otwiera obrazek w nowej karcie.\n\n")
 	sb.WriteString("Limity:\n")
 	sb.WriteString("7:00-8:59 - 3 memy\n")
 	sb.WriteString("9:00-14:59 - 1 mem na godzinę\n")

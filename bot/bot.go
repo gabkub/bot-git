@@ -40,7 +40,7 @@ func canRespond(post *model.Post, prefix string) bool {
 func handleMsg(msg string) messages.Message {
 	messages.Response.New()
 	handlers := []abstract.Handler{commands.AliveHandler.New(), commands.HelloHandler.New(), commands.HelpHandler.New(),  commands.JokeHandler.New(),
-		commands.VersionHandler.New(), commands.MemeHandler.New()}
+		commands.VersionHandler.New(), commands.MemeHandler.New(), commands.SucharHandler.New()}
 	if msg == "-h"{
 		return commands.HelpHandler.Handle(msg)
 	}
