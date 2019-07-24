@@ -8,7 +8,6 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
-	"os"
 	"sync"
 )
 var mux = &sync.Mutex{}
@@ -24,8 +23,8 @@ func Start(){
 
 			case <-connection.Websocket.PingTimeoutChannel:
 				logs.WriteToFile("Websocket ping timeout. Connecting again.")
-				log.Println("Websocket ping timeout.")
-				os.Exit(1)
+				log.Println("Websocket ping timeout. Connecting again.")
+				connection.Connect()
 
 			case event := <-connection.Websocket.EventChannel:
 				mux.Lock()
