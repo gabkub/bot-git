@@ -24,11 +24,12 @@ func (h *help) CanHandle(msg string) bool {
 func (h *help) Handle(msg string) messages.Message {
 	var sb strings.Builder
 	sb.WriteString("LISTA KOMEND:\n")
-	sb.WriteString(":arrow_right: _joke, żart_ - losowy dowcip\n")
-	sb.WriteString(":arrow_right: _meme, mem_ - losowy mem\n")
-	sb.WriteString(":arrow_right: _help, pomocy_ - pomoc\n")
-	sb.WriteString(":arrow_right: _ver_ - wersja\n")
-	sb.WriteString("_<komenda> -h_ zwraca szczegółowe informacje o komendzie\n")
+	sb.WriteString("- _joke, żart_ - losowy dowcip\n")
+	sb.WriteString("- _meme, mem_ - losowy mem\n")
+	sb.WriteString("- _suchar, nie, ..._ - usuwa ostatni dowcip/mem\n")
+	sb.WriteString("- _help, pomocy_ - pomoc\n")
+	sb.WriteString("- _ver_ - wersja\n")
+	sb.WriteString("- _<komenda> -h_ zwraca szczegółowe informacje o komendzie\n")
 	messages.Response.Text = sb.String()
 	return messages.Response
 }
