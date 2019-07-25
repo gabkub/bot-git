@@ -2,8 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"github.com/mattermost/mattermost-bot-sample-golang/aesCrypt"
-	"github.com/mattermost/mattermost-bot-sample-golang/logs"
 	"github.com/mattermost/mattermost-server/model"
 	"io/ioutil"
 	"log"
@@ -64,22 +62,13 @@ func ReadConfig(aesKey string) {
 	if e != nil {
 		log.Fatal("Error while opening the configuration file. Path: "+path)
 	}
+
 	cfg := &Data{}
 	e = json.Unmarshal([]byte(file), cfg)
 	if e != nil {
 		log.Fatal("Error while reading the configuration file.")
 	}
 
-	cfg.BotConfig.Password, e = aesCrypt.DecryptFromBase64(cfg.BotConfig.Password, []byte(aesKey))
-	if e != nil {
-		logs.WriteToFile("Error decrypting bot user password.")
-		log.Fatal("Error decrypting bot user password.")
-	}
 	BotCfg = cfg.BotConfig
-	cfg.DbConfig.Password, e = aesCrypt.DecryptFromBase64(cfg.DbConfig.Password, []byte(aesKey))
-	if e != nil {
-		logs.WriteToFile("Error decrypting database user password.")
-		log.Fatal("Error decrypting database user password.")
-	}
 	DbCfg = cfg.DbConfig
 }

@@ -27,13 +27,7 @@ user verify bot_username
 ```
 5 - Ask colleagues when they want the English Day to be or just choose a random one.
 
-6 - set environmental variable 'AES_KEY'
-
-7 - encrypt the bot user and your database user passwords:
-- run encrypting tool (`EncryptPassword.exe`) (if it gives an error, run it as Administrator)
-- save the encrypted passwords
-
-8 - modify the [configuration file](bin/config.json) following the template below
+6 - modify the [configuration file](bin/config.json) following the template below
 ```
 {
     "BotConfig": {
@@ -57,5 +51,5 @@ user verify bot_username
 }
 ```
 
-9 - Run the bot and enjoy it! Use the template:
+7 - Run the bot and enjoy it! Use the template:
 `@bot_username <command>`

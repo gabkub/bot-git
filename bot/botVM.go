@@ -26,6 +26,7 @@ func Start(){
 
 			case <-connection.Websocket.PingTimeoutChannel:
 				mux.Lock()
+				logs.WriteToFile("Websocket PingTimeout.")
 				config.ConnectionCfg.Client.Logout()
 				connection.Connect()
 				mux.Unlock()
