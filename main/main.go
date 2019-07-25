@@ -7,7 +7,6 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-bot-sample-golang/logs"
 	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
-	"github.com/mattermost/mattermost-bot-sample-golang/schedule"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,12 +17,15 @@ import (
 
 func main() {
 	setGracefulShutdown()
-	config.ReadConfig()
+
+	aesKey := os.Getenv("AES_KEY")
+	config.ReadConfig(aesKey)
+
 	os.Remove("./logs.log")
-	logs.WriteToFile(fmt.Sprintf("Running bot v.%v...\n", commands.VER))
+	logs.WriteToFile(fmt.Sprintf("Starting bot v.%v...\n", commands.VER))
+
 	connection.Connect()
-	connection.Websocket.Listen()
-	schedule.Start()
+	//go schedule.Start()
 	bot.Start()
 }
 
@@ -39,8 +41,4 @@ func setGracefulShutdown() {
 			os.Exit(0)
 		}
 	}()
-}
-
-func getDatabasePassword() {
-
 }

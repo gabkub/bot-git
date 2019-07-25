@@ -1,24 +1,23 @@
 package schedule
 
 import (
-	"fmt"
 	"github.com/carlescere/scheduler"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-bot-sample-golang/logs"
 )
 
 func Start() {
-	scheduler.Every().Day().At("7").NotImmediately().Run(resetRequests)
-	scheduler.Every().Day().At("9").NotImmediately().Run(resetRequests)
-	scheduler.Every().Day().At("10").NotImmediately().Run(resetRequests)
-	scheduler.Every().Day().At("11").NotImmediately().Run(resetRequests)
-	scheduler.Every().Day().At("12").NotImmediately().Run(resetRequests)
-	scheduler.Every().Day().At("13").NotImmediately().Run(resetRequests)
-	scheduler.Every().Day().At("14").NotImmediately().Run(resetRequests)
-	scheduler.Every().Day().At("15").NotImmediately().Run(resetRequests)
-	scheduler.Every(1).Minutes().NotImmediately().Run(checkConnection)
+	_,e := scheduler.Every().Day().At("7:00").Run(resetRequests)
+	_,e = scheduler.Every().Day().At("9:00").Run(resetRequests)
+	_,e = scheduler.Every().Day().At("10:00").Run(resetRequests)
+	_,e = scheduler.Every().Day().At("11:00").Run(resetRequests)
+	_,e = scheduler.Every().Day().At("12:00").Run(resetRequests)
+	_,e = scheduler.Every().Day().At("13:00").Run(resetRequests)
+	_,e = scheduler.Every().Day().At("14:00").Run(resetRequests)
+	_,e = scheduler.Every().Day().At("15:00").Run(resetRequests)
+	if e != nil {
+		logs.WriteToFile("Error reseting user requests. Details: " + e.Error())
+	}
 }
 
 func resetRequests() {
@@ -29,13 +28,3 @@ func resetRequests() {
 		}
 	}
 }
-
-func checkConnection() {
-	if ping, resp := config.ConnectionCfg.Client.GetPing(); resp.Error != nil {
-		logs.WriteToFile("Server not responding. Connecting again.")
-		bot.Start()
-	} else {
-		logs.WriteToFile(fmt.Sprintf("Server ping: %v", ping))
-	}
-}
-

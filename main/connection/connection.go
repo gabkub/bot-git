@@ -32,6 +32,7 @@ func Connect() {
 	}
 
 	connectWebsocket()
+	Websocket.Listen()
 }
 
 func connectServer() {
@@ -95,16 +96,11 @@ func connectWebsocket() {
 		ws = "wss"
 	}
 
-	if Websocket != nil {
-		Websocket.Close()
-	}
-
 	websocket, err := model.NewWebSocketClient4(fmt.Sprintf("%s://%s:%s", ws, config.BotCfg.Server, config.BotCfg.Port), config.ConnectionCfg.Client.AuthToken)
 	if err != nil {
 		logs.WriteToFile("Error connecting to the web socket. Details: " + err.DetailedError)
 		log.Fatal("Error connecting to the web socket. Details: " + err.DetailedError)
 	} else {
 		Websocket = websocket
-		logs.WriteToFile("Websocket client connected.")
 	}
 }

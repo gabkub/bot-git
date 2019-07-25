@@ -27,14 +27,20 @@ user verify bot_username
 ```
 5 - Ask colleagues when they want the English Day to be or just choose a random one.
 
-6 - modify the [configuration file](bin/config.json) following the template below
+6 - set environmental variable 'AES_KEY'
+
+7 - encrypt the bot user and your database user passwords:
+- run encrypting tool (`EncryptPassword.exe`) (if it gives an error, run it as Administrator)
+- save the encrypted passwords
+
+8 - modify the [configuration file](bin/config.json) following the template below
 ```
 {
     "BotConfig": {
             "Server": "Mattermost_server",
             "Port": "Mattermost_server_port", (HTTP=80/HTTPS=443/default=8065)
             "BotName": "bot_username",
-            "Password": "bot_password", 
+            "Password": "bot_password_encrypted", 
             "TeamName": "team_name",
             "EnglishDay": "englishday_weekday"
             },
@@ -43,7 +49,7 @@ user verify bot_username
             "Server": "database_server",
             "Port": database_port,
             "User": "database_username",
-            "Password": "database_user_password", (set in aes/cmd)
+            "Password": "database_user_password_encrypted",
             "Connections_warning": 50,
             "Connections_check_cron": "@every 1h",
             "Connections_log_cron": "@every 4h"
@@ -51,5 +57,5 @@ user verify bot_username
 }
 ```
 
-7 - Run the bot and enjoy it! Use template:
+9 - Run the bot and enjoy it! Use the template:
 `@bot_username <command>`

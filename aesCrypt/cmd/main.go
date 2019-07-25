@@ -1,22 +1,28 @@
 package main
 
 import (
+	//"bufio"
+	//"fmt"
+	//"github.com/mattermost/mattermost-bot-sample-golang/aesCrypt"
+	//"log"
 	"bufio"
 	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/aesCrypt"
+	"log"
 	"os"
 )
-
 func main() {
+	aesKey := os.Getenv("AES_KEY")
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter key (32 characters): ")
-	aesKey, _ := reader.ReadString('\n')
-	aesKey = aesKey[:len(aesKey) - 1]
 
 	for {
-		fmt.Print("Enter database password: ")
+		fmt.Print("Enter password: ")
 		password, _ := reader.ReadString('\n')
-		aesPass := aesCrypt.EncryptToBase64(password, []byte(aesKey))
-		fmt.Println("AES password: " + aesPass)
+		password = password[:len(password)-2]
+		aesPassword, e := aesCrypt.EncryptToBase64(password, []byte(aesKey))
+		if e != nil {
+			log.Println("Error encrypting password. " + e.Error())
+		}
+		println("Encrypted password: " + aesPassword)
 	}
 }
