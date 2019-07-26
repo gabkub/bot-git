@@ -45,14 +45,21 @@ func (f *football) Handle(msg string) messages.Message {
 	}
 
 	free := footballDatabase.FreeReservation(bookingTime)
+	if free.IsZero(){
+		messages.Response.Text = "Nie można zarezerwować. Spróbuj inną godzinę."
+		return messages.Response
+	}
 	if footballDatabase.TimeToString(free) == footballDatabase.TimeToString(bookingTime) {
 		user, _ := config.ConnectionCfg.Client.GetUser(abstract.GetUserId(),"")
-		footballDatabase.SetReservation(user.Username, bookingTime)
-		messages.Response.Text = "Zarezerwowano piłkarzyki. Miłej gry!"
+		if footballDatabase.SetReservation(user.Username, bookingTime) {
+			messages.Response.Text = "Zarezerwowano piłkarzyki. Miłej gry!"
+		} else {
+			messages.Response.Text = "Już dzisiaj rezerwowałeś."
+		}
 		return messages.Response
 	}
 
-	messages.Response.Text = fmt.Sprintf("Stół zajęty. Możesz zarezerwować na: %v:%v",free.Hour(),free.Minute())
+	messages.Response.Text = fmt.Sprintf("Stół zajęty. Stół będzie wolny o: %v:%v",free.Hour(),free.Minute())
 	return messages.Response
 }
 

@@ -13,17 +13,17 @@ Go version: 1.12.7
 
 2 - Create the user the bot will run as.
 ```
-user create --email="bot@example.com" --password="bot_password" --username="bot_username"
+mattermost user create --email="bot@example.com" --password="bot_password" --username="bot_username"
 ```
 
 3 - Add the bot user to the desired team
 ```
-team add team_name bot_username
+mattermost team add team_name bot_username
 ```
 
 4 - Verify bot's e-mail address.
 ```
-user verify bot_username
+mattermost user verify bot_username
 ```
 5 - Ask colleagues when they want the English Day to be or just choose a random one.
 

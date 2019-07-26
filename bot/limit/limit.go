@@ -36,7 +36,6 @@ func SetUsersList() {
 		Users[user.UserId] = map[string]*Limitation{
 			"joke": {0,false},
 			"meme": {0,false},
-			"football": {0,false},
 		}
  	}
 }

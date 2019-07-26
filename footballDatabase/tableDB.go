@@ -41,7 +41,7 @@ func CreateTableDB(){
 	}
 	logs.WriteToFile("Created database table for booking.")
 }
-func SetReservation(userName string, startTime time.Time){
+func SetReservation(userName string, startTime time.Time) bool {
 
 	tempTime := TimeToString(roundToMinute(startTime))
 	//if TimeToString(roundToMinute(time.Now())) > tempTime{
@@ -99,6 +99,7 @@ func SetReservation(userName string, startTime time.Time){
 			log.Fatal(fmt.Sprintf("Unable to update. Error: %s", updateError))
 		}
 	}
+	return canAddUser
 }
 func GetAllReservationByStartTime(startTime time.Time) []TimeReservation {
 	db,_ := bolt.Open("footballTable.db",0600,&bolt.Options{ReadOnly: true})
@@ -142,9 +143,21 @@ func GetAllReservationByStartTime(startTime time.Time) []TimeReservation {
 }
 func FreeReservation(paramTime time.Time) time.Time {
 	reservations := GetAllReservationByStartTime(paramTime)
+	paramTimeAsString := TimeToString(paramTime)
 
 	if len(reservations) == 0{
 		return paramTime
+	}
+
+	for _, reservation := range reservations{
+		if reservation.StartTime <= paramTimeAsString && paramTimeAsString <= reservation.EndTime {
+			continue
+		}
+		timeStamp := convertStringToTime(reservation.StartTime).Sub(convertStringToTime(TimeToString(paramTime))).Minutes()
+
+		if timeStamp < 20{
+			return time.Time{}
+		}
 	}
 
 	var lastEndTimeReservation string
@@ -152,13 +165,19 @@ func FreeReservation(paramTime time.Time) time.Time {
 	for _, reservation := range reservations{
 
 		if lastEndTimeReservation != "" {
-			timeStamp := convertStringToTime(lastEndTimeReservation).Sub(convertStringToTime(reservation.StartTime)).Minutes()
+			timeStamp := convertStringToTime(reservation.StartTime).Sub(convertStringToTime(lastEndTimeReservation)).Minutes()
 
 			if timeStamp >= 20{
 				return convertStringToTime(lastEndTimeReservation)
 			}
 		}
 		lastEndTimeReservation = reservation.EndTime
+	}
+
+	timeStamp := convertStringToTime(lastEndTimeReservation).Sub(convertStringToTime(paramTimeAsString)).Minutes()
+
+	if timeStamp >= 20{
+		return paramTime
 	}
 
 	return convertStringToTime(lastEndTimeReservation)
