@@ -36,24 +36,24 @@ func Connect() {
 }
 
 func connectServer() {
-
-	config.ConnectionCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s://%s:%s", protocol, config.BotCfg.Server, config.BotCfg.Port))
-
-	if config.ConnectionCfg.Client == nil {
-		logs.WriteToFile(fmt.Sprintf("Error while connecting to the Mattermost API. Connecting again."))
-		log.Fatal(fmt.Sprintf("Error while connecting to the Mattermost API. Connecting again."))
-	}
-
-	makeSureServerIsRunning()
+		config.ConnectionCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s://%s:%s", protocol, config.BotCfg.Server, config.BotCfg.Port))
+		if config.ConnectionCfg.Client == nil {
+			logs.WriteToFile(fmt.Sprintf("Error while connecting to the Mattermost API. Connecting again."))
+			log.Println(fmt.Sprintf("Error while connecting to the Mattermost API. Connecting again."))
+		}
+		makeSureServerIsRunning()
 }
 
 func makeSureServerIsRunning() {
 
-	if _, resp := config.ConnectionCfg.Client .GetPing(); resp.Error != nil {
-		logs.WriteToFile(fmt.Sprintf("Error pinging the Mattermost server %s. Details: %s", config.ConnectionCfg.Client.Url, resp.Error.Message))
-		log.Fatal(fmt.Sprintf("Error pinging the Mattermost server %s. Details: %s", config.ConnectionCfg.Client.Url, resp.Error.Message))
-	} else {
-		logs.WriteToFile(fmt.Sprintf("Mattermost server %s detected and running ver. %s.", config.ConnectionCfg.Client.Url, resp.ServerVersion))
+	for {
+		if _, resp := config.ConnectionCfg.Client.GetPing(); resp.Error != nil {
+			logs.WriteToFile(fmt.Sprintf("Error pinging the Mattermost server %s. Details: %s", config.ConnectionCfg.Client.Url, resp.Error.Message))
+			log.Println(fmt.Sprintf("Error pinging the Mattermost server %s. Details: %s", config.ConnectionCfg.Client.Url, resp.Error.Message))
+		} else {
+			logs.WriteToFile(fmt.Sprintf("Mattermost server %s pinged successfully.", config.ConnectionCfg.Client.Url))
+			break
+		}
 	}
 }
 
@@ -96,11 +96,13 @@ func connectWebsocket() {
 		ws = "wss"
 	}
 
-	websocket, err := model.NewWebSocketClient4(fmt.Sprintf("%s://%s:%s", ws, config.BotCfg.Server, config.BotCfg.Port), config.ConnectionCfg.Client.AuthToken)
-	if err != nil {
-		logs.WriteToFile("Error connecting to the web socket. Details: " + err.DetailedError)
-		log.Fatal("Error connecting to the web socket. Details: " + err.DetailedError)
-	} else {
-		Websocket = websocket
+	for {
+		websocket, err := model.NewWebSocketClient4(fmt.Sprintf("%s://%s:%s", ws, config.BotCfg.Server, config.BotCfg.Port), config.ConnectionCfg.Client.AuthToken)
+		if err != nil {
+			logs.WriteToFile("Error connecting to the web socket. Details: " + err.DetailedError)
+		} else {
+			Websocket = websocket
+			break
+		}
 	}
 }

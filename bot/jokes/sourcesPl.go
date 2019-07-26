@@ -7,15 +7,15 @@ import (
 )
 
 var jokersPl = []getJoke{
-	suchary,
 	jeja,
 	gomeo,
 }
 
 var countersPl = map[string]int {
-	"suchary": 1,
 	"gomeo": 1,
 }
+
+/* probably too extreme
 
 func suchary() []string {
 	blacklists.New("sucharyBL")
@@ -23,7 +23,7 @@ func suchary() []string {
 	div := abstract.GetDiv(doc, "div.panel-body p")
 	countersPl["suchary"]++
 	return getJokesList(div)
-}
+}*/
 
 func jeja() []string {
 	blacklists.New("jejaBL")

@@ -25,7 +25,6 @@ func main() {
 	logs.WriteToFile(fmt.Sprintf("Starting bot v.%v...\n", commands.VER))
 
 	connection.Connect()
-	//go schedule.Start()
 	bot.Start()
 }
 

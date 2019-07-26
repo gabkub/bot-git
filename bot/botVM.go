@@ -4,6 +4,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"github.com/mattermost/mattermost-bot-sample-golang/footballDatabase"
 	"github.com/mattermost/mattermost-bot-sample-golang/logs"
 	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"github.com/mattermost/mattermost-bot-sample-golang/schedule"
@@ -21,6 +22,7 @@ func Start(){
 
 	go func() {
 		schedule.Start()
+		footballDatabase.CreateTableDB()
 		for {
 			select {
 
@@ -61,9 +63,9 @@ func sendMessage(channelId string, msg messages.Message) {
 		toSend = &model.Post{
 			Message: msg.Text,
 		}
+
 	case "Image":
 		toSend = &model.Post{
-			Message: msg.Text,
 			Props: map[string]interface{}{
 				"attachments": []model.SlackAttachment{
 					{
@@ -75,7 +77,53 @@ func sendMessage(channelId string, msg messages.Message) {
 				},
 			},
 		}
+
+	case "Title":
+		toSend = &model.Post{
+			Message: msg.Text,
+			Props: map[string]interface{}{
+				"attachments": []model.SlackAttachment{
+					{
+						Title: msg.Title,
+					},
+
+				},
+			},
+		}
+
+	case "ThumbUrl":
+		toSend = &model.Post{
+			Message: msg.Text,
+			Props: map[string]interface{}{
+				"attachments": []model.SlackAttachment{
+					{
+						ThumbURL: msg.ThumbUrl,
+					},
+
+				},
+			},
+		}
+
+	case "TitleThumbUrl":
+		toSend = &model.Post{
+			Props: map[string]interface{}{
+				"attachments": []model.SlackAttachment{
+					{
+						Fields: []*model.SlackAttachmentField{
+								{
+									Short: false,
+									Title: msg.Title,
+									Value: msg.Text,
+								},
+						},
+						ThumbURL: msg.ThumbUrl,
+					},
+
+				},
+			},
+		}
 	}
+
 	if toSend != nil {
 		toSend.ChannelId = channelId
 

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const VER = "1.1.1"
+const VER = "1.2.0"
 
 type version struct {
 	commands []string

@@ -17,6 +17,7 @@ func handleEvent(event *model.WebSocketEvent) {
 	// array of data from the event (user's message)
 	post := model.PostFromJson(strings.NewReader(event.Data["post"].(string)))
 	abstract.SetUserId(post.UserId)
+
 	// ignore messages that are:
 	// - empty
 	// - bot's
@@ -40,7 +41,7 @@ func canRespond(post *model.Post, prefix string) bool {
 func handleMsg(msg string) messages.Message {
 	messages.Response.New()
 	handlers := []abstract.Handler{commands.AliveHandler.New(), commands.HelloHandler.New(), commands.HelpHandler.New(),  commands.JokeHandler.New(),
-		commands.VersionHandler.New(), commands.MemeHandler.New(), commands.SucharHandler.New()}
+		commands.VersionHandler.New(), commands.MemeHandler.New(), commands.SucharHandler.New(), commands.FootballHandler.New()}
 	if msg == "-h"{
 		return commands.HelpHandler.Handle(msg)
 	}

@@ -1,7 +1,5 @@
 package messages
 
-import "github.com/mattermost/mattermost-server/model"
-
 type Image struct{
 	Header 		string
 	ImageUrl 	string
@@ -14,14 +12,16 @@ func (i Image) IsEmpty() bool{
 type Message struct {
 	Text           string
 	Img            Image
-	Buttons        []*model.PostAction
+	Title		   string
+	ThumbUrl		string
 	IsFunnyMessage bool
 }
 
 func (msg *Message) New() {
 	msg.Text = ""
 	msg.Img = Image{}
-	msg.Buttons = nil
+	msg.Title = ""
+	msg.ThumbUrl = ""
 	msg.IsFunnyMessage = false
 }
 
@@ -29,8 +29,14 @@ func (msg *Message) GetType() string {
 	if !msg.Img.IsEmpty() {
 		return "Image"
 	}
-	if msg.Buttons != nil {
-		return "Buttons"
+	if msg.Title != "" && msg.ThumbUrl != "" {
+		return "TitleThumbUrl"
+	}
+	if msg.Title != "" {
+		return "Title"
+	}
+	if msg.ThumbUrl != "" {
+		return "ThumbUrl"
 	}
 	return "Text"
 }
