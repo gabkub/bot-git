@@ -30,7 +30,7 @@ func (j *joke) Handle(msg string) messages.Message {
 	}
 	if limit.CanSend(abstract.GetUserId(),"joke") {
 		messages.Response.IsFunnyMessage = true
-		joke := jokes.Fetch()
+		joke := jokes.Fetch(false)
 		messages.Response.Text = joke
 		return messages.Response
 	}

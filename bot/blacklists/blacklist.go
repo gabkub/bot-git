@@ -48,7 +48,3 @@ func (b *Blacklist) Contains(s string) bool {
 	}
 	return false
 }
-
-func (b *Blacklist) RemoveElement(s string) {
-
-}

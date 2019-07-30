@@ -67,7 +67,8 @@ func (f *football) GetHelp() messages.Message {
 	var sb strings.Builder
 	sb.WriteString("Rezerwacja stołu do gry w piłkarzyki na 20 minut. Domyślna godzina rezerwacji to godzina wysłania wiadomości.\n")
 	sb.WriteString("Limit rezerwacji na użytkownika = 1\n")
-	sb.WriteString("Szablon: _<komenda>_ @_<godzinarezerwacji>_\n\n")
+	sb.WriteString("Szablon: _<komenda>_ (@_<godzinarezerwacji>_) (domyślnie ustawiana jest aktualna godzina)\n")
+	sb.WriteString("_<komenda>_ -l - wyświetla wszystkie rezerwacje na dany dzień.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_football, game, gramy, piłkarzyki, play, soccer_\n")
 	messages.Response.Text = sb.String()
@@ -82,11 +83,11 @@ func setTime(toConvert string) (time.Time, string) {
 
 	hour_minute := strings.Split(toConvert, ":")
 	hour, e := strconv.Atoi(hour_minute[0])
-	if e != nil {
+	if e != nil || hour <= 6 || hour >= 20 {
 		return time.Time{}, "Zły format godziny."
 	}
 	minute, e := strconv.Atoi(hour_minute[1])
-	if e != nil {
+	if e != nil || minute < 0 || minute <= 60{
 		return time.Time{},"Zły format minut."
 	}
 

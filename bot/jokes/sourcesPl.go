@@ -15,16 +15,6 @@ var countersPl = map[string]int {
 	"gomeo": 1,
 }
 
-/* probably too extreme
-
-func suchary() []string {
-	blacklists.New("sucharyBL")
-	doc := abstract.GetDoc(fmt.Sprintf("https://suchary.jakubchmura.pl/?page=%v", countersPl["suchary"]))
-	div := abstract.GetDiv(doc, "div.panel-body p")
-	countersPl["suchary"]++
-	return getJokesList(div)
-}*/
-
 func jeja() []string {
 	blacklists.New("jejaBL")
 	doc := abstract.GetDoc("https://dowcipy.jeja.pl/losowe")

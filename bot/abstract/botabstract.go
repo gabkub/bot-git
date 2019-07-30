@@ -4,15 +4,22 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"math/rand"
 	"net/http"
 	"strings"
 )
 
+var MsgChannel *model.Channel
+
 var limitMessages = []string{
 	"Do roboty!", "Hej ho, hej ho, do pracy by się szło...", "Już się zmęczyłem.", "Zostaw mnie w spokoju.",
 	"Koniec śmieszków...", "Foch.", "Nie.", "Zaraz wracam. Albo i nie...", "A może by tak popracować?", "~~żart~~",
+	"Kolego, poszukaj w eDoku - może tam znajdziesz...",
+	"Może lepiej @dadoczek ?",
+	"Jestem na obiedzie w Bistro",
+	"Jestem zajęty - teraz bujam się po mieście BMW.",
 }
 
 func RandomLimitMsg() messages.Message {

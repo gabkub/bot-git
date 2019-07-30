@@ -1,6 +1,7 @@
 package jokes
 
 import (
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
@@ -22,11 +23,17 @@ type getJoke func() []string
 
 var jokeList []string
 
-func Fetch() string {
+func Fetch(hard bool) string {
 	limit.AddRequest(abstract.GetUserId(), "joke")
-	jokeSources := jokersPl
-	if checkDay() {
-		jokeSources = jokersEn
+	var jokeSources []getJoke
+
+	if hard {
+		jokeSources = jokersHard
+	} else {
+		jokeSources = jokersPl
+		if checkDay() {
+			jokeSources = jokersEn
+		}
 	}
 	var jokeFunction getJoke
 	if len(jokeList) == 0 {
@@ -47,7 +54,7 @@ func getFunctionName(functionReturningJoke getJoke) string {
 }
 
 func handleBlacklist(functionReturningJoke getJoke, jokeReturned string) {
-	blacklist := blacklists.BlacklistsMap[getFunctionName(functionReturningJoke)]
+	blacklist := blacklists.BlacklistsMap[fmt.Sprintf("%vBL", getFunctionName(functionReturningJoke))]
 
 	if blacklist.Contains(jokeReturned) {
 		functionReturningJoke()

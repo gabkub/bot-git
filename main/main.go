@@ -17,7 +17,7 @@ import (
 
 func main() {
 	setGracefulShutdown()
-
+	logs.SetOutPut()
 	aesKey := os.Getenv("AES_KEY")
 	config.ReadConfig(aesKey)
 

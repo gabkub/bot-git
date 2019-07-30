@@ -13,6 +13,7 @@ type Message struct {
 	Text           string
 	Img            Image
 	Title		   string
+	TitleLink		string
 	ThumbUrl		string
 	IsFunnyMessage bool
 }
@@ -21,11 +22,15 @@ func (msg *Message) New() {
 	msg.Text = ""
 	msg.Img = Image{}
 	msg.Title = ""
+	msg.TitleLink = ""
 	msg.ThumbUrl = ""
 	msg.IsFunnyMessage = false
 }
 
 func (msg *Message) GetType() string {
+	if msg.TitleLink != "" {
+		return "News"
+	}
 	if !msg.Img.IsEmpty() {
 		return "Image"
 	}
@@ -38,6 +43,7 @@ func (msg *Message) GetType() string {
 	if msg.ThumbUrl != "" {
 		return "ThumbUrl"
 	}
+
 	return "Text"
 }
 var Response Message

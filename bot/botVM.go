@@ -63,7 +63,18 @@ func sendMessage(channelId string, msg messages.Message) {
 		toSend = &model.Post{
 			Message: msg.Text,
 		}
-
+	case "News":
+		toSend = &model.Post{
+			Props: map[string]interface{}{
+				"attachments": []model.SlackAttachment{
+					{
+						ImageURL: msg.Img.ImageUrl,
+						Title: msg.Img.Header,
+						TitleLink: msg.TitleLink,
+					},
+				},
+			},
+		}
 	case "Image":
 		toSend = &model.Post{
 			Props: map[string]interface{}{

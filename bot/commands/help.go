@@ -24,6 +24,7 @@ func (h *help) CanHandle(msg string) bool {
 func (h *help) Handle(msg string) messages.Message {
 	var sb strings.Builder
 	sb.WriteString("LISTA KOMEND:\n")
+	sb.WriteString("- _hard_ (dostępne tylko w wiadomościach prywatnych z botem) - losowy żart w kategorii **hard** (na własną odpowiedzialność!)\n")
 	sb.WriteString("- _help, pomocy_ - pomoc\n")
 	sb.WriteString("- _joke, żart_ - losowy dowcip\n")
 	sb.WriteString("- _meme, mem_ - losowy mem\n")
