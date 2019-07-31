@@ -87,7 +87,7 @@ func setTime(toConvert string) (time.Time, string) {
 		return time.Time{}, "Zły format godziny."
 	}
 	minute, e := strconv.Atoi(hour_minute[1])
-	if e != nil || minute < 0 || minute <= 60{
+	if e != nil || minute < 0 || minute >= 60{
 		return time.Time{},"Zły format minut."
 	}
 

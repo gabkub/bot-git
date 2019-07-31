@@ -15,7 +15,7 @@
 			"Password": "",
 			"AlertChannel": "",
 			"Connections_warning": 50,
-			"Connections_check_cron": "@every 1h",
-			"Connections_log_cron": "@every 4h"
+			"Connections_check_cron": 1,
+			"Connections_log_cron": 4
 		}
 }
