@@ -4,25 +4,37 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc/newsAbstract"
 )
 
 var GetTech = []newsAbstract.GetNews{
+	techSpider,
 	techComputerWorld,
+	techWirtualneMedia,
 }
 
 var techPage = map[string]int{
 	"Spider": 0,
 	"ComputerWorld": 0,
+	"WirtualneMedia":0,
 }
 
 func techSpider() []messages.Message{
+	blacklists.New("techSpiderBL")
 	techPage["Spider"]++
 	return newsAbstract.GetSpider("nowe-technologie", techPage["Spider"])
 }
 
+func techWirtualneMedia() []messages.Message{
+	blacklists.New("techWirtualneMediaBL")
+	techPage["WirtualneMedia"]++
+	return newsAbstract.GetWirtualneMedia("technologie",techPage["WirtualneMedia"])
+}
+
 func techComputerWorld() []messages.Message{
+	blacklists.New("techComputerWorldBL")
 	techPage["ComputerWorld"]++
 	doc := abstract.GetDoc(fmt.Sprintf("https://www.computerworld.pl/news/archiwum-%v.html", techPage["ComputerWorld"]))
 
@@ -35,7 +47,7 @@ func techComputerWorld() []messages.Message{
 		textlink,_ := s.Find("div.row-item-icon > a").Attr("href")
 
 		temp := messages.Message{
-			TitleLink:  textlink,
+			TitleLink:  fmt.Sprintf("https://www.computerworld.pl/%v", textlink),
 			Img: messages.Image{
 				Header: text,
 				ImageUrl: image,

@@ -1,6 +1,7 @@
 package memes
 
 import (
+	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
@@ -17,31 +18,39 @@ var memeList []messages.Image
 func Fetch() messages.Image {
 	limit.AddRequest(abstract.GetUserId(), "meme")
 	var memeFunction getMeme
-	if len(memeList)==0 {
-		memeFunction = memSources[rand.Intn(len(memSources))]
-		memeList = memeFunction()
+
+	canReturn := false
+	var meme messages.Image
+	for canReturn==false {
+		if len(memeList) == 0 {
+			memeFunction = memSources[rand.Intn(len(memSources))]
+			memeList = memeFunction()
+		}
+		meme = getRandomMeme(memeList)
+		canReturn = handleBlacklist(memeFunction, meme.ImageUrl)
 	}
 
-	meme := memeList[rand.Intn(len(memeList))]
-	handleBlacklist(memeFunction, meme.ImageUrl)
-
 	return meme
+}
+
+func getRandomMeme(memeList []messages.Image) messages.Image {
+	return memeList[rand.Intn(len(memeList))]
 }
 
 func getFunctionName(functionReturningMeme getMeme) string {
 	return runtime.FuncForPC(reflect.ValueOf(functionReturningMeme).Pointer()).Name()
 }
 
-func handleBlacklist(functionReturningMeme getMeme, memeReturned string) {
-	bl := blacklists.BlacklistsMap[getFunctionName(functionReturningMeme)]
+func handleBlacklist(functionReturningJoke getMeme, jokeReturned string) bool {
+	blacklist := blacklists.BlacklistsMap[fmt.Sprintf("%vBL", getFunctionName(functionReturningJoke))]
 
-	if bl.Contains(memeReturned) {
-		return
+	if blacklist.Contains(jokeReturned) {
+		removeFromMemeList(jokeReturned)
+		return false
 	}
 
-	bl.AddElement(memeReturned)
-
-	removeFromMemeList(memeReturned)
+	blacklist.AddElement(jokeReturned)
+	return true
 }
 
 func removeFromMemeList(meme string) {

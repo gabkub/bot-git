@@ -36,12 +36,16 @@ func Fetch(hard bool) string {
 		}
 	}
 	var jokeFunction getJoke
-	if len(jokeList) == 0 {
-		jokeFunction = jokeSources[rand.Intn(len(jokeSources))]
-		jokeList = jokeFunction()
+	canReturn := false
+	var joke string
+	for canReturn==false {
+		if len(jokeList) == 0 {
+			jokeFunction = jokeSources[rand.Intn(len(jokeSources))]
+			jokeList = jokeFunction()
+		}
+		joke = getRandomJoke(jokeList)
+		canReturn =	handleBlacklist(jokeFunction, joke)
 	}
-	joke := jokeList[rand.Intn(len(jokeList))]
-	handleBlacklist(jokeFunction, joke)
 	return joke
 }
 
@@ -53,16 +57,20 @@ func getFunctionName(functionReturningJoke getJoke) string {
 	return runtime.FuncForPC(reflect.ValueOf(functionReturningJoke).Pointer()).Name()
 }
 
-func handleBlacklist(functionReturningJoke getJoke, jokeReturned string) {
+func getRandomJoke(jokeList []string) string {
+	return jokeList[rand.Intn(len(jokeList))]
+}
+
+func handleBlacklist(functionReturningJoke getJoke, jokeReturned string) bool {
 	blacklist := blacklists.BlacklistsMap[fmt.Sprintf("%vBL", getFunctionName(functionReturningJoke))]
 
 	if blacklist.Contains(jokeReturned) {
-		functionReturningJoke()
+		removeFromJokeList(jokeReturned)
+		return false
 	}
 
 	blacklist.AddElement(jokeReturned)
-
-	removeFromJokeList(jokeReturned)
+	return true
 }
 
 func removeFromJokeList(joke string) {

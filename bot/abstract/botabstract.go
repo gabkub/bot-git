@@ -18,8 +18,17 @@ var limitMessages = []string{
 	"Koniec śmieszków...", "Foch.", "Nie.", "Zaraz wracam. Albo i nie...", "A może by tak popracować?", "~~żart~~",
 	"Kolego, poszukaj w eDoku - może tam znajdziesz...",
 	"Może lepiej @dadoczek ?",
-	"Jestem na obiedzie w Bistro",
-	"Jestem zajęty - teraz bujam się po mieście BMW.",
+	"Jestem na obiedzie w Bistro :pizza:",
+	"Jestem zajęty - teraz bujam się po mieście BMW",
+	"Jadę na wdrożenie do Gorzowa :car:",
+	"Później - teraz wykręcam alufy z BMW, które stoi u Was na parkingu. Nie wiecie czyje to?",
+	"Głodny nie jesteś sobą - zjedz coś w Bistro :pizza:",
+	"Teraz czytam książkę od @dadoczek :book:",
+	"Kolego, bo pójdę spać :sleeping_bed:",
+	"A chcesz pojechać na wdrożenie do Gorzowa?",
+	"Dacie zapalić cygaro to może coś wrzucę",
+	"Lepiej może piłkarzyki?",
+	"Weź przykład z Daniela i popracuj trochę.",
 }
 
 func RandomLimitMsg() messages.Message {

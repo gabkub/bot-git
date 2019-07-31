@@ -13,6 +13,7 @@
 			"Port": 5432,
 			"User": "postgres",
 			"Password": "",
+			"AlertChannel": "",
 			"Connections_warning": 50,
 			"Connections_check_cron": "@every 1h",
 			"Connections_log_cron": "@every 4h"

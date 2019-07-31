@@ -30,7 +30,7 @@ func handleEvent(event *model.WebSocketEvent) {
 	}
 
 	response := handleMsg(strings.TrimSpace(strings.TrimPrefix(post.Message, prefix)))
-	sendMessage(post.ChannelId, response)
+	SendMessage(post.ChannelId, response)
 	logs.WriteToFile("Message sent.")
 }
 

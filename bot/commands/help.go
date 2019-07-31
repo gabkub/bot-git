@@ -28,6 +28,7 @@ func (h *help) Handle(msg string) messages.Message {
 	sb.WriteString("- _help, pomocy_ - pomoc\n")
 	sb.WriteString("- _joke, żart_ - losowy dowcip\n")
 	sb.WriteString("- _meme, mem_ - losowy mem\n")
+	sb.WriteString("- _news <kategoria>_ - losowy news z danej kategorii (brak kategorii wysyła newsa technologicznego)\n")
 	sb.WriteString("- _piłkarzyki, gramy_ - rezerwacja stołu do gry w piłkarzyki\n")
 	sb.WriteString("- _suchar, nie, ..._ - usuwa ostatni dowcip/mem\n")
 	sb.WriteString("- _ver_ - wersja\n\n")

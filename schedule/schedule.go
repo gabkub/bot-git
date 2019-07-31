@@ -3,7 +3,9 @@ package schedule
 import (
 	"github.com/carlescere/scheduler"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
+	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/pgMonitor"
 )
 
 func Start() {
@@ -15,6 +17,9 @@ func Start() {
 	_,e = scheduler.Every().Day().At("13:00").Run(resetRequests)
 	_,e = scheduler.Every().Day().At("14:00").Run(resetRequests)
 	_,e = scheduler.Every().Day().At("15:00").Run(resetRequests)
+
+	_,e = scheduler.Every(config.DbCfg.ConnectionsCheckCron).Hours().Run(pgMonitor.CheckConnections)
+	_,e = scheduler.Every(config.DbCfg.ConnectionsLogCron).Hours().Run(pgMonitor.LogConnections)
 	if e != nil {
 		logs.WriteToFile("Error reseting user requests. Details: " + e.Error())
 	}

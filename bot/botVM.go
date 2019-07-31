@@ -55,7 +55,7 @@ func isMessage(eventType string) bool {
 	return false
 }
 
-func sendMessage(channelId string, msg messages.Message) {
+func SendMessage(channelId string, msg messages.Message) {
 	// create new post
 	var toSend *model.Post
 	switch msg.GetType() {

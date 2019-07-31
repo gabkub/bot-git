@@ -18,8 +18,7 @@ import (
 func main() {
 	setGracefulShutdown()
 	logs.SetOutPut()
-	aesKey := os.Getenv("AES_KEY")
-	config.ReadConfig(aesKey)
+	config.ReadConfig()
 
 	os.Remove("./logs.log")
 	logs.WriteToFile(fmt.Sprintf("Starting bot v.%v...\n", commands.VER))

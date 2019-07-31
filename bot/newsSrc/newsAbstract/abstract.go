@@ -31,3 +31,30 @@ func GetSpider(category string, page int) []messages.Message{
 
 	return messagesToReturn
 }
+
+func GetWirtualneMedia(category string, page int) []messages.Message{
+	doc := abstract.GetDoc(fmt.Sprintf("https://www.wirtualnemedia.pl/wiadomosci/%v/page:%v",category, page))
+
+	div := abstract.GetDiv(doc,"div.news-box-content")
+
+	var news []messages.Message
+
+	div.Each(func(i int, s *goquery.Selection){
+
+		image,_ := s.Find("div.news-img-wrapper > a > div.news-img-ratio > img").Attr("src")
+		text := s.Find("div.news-desc-head").Text()
+		textlink, _ :=  s.Find("div.news-img-wrapper > a").Attr("href")
+		temp := messages.Message{
+			TitleLink: fmt.Sprintf("https://www.wirtualnemedia.pl%v",textlink),
+			Img: messages.Image{
+				Header: text,
+				ImageUrl: image,
+			},
+		}
+
+		if !temp.Img.IsEmpty() && temp.TitleLink != ""{
+			news = append(news,temp)
+		}
+	})
+	return news
+}

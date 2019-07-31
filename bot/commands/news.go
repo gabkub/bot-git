@@ -1,7 +1,9 @@
 package commands
 
 import (
+	"fmt"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
+	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc/newsAbstract"
@@ -16,7 +18,7 @@ type news struct {
 }
 
 var NewsHandler news
-var resultsNews = map[string][]messages.Message{}
+var resultsNews = make(map[string][]messages.Message)
 
 func (n *news) New() abstract.Handler {
 	n.commands = []string{"news"}
@@ -47,33 +49,57 @@ func (n *news) Handle(msg string) messages.Message {
 		newsFunction = newsSrc.GetScience[rand.Intn(len(newsSrc.GetScience))]
 	case "tech":
 		newsFunction = newsSrc.GetTech[rand.Intn(len(newsSrc.GetTech))]
-	case "voyage":
+		case "news":
+		newsFunction = newsSrc.GetTech[rand.Intn(len(newsSrc.GetTech))]
+	case "travel":
 		newsFunction = newsSrc.GetVoyage[rand.Intn(len(newsSrc.GetVoyage))]
 	case "podróże":
 		newsFunction = newsSrc.GetVoyage[rand.Intn(len(newsSrc.GetVoyage))]
+	case "moto":
+		newsFunction = newsSrc.GetMoto[(rand.Intn(len(newsSrc.GetMoto)))]
 	}
 
-	if newsFunction != nil {
-		functionName := getFunctionName(newsFunction)
+	if newsFunction == nil {
+		newsFunction = newsSrc.GetTech[rand.Intn(len(newsSrc.GetTech))]
+	}
+
+	functionName := getFunctionName(newsFunction)
+	canReturn := false
+	var news messages.Message
+	for canReturn==false {
 		if len(resultsNews[functionName]) == 0 {
 			resultsNews[functionName] = newsFunction()
+		}
+		news = getRandomNews(functionName)
+		canReturn =	handleBlacklist(newsFunction, news)
 	}
-		messages.Response = randomNews(functionName)
-	} else {
-		messages.Response.Text = "Brak kategorii. Sprawdź listę dostępnych kategorii komendą _news -h_"
-	}
+	messages.Response = news
 
 	return messages.Response
 }
-func randomNews(mapName string) messages.Message{
+func getRandomNews(mapName string) messages.Message{
 	result := resultsNews[mapName][rand.Intn(len(resultsNews[mapName]))]
 	removeFromNewsList(result)
 
 	return result
 }
+
 func getFunctionName(functionReturningNews newsAbstract.GetNews) string {
 	return runtime.FuncForPC(reflect.ValueOf(functionReturningNews).Pointer()).Name()
 }
+
+func handleBlacklist(functionReturningNews newsAbstract.GetNews, newsReturned messages.Message) bool {
+	blacklist := blacklists.BlacklistsMap[fmt.Sprintf("%vBL", getFunctionName(functionReturningNews))]
+
+	if blacklist.Contains(newsReturned.TitleLink) {
+		removeFromNewsList(newsReturned)
+		return false
+	}
+
+	blacklist.AddElement(newsReturned.TitleLink)
+	return true
+}
+
 
 func removeFromNewsList(news messages.Message) {
 	for k,v := range resultsNews {
@@ -89,13 +115,14 @@ func removeFromNewsList(news messages.Message) {
 }
 func (n *news) GetHelp() messages.Message {
 	var sb strings.Builder
-	sb.WriteString("Losowy news z polskich i zagranicznych witryn.\n\n")
+	sb.WriteString("Losowy news.\n\n")
 	sb.WriteString("Dostępne kategorie:\n")
-	sb.WriteString("- games/gry\n")
+	sb.WriteString("- gry/games\n")
 	sb.WriteString("- media\n")
-	sb.WriteString("- science/nauka\n")
-	sb.WriteString("- tech\n")
-	sb.WriteString("- voyage/podróże\n")
+	sb.WriteString("- nauka/science\n")
+	sb.WriteString("- tech (domyślna)\n")
+	sb.WriteString("- moto\n")
+	sb.WriteString("- podróże/travel\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_news_\n")
 	messages.Response.Text = sb.String()

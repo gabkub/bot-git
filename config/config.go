@@ -41,12 +41,14 @@ type DbConfig struct {
 	Port                 int    `json:"Port"`
 	User                 string `json:"User"`
 	Password             string `json:"Password"`
+	AlertChannelName	 string `json:"AlertChannel"`
 	ConnectionsWarning   int    `json:"Connections_warning"`
-	ConnectionsCheckCron string `json:"Connections_check_cron"`
-	ConnectionsLogCron   string `json:"Connections_log_cron"`
+	ConnectionsCheckCron int 	`json:"Connections_check_cron"`
+	ConnectionsLogCron   int 	`json:"Connections_log_cron"`
+	Channel				 *model.Channel
 }
 
-func ReadConfig(aesKey string) {
+func ReadConfig() {
 	var path string
 	if len(os.Args) < 2 {
 		path = "./config.json"
@@ -71,4 +73,5 @@ func ReadConfig(aesKey string) {
 
 	BotCfg = cfg.BotConfig
 	DbCfg = cfg.DbConfig
+	//DbCfg.Channel, _ = ConnectionCfg.Client.GetChannelByName(DbCfg.AlertChannelName, ConnectionCfg.Team.Id,"")
 }
