@@ -15,7 +15,7 @@ var GetTech = []newsAbstract.GetNews{
 	techWirtualneMedia,
 }
 
-var techPage = map[string]int{
+var TechPage = map[string]int{
 	"Spider": 0,
 	"ComputerWorld": 0,
 	"WirtualneMedia":0,
@@ -23,20 +23,20 @@ var techPage = map[string]int{
 
 func techSpider() []messages.Message{
 	blacklists.New("techSpiderBL")
-	techPage["Spider"]++
-	return newsAbstract.GetSpider("nowe-technologie", techPage["Spider"])
+	TechPage["Spider"]++
+	return newsAbstract.GetSpider("nowe-technologie", TechPage["Spider"])
 }
 
 func techWirtualneMedia() []messages.Message{
 	blacklists.New("techWirtualneMediaBL")
-	techPage["WirtualneMedia"]++
-	return newsAbstract.GetWirtualneMedia("technologie",techPage["WirtualneMedia"])
+	TechPage["WirtualneMedia"]++
+	return newsAbstract.GetWirtualneMedia("technologie", TechPage["WirtualneMedia"])
 }
 
 func techComputerWorld() []messages.Message{
 	blacklists.New("techComputerWorldBL")
-	techPage["ComputerWorld"]++
-	doc := abstract.GetDoc(fmt.Sprintf("https://www.computerworld.pl/news/archiwum-%v.html", techPage["ComputerWorld"]))
+	TechPage["ComputerWorld"]++
+	doc := abstract.GetDoc(fmt.Sprintf("https://www.computerworld.pl/news/archiwum-%v.html", TechPage["ComputerWorld"]))
 
 	var news []messages.Message
 

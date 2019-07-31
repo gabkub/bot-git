@@ -13,20 +13,20 @@ var GetGame = []newsAbstract.GetNews{
 	gameSpider,gamePPE,
 }
 
-var gamePage = map[string]int{
+var GamePage = map[string]int{
 	"Spider": 0,
 	"PPE": 0,
 }
 
 func gameSpider() []messages.Message{
 	blacklists.New("gameSpiderBL")
-	gamePage["Spider"]++
-	return newsAbstract.GetSpider("gry", gamePage["Spider"])
+	GamePage["Spider"]++
+	return newsAbstract.GetSpider("gry", GamePage["Spider"])
 }
 
 func gamePPE() []messages.Message{
 	blacklists.New("gamePPEBL")
-	doc := abstract.GetDoc(fmt.Sprintf("https://www.ppe.pl/news/news.html?page=%v",gamePage["PPE"]))
+	doc := abstract.GetDoc(fmt.Sprintf("https://www.ppe.pl/news/news.html?page=%v", GamePage["PPE"]))
 	var messagesToReturn []messages.Message
 	abstract.GetDiv(doc,"div.box").Each(func(i int, s *goquery.Selection){
 

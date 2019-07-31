@@ -13,15 +13,15 @@ var GetMoto = []newsAbstract.GetNews{
 	motoAutoCentrum,
 }
 
-var motoPage = map[string]int{
+var MotoPage = map[string]int{
 	"AutoCentrum": 0,
 	"Moto": 0,
 }
 
 func motoAutoCentrum() []messages.Message{
 	blacklists.New("motoAutoCentrumBL")
-	motoPage["AutoCentrum"]++
-	doc := abstract.GetDoc(fmt.Sprintf("https://www.autocentrum.pl/newsy/strona-%v/", motoPage["AutoCentrum"]))
+	MotoPage["AutoCentrum"]++
+	doc := abstract.GetDoc(fmt.Sprintf("https://www.autocentrum.pl/newsy/strona-%v/", MotoPage["AutoCentrum"]))
 	var news []messages.Message
 
 	abstract.GetDiv(doc,"div.ac-article-wrapper").Each(func(i int, s *goquery.Selection){
@@ -45,8 +45,8 @@ func motoAutoCentrum() []messages.Message{
 	return news
 }
 func motoMoto() []messages.Message{
-	motoPage["Moto"]++
-	doc := abstract.GetDoc(fmt.Sprintf("http://moto.pl/MotoPL/0,88389.html?str=%v_24561775", motoPage["Moto"]))
+	MotoPage["Moto"]++
+	doc := abstract.GetDoc(fmt.Sprintf("http://moto.pl/MotoPL/0,88389.html?str=%v_24561775", MotoPage["Moto"]))
 
 	div := abstract.GetDiv(doc,"li.entry")
 

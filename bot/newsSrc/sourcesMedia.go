@@ -11,19 +11,19 @@ var GetMedia = []newsAbstract.GetNews{
 	mediaSpider,
 }
 
-var mediaPage = map[string]int{
+var MediaPage = map[string]int{
 	"Spider": 0,
 	"WirtualneMedia":0,
 }
 
 func mediaSpider() []messages.Message{
 	blacklists.New("mediaSpiderBL")
-	mediaPage["Spider"]++
-	return newsAbstract.GetSpider("media", mediaPage["Spider"])
+	MediaPage["Spider"]++
+	return newsAbstract.GetSpider("media", MediaPage["Spider"])
 }
 
 func mediaWirtualneMedia() []messages.Message{
 	blacklists.New("mediaWirtualneMediaBL")
-	mediaPage["WirtualneMedia"]++
-	return newsAbstract.GetWirtualneMedia("kultura-i-rozrywka", mediaPage["WirtualneMedia"])
+	MediaPage["WirtualneMedia"]++
+	return newsAbstract.GetWirtualneMedia("kultura-i-rozrywka", MediaPage["WirtualneMedia"])
 }

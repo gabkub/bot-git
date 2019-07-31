@@ -14,20 +14,20 @@ var GetScience = []newsAbstract.GetNews{
 	scienceSpider,
 }
 
-var sciencePage = map[string]int{
+var SciencePage = map[string]int{
 	"Spider": 0,
 	"Przystanek": -1,
 }
 func scienceSpider() []messages.Message{
 	blacklists.New("scienceSpiderBL")
-	sciencePage["Spider"]++
-	return newsAbstract.GetSpider("nauka", sciencePage["Spider"])
+	SciencePage["Spider"]++
+	return newsAbstract.GetSpider("nauka", SciencePage["Spider"])
 }
 
 func sciencePrzystanek() []messages.Message{
 	blacklists.New("sciencePrzystanekBL")
-	sciencePage["Przystanek"]++
-	doc := abstract.GetDoc(fmt.Sprintf("http://przystaneknauka.us.edu.pl/news?page=%v", sciencePage["Przystanek"]))
+	SciencePage["Przystanek"]++
+	doc := abstract.GetDoc(fmt.Sprintf("http://przystaneknauka.us.edu.pl/news?page=%v", SciencePage["Przystanek"]))
 
 	div := abstract.GetDiv(doc,"div.views-row")
 

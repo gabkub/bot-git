@@ -14,20 +14,20 @@ var GetVoyage = []newsAbstract.GetNews{
 	voyageMlecznePodroze,
 }
 
-var voyagePage = map[string]int{
+var VoyagePage = map[string]int{
 	"Spider": 0,
 	"MlecznePodroze": 0,
 }
 func voyageSpider() []messages.Message{
 	blacklists.New("voyageSpiderBL")
-	voyagePage["Spider"]++
-	return newsAbstract.GetSpider("podroze", voyagePage["Spider"])
+	VoyagePage["Spider"]++
+	return newsAbstract.GetSpider("podroze", VoyagePage["Spider"])
 }
 
 func voyageMlecznePodroze() []messages.Message{
 	blacklists.New("voyageMlecznePodrozeBL")
-	voyagePage["MlecznePodroze"]++
-	doc := abstract.GetDoc(fmt.Sprintf("https://mlecznepodroze.pl/tag/news/page/%v/", voyagePage["MlecznePodroze"]))
+	VoyagePage["MlecznePodroze"]++
+	doc := abstract.GetDoc(fmt.Sprintf("https://mlecznepodroze.pl/tag/news/page/%v/", VoyagePage["MlecznePodroze"]))
 
 	div := abstract.GetDiv(doc,"div.primary-post-content")
 
