@@ -5,7 +5,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"github.com/mattermost/mattermost-bot-sample-golang/footballDatabase"
-	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"github.com/mattermost/mattermost-bot-sample-golang/schedule"
 	"github.com/mattermost/mattermost-server/model"
@@ -17,7 +17,7 @@ var mux = &sync.Mutex{}
 
 func Start(){
 
-	logs.WriteToFile("Bot has started.")
+	logg.WriteToFile("Bot has started.")
 	log.Println("Bot has started.")
 
 	go func() {
@@ -28,7 +28,7 @@ func Start(){
 
 			case <-connection.Websocket.PingTimeoutChannel:
 				mux.Lock()
-				logs.WriteToFile("Websocket PingTimeout.")
+				logg.WriteToFile("Websocket PingTimeout.")
 				config.ConnectionCfg.Client.Logout()
 				connection.Connect()
 				mux.Unlock()
@@ -140,7 +140,7 @@ func SendMessage(channelId string, msg messages.Message) {
 
 		sentPost, er := config.ConnectionCfg.Client.CreatePost(toSend)
 		if er.Error != nil {
-			logs.WriteToFile("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
+			logg.WriteToFile("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
 		}
 
 		if msg.IsFunnyMessage {
@@ -148,6 +148,6 @@ func SendMessage(channelId string, msg messages.Message) {
 		}
 
 	} else {
-		logs.WriteToFile("Error creating the respond message.")
+		logg.WriteToFile("Error creating the respond message.")
 	}
 }

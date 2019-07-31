@@ -6,7 +6,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"math/rand"
 	"strings"
@@ -31,7 +31,7 @@ func handleEvent(event *model.WebSocketEvent) {
 
 	response := handleMsg(strings.TrimSpace(strings.TrimPrefix(post.Message, prefix)))
 	SendMessage(post.ChannelId, response)
-	logs.WriteToFile("Message sent.")
+	logg.WriteToFile("Message sent.")
 }
 
 func canRespond(post *model.Post, prefix string) bool {

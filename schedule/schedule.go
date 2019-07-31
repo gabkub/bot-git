@@ -4,7 +4,7 @@ import (
 	"github.com/carlescere/scheduler"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc"
-	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 )
 
 func Start() {
@@ -21,7 +21,7 @@ func Start() {
 	//_,e = scheduler.Every(config.DbCfg.ConnectionsCheckCron).Hours().Run(pgMonitor.CheckConnections)
 	//_,e = scheduler.Every(config.DbCfg.ConnectionsLogCron).Hours().Run(pgMonitor.LogConnections)
 	if e != nil {
-		logs.WriteToFile("Error while scheduling. Details: " + e.Error())
+		logg.WriteToFile("Error while scheduling. Details: " + e.Error())
 	}
 }
 

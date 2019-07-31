@@ -3,7 +3,7 @@ package abstract
 import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"math/rand"
@@ -61,7 +61,7 @@ func GetDoc(url string) *goquery.Document {
 	defer resp.Body.Close()
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil{
-		logs.WriteToFile("Error opening the joke/meme website.")
+		logg.WriteToFile("Error opening the joke/meme website.")
 		log.Fatal("Error while opening the website. Error: " + err.Error())
 	}
 	return doc
@@ -71,7 +71,7 @@ func GetDiv(d *goquery.Document, container string) *goquery.Selection {
 	// get the random joke website shows
 	div := d.Find(container)
 	if div == nil{
-		logs.WriteToFile("Error scraping the jokes/memes.")
+		logg.WriteToFile("Error scraping the jokes/memes.")
 		log.Fatal("Error scraping the jokes/memes.")
 	}
 	return div

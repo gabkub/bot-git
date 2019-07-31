@@ -6,7 +6,7 @@ import (
 	"github.com/lib/pq"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"time"
 )
@@ -43,8 +43,8 @@ func CheckConnections() {
 	if cons != nil && len(cons) >= config.DbCfg.ConnectionsWarning {
 		warning := fmt.Sprintf("Uwaga! Wysoka ilość połączeń z bazą %s (%d połączeń). Możesz je wylistować za pomocą komendy `zombie`", config.DbCfg.Name, len(cons))
 		alert.Text = warning
-		logs.WriteToFile(warning)
-		logs.WriteToFile(formatConnections(cons))
+		logg.WriteToFile(warning)
+		logg.WriteToFile(formatConnections(cons))
 	}
 }
 
@@ -57,7 +57,7 @@ func LogConnections() {
 	}
 	if cons != nil {
 		header := fmt.Sprintf("\n\n%s Połączenia do %s:\n", time.Now().Format("15:04:05"), config.DbCfg.Name)
-		logs.WriteToFile(header)
-		logs.WriteToFile(formatConnections(cons))
+		logg.WriteToFile(header)
+		logg.WriteToFile(formatConnections(cons))
 	}
 }

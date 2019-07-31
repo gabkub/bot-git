@@ -2,7 +2,7 @@ package footballDatabase
 
 import (
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	bolt "go.etcd.io/bbolt"
 	"log"
 	"strconv"
@@ -19,7 +19,7 @@ type TimeReservation struct{
 func CreateTableDB(){
 	db, err := bolt.Open("./footballTable.db", 0600, nil)
 	if err != nil{
-		logs.WriteToFile("Error opening or creating database.")
+		logg.WriteToFile("Error opening or creating database.")
 		log.Fatal("Error opening or creating database.")
 	}
 
@@ -36,10 +36,10 @@ func CreateTableDB(){
 	})
 
 	if createError != nil{
-		logs.WriteToFile("Error creating the table. " + createError.Error())
+		logg.WriteToFile("Error creating the table. " + createError.Error())
 		log.Println("Error creating the table. " + createError.Error())
 	}
-	logs.WriteToFile("Created database table for booking.")
+	logg.WriteToFile("Created database table for booking.")
 }
 func SetReservation(userName string, startTime time.Time) bool {
 
@@ -135,7 +135,7 @@ func GetAllReservationByStartTime(startTime time.Time) []TimeReservation {
 	})
 
 	if err != nil{
-		logs.WriteToFile("Error reading the football reservations. "+err.Error())
+		logg.WriteToFile("Error reading the football reservations. "+err.Error())
 		log.Println("Error reading the football reservations. "+err.Error())
 	}
 
@@ -207,7 +207,7 @@ func convertStringToTime(paramTime string) time.Time{
 	resultTime, timeParseError := time.Parse("2006-01-02 15:04:05", strings.TrimSpace(paramTime))
 
 	if timeParseError != nil{
-		logs.WriteToFile(fmt.Sprintf("Error occured during parsing: %s", timeParseError))
+		logg.WriteToFile(fmt.Sprintf("Error occured during parsing: %s", timeParseError))
 	}
 
 	return resultTime

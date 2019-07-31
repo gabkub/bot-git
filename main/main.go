@@ -5,7 +5,7 @@ import (
 	"github.com/mattermost/mattermost-bot-sample-golang/bot"
 	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
 	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logs"
+	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"os"
 	"os/signal"
@@ -17,11 +17,11 @@ import (
 
 func main() {
 	setGracefulShutdown()
-	logs.SetOutPut()
+	logg.SetOutPut()
 	config.ReadConfig()
 
-	os.Remove("./logs.log")
-	logs.WriteToFile(fmt.Sprintf("Starting bot v.%v...\n", commands.VER))
+	os.Remove("./logg.log")
+	logg.WriteToFile(fmt.Sprintf("Starting bot v.%v...\n", commands.VER))
 
 	connection.Connect()
 	bot.Start()
@@ -35,7 +35,7 @@ func setGracefulShutdown() {
 			if connection.Websocket != nil {
 				connection.Websocket.Close()
 			}
-			logs.WriteToFile("Bot has exited the chat.")
+			logg.WriteToFile("Bot has exited the chat.")
 			os.Exit(0)
 		}
 	}()
