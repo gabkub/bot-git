@@ -1,11 +1,11 @@
 package commands
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/messages"
+	"bot-git/config"
+	"bot-git/footballDatabase"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/footballDatabase"
 	"strconv"
 	"strings"
 	"time"

@@ -1,10 +1,10 @@
 package schedule
 
 import (
+	"bot-git/bot/limit"
+	"bot-git/bot/newsSrc"
+	"bot-git/logg"
 	"github.com/carlescere/scheduler"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 )
 
 func Start() {

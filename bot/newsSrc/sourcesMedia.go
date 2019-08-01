@@ -1,9 +1,9 @@
 package newsSrc
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc/newsAbstract"
+	"bot-git/bot/blacklists"
+	"bot-git/bot/messages"
+	"bot-git/bot/newsSrc/newsAbstract"
 )
 
 var GetMedia = []newsAbstract.GetNews{

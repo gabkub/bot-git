@@ -1,10 +1,10 @@
 package connection
 
 import (
+	"bot-git/bot/limit"
+	"bot-git/config"
+	"bot-git/logg"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"strings"

@@ -1,12 +1,12 @@
 package pgMonitor
 
 import (
+	"bot-git/bot/messages"
+	"bot-git/config"
+	"bot-git/logg"
 	"database/sql"
 	"fmt"
 	"github.com/lib/pq"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"time"
 )

@@ -1,10 +1,10 @@
 package newsAbstract
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/messages"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 )
 
 type GetNews func() []messages.Message

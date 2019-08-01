@@ -1,13 +1,13 @@
 package main
 
 import (
+	"../../aesCrypt"
 	//"bufio"
 	//"fmt"
 	//"github.com/mattermost/mattermost-bot-sample-golang/aesCrypt"
 	//"log"
 	"bufio"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/aesCrypt"
 	"log"
 	"os"
 )

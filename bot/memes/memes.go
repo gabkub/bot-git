@@ -1,11 +1,11 @@
 package memes
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
+	"bot-git/bot/limit"
+	"bot-git/bot/messages"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"math/rand"
 	"reflect"
 	"runtime"

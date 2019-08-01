@@ -1,9 +1,9 @@
 package jokes
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 )
 
 var jokersPl = []getJoke{

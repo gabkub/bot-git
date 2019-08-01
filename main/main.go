@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bot-git/bot"
+	"bot-git/bot/commands"
+	"bot-git/config"
+	"bot-git/logg"
+	"bot-git/main/connection"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
-	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
 	"os"
 	"os/signal"
 	"syscall"

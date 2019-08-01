@@ -1,9 +1,9 @@
 package tests
 
 import (
+	"bot-git/bot/commands"
+	"bot-git/config"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"testing"
 )
 

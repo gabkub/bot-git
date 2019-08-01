@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/memes"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
+	"bot-git/bot/abstract"
+	"bot-git/bot/limit"
+	"bot-git/bot/memes"
+	"bot-git/bot/messages"
 	"strings"
 )
 

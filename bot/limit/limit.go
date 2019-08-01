@@ -1,8 +1,8 @@
 package limit
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
+	"bot-git/config"
+	"bot-git/logg"
 	"log"
 	"time"
 )

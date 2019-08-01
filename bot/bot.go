@@ -1,12 +1,12 @@
 package bot
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/commands"
+	"bot-git/bot/messages"
+	"bot-git/config"
+	"bot-git/logg"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"math/rand"
 	"strings"

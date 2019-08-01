@@ -2,10 +2,10 @@ package logg
 
 import (
 	"fmt"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"log"
 	"os"
 	"strings"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"time"
 )
 

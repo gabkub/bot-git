@@ -1,8 +1,8 @@
 package footballDatabase
 
 import (
+	"bot-git/logg"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	bolt "go.etcd.io/bbolt"
 	"log"
 	"strconv"

@@ -1,12 +1,12 @@
 package commands
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
+	"bot-git/bot/messages"
+	"bot-git/bot/newsSrc"
+	"bot-git/bot/newsSrc/newsAbstract"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc/newsAbstract"
 	"math/rand"
 	"reflect"
 	"runtime"

@@ -1,13 +1,13 @@
 package bot
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/footballDatabase"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
-	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
-	"github.com/mattermost/mattermost-bot-sample-golang/schedule"
+	"bot-git/bot/commands"
+	"bot-git/bot/messages"
+	"bot-git/config"
+	"bot-git/footballDatabase"
+	"bot-git/logg"
+	"bot-git/main/connection"
+	"bot-git/schedule"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"sync"
