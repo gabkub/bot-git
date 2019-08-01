@@ -1,10 +1,10 @@
 package pgMonitor
 
 import (
+	"bot-git/config"
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
 )
 
 const (

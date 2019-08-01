@@ -1,9 +1,9 @@
 package commands
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
+	"bot-git/bot/abstract"
+	"bot-git/bot/messages"
+	"bot-git/config"
 	"strings"
 )
 

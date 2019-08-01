@@ -1,12 +1,12 @@
 package jokes
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
+	"bot-git/bot/limit"
+	"bot-git/config"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
 	"math/rand"
 	"reflect"
 	"runtime"
@@ -38,13 +38,13 @@ func Fetch(hard bool) string {
 	var jokeFunction getJoke
 	canReturn := false
 	var joke string
-	for canReturn==false {
+	for canReturn == false {
 		if len(jokeList) == 0 {
 			jokeFunction = jokeSources[rand.Intn(len(jokeSources))]
 			jokeList = jokeFunction()
 		}
 		joke = getRandomJoke(jokeList)
-		canReturn =	handleBlacklist(jokeFunction, joke)
+		canReturn = handleBlacklist(jokeFunction, joke)
 	}
 	return joke
 }
@@ -74,7 +74,7 @@ func handleBlacklist(functionReturningJoke getJoke, jokeReturned string) bool {
 }
 
 func removeFromJokeList(joke string) {
-	for i,v := range jokeList {
+	for i, v := range jokeList {
 		if v == joke {
 			jokeList[i] = jokeList[len(jokeList)-1]
 			jokeList = jokeList[:len(jokeList)-1]
@@ -87,7 +87,7 @@ func getJokesList(selectionsToFormat *goquery.Selection) []string {
 
 	var jokes []string
 	selectionsToFormat.Each(func(i int, s *goquery.Selection) {
-		selectionHTML,_ := s.Html()
+		selectionHTML, _ := s.Html()
 		jokes = append(jokes, fixFormat(selectionHTML))
 	})
 
@@ -98,7 +98,7 @@ func fixFormat(HTMLtoFormat string) string {
 	formattedString := strings.ReplaceAll(HTMLtoFormat, "<br>", "\n")
 	formattedString = strings.ReplaceAll(formattedString, "<br/>", "\n")
 	formattedString = strings.ReplaceAll(formattedString, "<p>", "")
-	formattedString = strings.ReplaceAll(formattedString, "</p>","")
+	formattedString = strings.ReplaceAll(formattedString, "</p>", "")
 
 	// markdown escape
 	formattedString = strings.ReplaceAll(formattedString, "-", "\\-")

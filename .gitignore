@@ -34,3 +34,5 @@ Session.vim
 .agignore
 .ctags
 tags
+*.log
+*.db

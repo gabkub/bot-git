@@ -1,12 +1,12 @@
 package commands
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
+	"bot-git/bot/messages"
+	"bot-git/bot/newsSrc"
+	"bot-git/bot/newsSrc/newsAbstract"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/newsSrc/newsAbstract"
 	"math/rand"
 	"reflect"
 	"runtime"
@@ -33,7 +33,7 @@ func (n *news) Handle(msg string) messages.Message {
 	if strings.Contains(msg, "-h") {
 		return n.GetHelp()
 	}
-	msgSplit := strings.Split(msg," ")
+	msgSplit := strings.Split(msg, " ")
 	cat := msgSplit[len(msgSplit)-1]
 	var newsFunction newsAbstract.GetNews
 	switch cat {
@@ -49,7 +49,7 @@ func (n *news) Handle(msg string) messages.Message {
 		newsFunction = newsSrc.GetScience[rand.Intn(len(newsSrc.GetScience))]
 	case "tech":
 		newsFunction = newsSrc.GetTech[rand.Intn(len(newsSrc.GetTech))]
-		case "news":
+	case "news":
 		newsFunction = newsSrc.GetTech[rand.Intn(len(newsSrc.GetTech))]
 	case "travel":
 		newsFunction = newsSrc.GetVoyage[rand.Intn(len(newsSrc.GetVoyage))]
@@ -66,18 +66,18 @@ func (n *news) Handle(msg string) messages.Message {
 	functionName := getFunctionName(newsFunction)
 	canReturn := false
 	var news messages.Message
-	for canReturn==false {
+	for canReturn == false {
 		if len(resultsNews[functionName]) == 0 {
 			resultsNews[functionName] = newsFunction()
 		}
 		news = getRandomNews(functionName)
-		canReturn =	handleBlacklist(newsFunction, news)
+		canReturn = handleBlacklist(newsFunction, news)
 	}
 	messages.Response = news
 
 	return messages.Response
 }
-func getRandomNews(mapName string) messages.Message{
+func getRandomNews(mapName string) messages.Message {
 	result := resultsNews[mapName][rand.Intn(len(resultsNews[mapName]))]
 	removeFromNewsList(result)
 
@@ -100,11 +100,10 @@ func handleBlacklist(functionReturningNews newsAbstract.GetNews, newsReturned me
 	return true
 }
 
-
 func removeFromNewsList(news messages.Message) {
-	for k,v := range resultsNews {
+	for k, v := range resultsNews {
 		for i, value := range v {
- 			if value.TitleLink == news.TitleLink {
+			if value.TitleLink == news.TitleLink {
 				v[i] = v[len(v)-1]
 				v = v[:len(v)-1]
 				resultsNews[k] = v

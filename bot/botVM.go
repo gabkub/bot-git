@@ -1,13 +1,13 @@
 package bot
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/footballDatabase"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
-	"github.com/mattermost/mattermost-bot-sample-golang/main/connection"
-	"github.com/mattermost/mattermost-bot-sample-golang/schedule"
+	"bot-git/bot/commands"
+	"bot-git/bot/messages"
+	"bot-git/config"
+	"bot-git/footballDatabase"
+	"bot-git/logg"
+	"bot-git/main/connection"
+	"bot-git/schedule"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"sync"
@@ -15,7 +15,7 @@ import (
 
 var mux = &sync.Mutex{}
 
-func Start(){
+func Start() {
 
 	logg.WriteToFile("Bot has started.")
 	log.Println("Bot has started.")
@@ -36,7 +36,7 @@ func Start(){
 			case event := <-connection.Websocket.EventChannel:
 				mux.Lock()
 				if event != nil {
-					if event.IsValid() && isMessage(event.Event){
+					if event.IsValid() && isMessage(event.Event) {
 						handleEvent(event)
 					}
 				}
@@ -68,8 +68,8 @@ func SendMessage(channelId string, msg messages.Message) {
 			Props: map[string]interface{}{
 				"attachments": []model.SlackAttachment{
 					{
-						ImageURL: msg.Img.ImageUrl,
-						Title: msg.Img.Header,
+						ImageURL:  msg.Img.ImageUrl,
+						Title:     msg.Img.Header,
 						TitleLink: msg.TitleLink,
 					},
 				},
@@ -80,11 +80,10 @@ func SendMessage(channelId string, msg messages.Message) {
 			Props: map[string]interface{}{
 				"attachments": []model.SlackAttachment{
 					{
-						ImageURL: msg.Img.ImageUrl,
-						Title: msg.Img.Header,
+						ImageURL:  msg.Img.ImageUrl,
+						Title:     msg.Img.Header,
 						TitleLink: msg.Img.ImageUrl,
 					},
-
 				},
 			},
 		}
@@ -97,7 +96,6 @@ func SendMessage(channelId string, msg messages.Message) {
 					{
 						Title: msg.Title,
 					},
-
 				},
 			},
 		}
@@ -110,7 +108,6 @@ func SendMessage(channelId string, msg messages.Message) {
 					{
 						ThumbURL: msg.ThumbUrl,
 					},
-
 				},
 			},
 		}
@@ -121,15 +118,14 @@ func SendMessage(channelId string, msg messages.Message) {
 				"attachments": []model.SlackAttachment{
 					{
 						Fields: []*model.SlackAttachmentField{
-								{
-									Short: false,
-									Title: msg.Title,
-									Value: msg.Text,
-								},
+							{
+								Short: false,
+								Title: msg.Title,
+								Value: msg.Text,
+							},
 						},
 						ThumbURL: msg.ThumbUrl,
 					},
-
 				},
 			},
 		}

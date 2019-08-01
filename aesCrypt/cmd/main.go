@@ -3,14 +3,15 @@ package main
 import (
 	//"bufio"
 	//"fmt"
-	//"github.com/mattermost/mattermost-bot-sample-golang/aesCrypt"
+	//"bot-git/aesCrypt"
 	//"log"
+	"bot-git/aesCrypt"
 	"bufio"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/aesCrypt"
 	"log"
 	"os"
 )
+
 func main() {
 	aesKey := os.Getenv("AES_KEY")
 	reader := bufio.NewReader(os.Stdin)
