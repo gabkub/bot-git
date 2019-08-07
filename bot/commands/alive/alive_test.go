@@ -2,39 +2,44 @@ package alive_test
 
 import (
 	"bot-git/bot/commands/alive"
-	"bot-git/bot/messages"
+	"bot-git/messageBuilders"
+	"bot-git/testUtils/mockSender"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-var expectedMsg = messages.Message{Text: "Żyję!", Img: messages.Image{}, IsFunnyMessage: false}
+var expectedMsg = messageBuilders.Text("Żyję!")
 
 func TestAlive(t *testing.T) {
 	a := alive.New()
+	sender := mockSender.New()
 
-	msg := a.Handle("alive")
+	a.Handle("alive", sender)
 
-	assert.Equal(t, expectedMsg, msg)
+	assert.Equal(t, expectedMsg, sender.LastSentMsg)
 }
 
 func TestUp(t *testing.T) {
 	a := alive.New()
+	sender := mockSender.New()
 
-	msg := a.Handle("up")
+	a.Handle("up", sender)
 
-	assert.Equal(t, expectedMsg, msg)
+	assert.Equal(t, expectedMsg, sender.LastSentMsg)
 }
 func TestRunning(t *testing.T) {
 	a := alive.New()
+	sender := mockSender.New()
 
-	msg := a.Handle("running")
+	a.Handle("running", sender)
 
-	assert.Equal(t, expectedMsg, msg)
+	assert.Equal(t, expectedMsg, sender.LastSentMsg)
 }
 func TestZyjesz(t *testing.T) {
 	a := alive.New()
+	sender := mockSender.New()
 
-	msg := a.Handle("żyjesz")
+	a.Handle("żyjesz", sender)
 
-	assert.Equal(t, expectedMsg, msg)
+	assert.Equal(t, expectedMsg, sender.LastSentMsg)
 }
