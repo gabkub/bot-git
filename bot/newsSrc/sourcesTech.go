@@ -1,10 +1,10 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
 	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc/newsAbstract"
+	"bot-git/contentFetcher"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 )
@@ -36,12 +36,9 @@ func techWirtualneMedia() []messages.Message {
 func techComputerWorld() []messages.Message {
 	blacklists.New("techComputerWorldBL")
 	TechPage["ComputerWorld"]++
-	doc := abstract.GetDoc(fmt.Sprintf("https://www.computerworld.pl/news/archiwum-%v.html", TechPage["ComputerWorld"]))
-
 	var news []messages.Message
-
-	abstract.GetDiv(doc, "div.row-list-item").Each(func(i int, s *goquery.Selection) {
-
+	div := contentFetcher.Fetch(fmt.Sprintf("https://www.computerworld.pl/news/archiwum-%v.html", TechPage["ComputerWorld"]), "div.row-list-item")
+	div.Each(func(i int, s *goquery.Selection) {
 		image, _ := s.Find("div.row-item-icon > a > figure.frame-responsive img.img-responsive").Attr("src")
 		text := s.Find("div.col-lg-9 > a > span.title").Text()
 		textlink, _ := s.Find("div.row-item-icon > a").Attr("href")
@@ -53,7 +50,6 @@ func techComputerWorld() []messages.Message {
 				ImageUrl: image,
 			},
 		}
-
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)
 		}

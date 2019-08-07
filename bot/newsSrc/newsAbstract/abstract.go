@@ -1,8 +1,8 @@
 package newsAbstract
 
 import (
-	"bot-git/bot/abstract"
 	"bot-git/bot/messages"
+	"bot-git/contentFetcher"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 )
@@ -11,9 +11,9 @@ type GetNews func() []messages.Message
 
 func GetSpider(category string, page int) []messages.Message {
 	//blacklists.New(fmt.Sprintf("%v",category))
-	doc := abstract.GetDoc(fmt.Sprintf("https://www.spidersweb.pl/kategoria/%v/page/%v", category, page))
 	var messagesToReturn []messages.Message
-	abstract.GetDiv(doc, "div.columns:first-child div.columns").Each(func(i int, s *goquery.Selection) {
+	div := contentFetcher.Fetch(fmt.Sprintf("https://www.spidersweb.pl/kategoria/%v/page/%v", category, page), "div.columns:first-child div.columns")
+	div.Each(func(i int, s *goquery.Selection) {
 		image, _ := s.Find("article.article > div.cover > a.single-permalink > img").Attr("data-src")
 		link, _ := s.Find("article.article > div.cover > a.single-permalink").Attr("href")
 		message := messages.Message{
@@ -23,7 +23,6 @@ func GetSpider(category string, page int) []messages.Message {
 				ImageUrl: image,
 			},
 		}
-
 		if !message.Img.IsEmpty() && message.TitleLink != "" {
 			messagesToReturn = append(messagesToReturn, message)
 		}
@@ -33,14 +32,10 @@ func GetSpider(category string, page int) []messages.Message {
 }
 
 func GetWirtualneMedia(category string, page int) []messages.Message {
-	doc := abstract.GetDoc(fmt.Sprintf("https://www.wirtualnemedia.pl/wiadomosci/%v/page:%v", category, page))
-
-	div := abstract.GetDiv(doc, "div.news-box-content")
-
 	var news []messages.Message
 
+	div := contentFetcher.Fetch(fmt.Sprintf("https://www.wirtualnemedia.pl/wiadomosci/%v/page:%v", category, page), "div.news-box-content")
 	div.Each(func(i int, s *goquery.Selection) {
-
 		image, _ := s.Find("div.news-img-wrapper > a > div.news-img-ratio > img").Attr("src")
 		text := s.Find("div.news-desc-head").Text()
 		textlink, _ := s.Find("div.news-img-wrapper > a").Attr("href")

@@ -1,10 +1,10 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
 	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc/newsAbstract"
+	"bot-git/contentFetcher"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 )
@@ -28,14 +28,9 @@ func voyageSpider() []messages.Message {
 func voyageMlecznePodroze() []messages.Message {
 	blacklists.New("voyageMlecznePodrozeBL")
 	VoyagePage["MlecznePodroze"]++
-	doc := abstract.GetDoc(fmt.Sprintf("https://mlecznepodroze.pl/tag/news/page/%v/", VoyagePage["MlecznePodroze"]))
-
-	div := abstract.GetDiv(doc, "div.primary-post-content")
-
 	var news []messages.Message
-
+	div := contentFetcher.Fetch(fmt.Sprintf("https://mlecznepodroze.pl/tag/news/page/%v/", VoyagePage["MlecznePodroze"]), "div.primary-post-content")
 	div.Each(func(i int, s *goquery.Selection) {
-
 		image, _ := s.Find("div.picture > div.picture-content > a > img").Attr("src")
 		text, _ := s.Find("div.picture > div.picture-content > a").Attr("title")
 		textlink, _ := s.Find("div.picture > div.picture-content > a").Attr("href")
@@ -46,7 +41,6 @@ func voyageMlecznePodroze() []messages.Message {
 				ImageUrl: image,
 			},
 		}
-
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)
 		}

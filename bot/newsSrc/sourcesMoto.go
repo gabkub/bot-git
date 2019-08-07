@@ -1,10 +1,10 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
 	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc/newsAbstract"
+	"bot-git/contentFetcher"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 )
@@ -21,11 +21,10 @@ var MotoPage = map[string]int{
 func motoAutoCentrum() []messages.Message {
 	blacklists.New("motoAutoCentrumBL")
 	MotoPage["AutoCentrum"]++
-	doc := abstract.GetDoc(fmt.Sprintf("https://www.autocentrum.pl/newsy/strona-%v/", MotoPage["AutoCentrum"]))
 	var news []messages.Message
 
-	abstract.GetDiv(doc, "div.ac-article-wrapper").Each(func(i int, s *goquery.Selection) {
-
+	div := contentFetcher.Fetch(fmt.Sprintf("https://www.autocentrum.pl/newsy/strona-%v/", MotoPage["AutoCentrum"]), "div.ac-article-wrapper")
+	div.Each(func(i int, s *goquery.Selection) {
 		image, _ := s.Find("a > div.photo > picture > img.img-responsive").Attr("src")
 		text, _ := s.Find("a > div.photo > picture > img.img-responsive").Attr("alt")
 		textlink, _ := s.Find("a.news-box").Attr("href")
@@ -36,24 +35,17 @@ func motoAutoCentrum() []messages.Message {
 				ImageUrl: fmt.Sprintf("https://www.autocentrum.pl%v", image),
 			},
 		}
-
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)
 		}
 	})
-
 	return news
 }
 func motoMoto() []messages.Message {
 	MotoPage["Moto"]++
-	doc := abstract.GetDoc(fmt.Sprintf("http://moto.pl/MotoPL/0,88389.html?str=%v_24561775", MotoPage["Moto"]))
-
-	div := abstract.GetDiv(doc, "li.entry")
-
 	var news []messages.Message
-
+	div := contentFetcher.Fetch(fmt.Sprintf("http://moto.pl/MotoPL/0,88389.html?str=%v_24561775", MotoPage["Moto"]), "li.entry")
 	div.Each(func(i int, s *goquery.Selection) {
-
 		image, _ := s.Find("a > fiugre.imgw > img").Attr("src")
 		text, _ := s.Find("a").Attr("title")
 		textlink, _ := s.Find("a").Attr("href")
@@ -64,7 +56,6 @@ func motoMoto() []messages.Message {
 				ImageUrl: image,
 			},
 		}
-
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)
 		}

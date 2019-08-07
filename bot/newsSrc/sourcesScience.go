@@ -1,10 +1,10 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
 	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc/newsAbstract"
+	"bot-git/contentFetcher"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 )
@@ -28,14 +28,10 @@ func scienceSpider() []messages.Message {
 func sciencePrzystanek() []messages.Message {
 	blacklists.New("sciencePrzystanekBL")
 	SciencePage["Przystanek"]++
-	doc := abstract.GetDoc(fmt.Sprintf("http://przystaneknauka.us.edu.pl/news?page=%v", SciencePage["Przystanek"]))
-
-	div := abstract.GetDiv(doc, "div.views-row")
-
 	var news []messages.Message
 
+	div := contentFetcher.Fetch(fmt.Sprintf("http://przystaneknauka.us.edu.pl/news?page=%v", SciencePage["Przystanek"]), "div.views-row")
 	div.Each(func(i int, s *goquery.Selection) {
-
 		image, _ := s.Find("a > img").Attr("src")
 		text := s.Find("h3.title").Text()
 		textlink, _ := s.Find("h3.title > a").Attr("href")
@@ -46,7 +42,6 @@ func sciencePrzystanek() []messages.Message {
 				ImageUrl: image,
 			},
 		}
-
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)
 		}
