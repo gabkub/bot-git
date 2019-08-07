@@ -20,7 +20,6 @@ _test
 *npm-debug.log*
 *.yaml
 *.lock
-*.bat
 .tmp
 
 # Vim temporary files
