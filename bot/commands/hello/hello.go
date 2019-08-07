@@ -1,4 +1,4 @@
-package commands
+package hello
 
 import (
 	"bot-git/bot/abstract"
@@ -8,22 +8,18 @@ import (
 )
 
 type hello struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var HelloHandler hello
-
-func (h *hello) New() abstract.Handler {
-	h.commands = []string{"cześć", "hej", "siema", "siemka", "siemanko", "hejo", "hejka", "elo"}
-	return h
+func New() *hello {
+	return &hello{[]string{"cześć", "hej", "siema", "siemka", "siemanko", "hejo", "hejka", "elo"}}
 }
 
 func (h *hello) CanHandle(msg string) bool {
-	return abstract.FindCommand(h.commands, msg)
+	return h.commands.ContainsMessage(msg)
 }
 
 func (h *hello) Handle(msg string) messages.Message {
-
 	if strings.Contains(msg, "-h") {
 		return h.GetHelp()
 	}

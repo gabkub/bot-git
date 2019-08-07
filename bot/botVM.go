@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"bot-git/bot/commands"
+	"bot-git/bot/commands/suchar"
 	"bot-git/bot/messages"
 	"bot-git/config"
 	"bot-git/footballDatabase"
@@ -140,7 +140,7 @@ func SendMessage(channelId string, msg messages.Message) {
 		}
 
 		if msg.IsFunnyMessage {
-			commands.SetLast(sentPost.Id)
+			suchar.SetLast(sentPost.Id)
 		}
 
 	} else {

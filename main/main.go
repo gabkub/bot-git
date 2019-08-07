@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"bot-git/bot"
-	"bot-git/bot/commands"
+	"bot-git/bot/commands/version"
 	"bot-git/config"
 	"bot-git/logg"
 	"bot-git/main/connection"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,7 +21,7 @@ func main() {
 	config.ReadConfig()
 
 	os.Remove("./logg.log")
-	logg.WriteToFile(fmt.Sprintf("Starting bot v.%v...\n", commands.VER))
+	logg.WriteToFile(fmt.Sprintf("Starting bot v.%v...\n", version.VER))
 
 	connection.Connect()
 	bot.Start()

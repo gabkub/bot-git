@@ -1,4 +1,4 @@
-package commands
+package version
 
 import (
 	"bot-git/bot/abstract"
@@ -6,21 +6,18 @@ import (
 	"strings"
 )
 
-const VER = "1.4.4"
+const VER = "1.4.5"
 
 type version struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var VersionHandler version
-
-func (v *version) New() abstract.Handler {
-	v.commands = []string{"wersja", "version", "ver"}
-	return v
+func New() *version {
+	return &version{[]string{"wersja", "version", "ver"}}
 }
 
 func (v *version) CanHandle(msg string) bool {
-	return abstract.FindCommand(v.commands, msg)
+	return v.commands.ContainsMessage(msg)
 }
 
 func (v *version) Handle(msg string) messages.Message {

@@ -1,4 +1,4 @@
-package commands
+package football
 
 import (
 	"bot-git/bot/abstract"
@@ -12,18 +12,15 @@ import (
 )
 
 type football struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var FootballHandler football
-
-func (f *football) New() abstract.Handler {
-	f.commands = []string{"gramy", "play", "game", "football", "soccer", "piłkarzyki"}
-	return f
+func New() *football {
+	return &football{[]string{"gramy", "play", "game", "football", "soccer", "piłkarzyki"}}
 }
 
 func (f *football) CanHandle(msg string) bool {
-	return abstract.FindCommand(f.commands, msg)
+	return f.commands.ContainsMessage(msg)
 }
 
 func (f *football) Handle(msg string) messages.Message {

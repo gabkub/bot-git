@@ -1,26 +1,24 @@
-package commands
+package meme
 
 import (
 	"bot-git/bot/abstract"
 	"bot-git/bot/limit"
 	"bot-git/bot/memes"
 	"bot-git/bot/messages"
+	"bot-git/notNowMsg"
 	"strings"
 )
 
 type meme struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var MemeHandler meme
-
-func (m *meme) New() abstract.Handler {
-	m.commands = []string{"meme", "mem"}
-	return m
+func New() *meme {
+	return &meme{[]string{"meme", "mem"}}
 }
 
 func (m *meme) CanHandle(msg string) bool {
-	return abstract.FindCommand(m.commands, msg)
+	return m.commands.ContainsMessage(msg)
 }
 
 func (m *meme) Handle(msg string) messages.Message {
@@ -33,7 +31,7 @@ func (m *meme) Handle(msg string) messages.Message {
 		messages.Response.Img = meme
 		return messages.Response
 	}
-	return abstract.RandomLimitMsg()
+	return notNowMsg.Get()
 }
 
 func (m *meme) GetHelp() messages.Message {

@@ -1,4 +1,4 @@
-package commands
+package alive
 
 import (
 	"bot-git/bot/abstract"
@@ -7,18 +7,15 @@ import (
 )
 
 type alive struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var AliveHandler alive
-
-func (a *alive) New() abstract.Handler {
-	a.commands = []string{"alive", "up", "running", "żyjesz"}
-	return a
+func New() *alive {
+	return &alive{[]string{"alive", "up", "running", "żyjesz"}}
 }
 
 func (a *alive) CanHandle(msg string) bool {
-	return abstract.FindCommand(a.commands, msg)
+	return a.commands.ContainsMessage(msg)
 }
 
 func (a *alive) Handle(msg string) messages.Message {

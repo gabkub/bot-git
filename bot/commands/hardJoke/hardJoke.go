@@ -1,30 +1,27 @@
-package commands
+package hardJoke
 
 import (
 	"bot-git/bot/abstract"
 	"bot-git/bot/jokes"
 	"bot-git/bot/limit"
 	"bot-git/bot/messages"
+	"bot-git/notNowMsg"
 	"strings"
 )
 
 type hardJoke struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var HardJokeHandler hardJoke
-
-func (hj *hardJoke) New() abstract.Handler {
-	hj.commands = []string{"hard"}
-	return hj
+func New() abstract.Handler {
+	return &hardJoke{[]string{"hard"}}
 }
 
 func (hj *hardJoke) CanHandle(msg string) bool {
-	return abstract.FindCommand(hj.commands, msg)
+	return hj.commands.ContainsMessage(msg)
 }
 
 func (hj *hardJoke) Handle(msg string) messages.Message {
-
 	if strings.Contains(msg, "-h") {
 		return hj.GetHelp()
 	}
@@ -38,7 +35,7 @@ func (hj *hardJoke) Handle(msg string) messages.Message {
 		}
 		return messages.Response
 	}
-	return abstract.RandomLimitMsg()
+	return notNowMsg.Get()
 }
 
 func (hj *hardJoke) GetHelp() messages.Message {

@@ -1,20 +1,21 @@
 package messages
 
-type Image struct{
-	Header 		string
-	ImageUrl 	string
+type Image struct {
+	Header   string
+	ImageUrl string
 }
 
-func (i Image) IsEmpty() bool{
+func (i Image) IsEmpty() bool {
 	return i.Header == "" && i.ImageUrl == ""
 }
 
 type Message struct {
-	Text           string
-	Img            Image
-	Title		   string
-	TitleLink		string
-	ThumbUrl		string
+	Text      string
+	Img       Image
+	Title     string
+	TitleLink string
+	ThumbUrl  string
+	// TODO remove this command should handle this fact that is funny by itself
 	IsFunnyMessage bool
 }
 
@@ -46,4 +47,5 @@ func (msg *Message) GetType() string {
 
 	return "Text"
 }
+
 var Response Message

@@ -1,4 +1,4 @@
-package commands
+package news
 
 import (
 	"bot-git/bot/abstract"
@@ -14,19 +14,17 @@ import (
 )
 
 type news struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var NewsHandler news
 var resultsNews = make(map[string][]messages.Message)
 
-func (n *news) New() abstract.Handler {
-	n.commands = []string{"news"}
-	return n
+func New() *news {
+	return &news{[]string{"news"}}
 }
 
 func (n *news) CanHandle(msg string) bool {
-	return abstract.FindCommand(n.commands, msg)
+	return n.commands.ContainsMessage(msg)
 }
 
 func (n *news) Handle(msg string) messages.Message {

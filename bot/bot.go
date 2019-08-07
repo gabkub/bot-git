@@ -2,7 +2,16 @@ package bot
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/commands"
+	"bot-git/bot/commands/alive"
+	"bot-git/bot/commands/football"
+	"bot-git/bot/commands/hardJoke"
+	"bot-git/bot/commands/hello"
+	"bot-git/bot/commands/help"
+	"bot-git/bot/commands/joke"
+	"bot-git/bot/commands/meme"
+	"bot-git/bot/commands/news"
+	"bot-git/bot/commands/suchar"
+	"bot-git/bot/commands/version"
 	"bot-git/bot/messages"
 	"bot-git/config"
 	"bot-git/logg"
@@ -38,21 +47,23 @@ func canRespond(post *model.Post, prefix string) bool {
 	return post != nil && post.UserId != config.ConnectionCfg.BotUser.Id && strings.Contains(post.Message, prefix)
 }
 
+var defaultCommand = joke.New()
+
+var handlers = []abstract.Handler{alive.New(), hello.New(), help.New(), defaultCommand,
+	version.New(), meme.New(), suchar.New(), football.New(), news.New(),
+	hardJoke.New()}
+
+var gifs = []string{
+	"https://media.giphy.com/media/pcOHEAG38BUaY/giphy.gif",
+	"https://media.giphy.com/media/g7shkYchjuRBm/giphy.gif",
+	"https://media.giphy.com/media/uL0pJDdA6fQ08/giphy.gif",
+	"https://media.giphy.com/media/xzoXvpBoYTSKY/giphy.gif",
+}
+
 func handleMsg(msg string) messages.Message {
 	messages.Response.New()
-	handlers := []abstract.Handler{commands.AliveHandler.New(), commands.HelloHandler.New(), commands.HelpHandler.New(), commands.JokeHandler.New(),
-		commands.VersionHandler.New(), commands.MemeHandler.New(), commands.SucharHandler.New(), commands.FootballHandler.New(), commands.NewsHandler.New(),
-		commands.HardJokeHandler.New()}
-	if msg == "-h" {
-		return commands.HelpHandler.Handle(msg)
-	}
 	if msg == "" {
-		gifs := []string{
-			"https://media.giphy.com/media/pcOHEAG38BUaY/giphy.gif",
-			"https://media.giphy.com/media/g7shkYchjuRBm/giphy.gif",
-			"https://media.giphy.com/media/uL0pJDdA6fQ08/giphy.gif",
-			"https://media.giphy.com/media/xzoXvpBoYTSKY/giphy.gif",
-		}
+
 		messages.Response.Img = messages.Image{Header: "Hello", ImageUrl: gifs[rand.Intn(len(gifs))]}
 		return messages.Response
 	}
@@ -62,5 +73,5 @@ func handleMsg(msg string) messages.Message {
 		}
 
 	}
-	return commands.JokeHandler.Handle(msg)
+	return defaultCommand.Handle(msg)
 }

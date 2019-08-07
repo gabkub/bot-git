@@ -1,4 +1,4 @@
-package commands
+package suchar
 
 import (
 	"bot-git/bot/abstract"
@@ -8,19 +8,17 @@ import (
 )
 
 type suchar struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var SucharHandler suchar
 var lastFunnyMessage string
 
-func (s *suchar) New() abstract.Handler {
-	s.commands = []string{"suchar", "usuń", "delete", "no", "nie", "..."}
-	return s
+func New() *suchar {
+	return &suchar{[]string{"suchar", "usuń", "delete", "no", "nie", "..."}}
 }
 
 func (s *suchar) CanHandle(msg string) bool {
-	return abstract.FindCommand(s.commands, msg)
+	return s.commands.ContainsMessage(msg)
 }
 
 func (s *suchar) Handle(msg string) messages.Message {

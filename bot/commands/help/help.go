@@ -1,4 +1,4 @@
-package commands
+package help
 
 import (
 	"bot-git/bot/abstract"
@@ -6,19 +6,18 @@ import (
 	"strings"
 )
 
+const helpFlag = "-h"
+
 type help struct {
-	commands []string
+	commands abstract.ReactForMsgs
 }
 
-var HelpHandler help
-
-func (h *help) New() abstract.Handler {
-	h.commands = []string{"help", "pomocy", "pomoc"}
-	return h
+func New() *help {
+	return &help{[]string{"help", "pomocy", "pomoc"}}
 }
 
 func (h *help) CanHandle(msg string) bool {
-	return abstract.FindCommand(h.commands, msg)
+	return msg == helpFlag || h.commands.ContainsMessage(msg)
 }
 
 func (h *help) Handle(msg string) messages.Message {
