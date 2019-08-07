@@ -1,10 +1,6 @@
 package main
 
 import (
-	//"bufio"
-	//"fmt"
-	//"bot-git/aesCrypt"
-	//"log"
 	"bot-git/aesCrypt"
 	"bufio"
 	"fmt"
