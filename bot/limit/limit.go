@@ -1,8 +1,8 @@
 package limit
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
+	"bot-git/config"
+	"bot-git/logg"
 	"log"
 	"time"
 )
@@ -25,21 +25,20 @@ func getTeamId() string {
 }
 
 func SetUsersList() {
-	teamMembers, resp := config.ConnectionCfg.Client.GetTeamMembers(getTeamId(),0,150,"")
+	teamMembers, resp := config.ConnectionCfg.Client.GetTeamMembers(getTeamId(), 0, 150, "")
 	if resp.Error != nil {
 		logg.WriteToFile("Error while getting team members'. Details: " + resp.Error.DetailedError)
 	}
 
 	Users = make(map[string]map[string]*Limitation)
 
-	for _,user := range teamMembers {
+	for _, user := range teamMembers {
 		Users[user.UserId] = map[string]*Limitation{
-			"joke": {0,false},
-			"meme": {0,false},
+			"joke": {0, false},
+			"meme": {0, false},
 		}
- 	}
+	}
 }
-
 
 func AddRequest(userId, command string) {
 	limit := Users[userId][command]
@@ -55,7 +54,7 @@ func mustBlock(limit Limitation) bool {
 			return true
 		}
 	}
-	if hour >=9 && hour < 15 {
+	if hour >= 9 && hour < 15 {
 		return true
 	}
 	return false
@@ -64,4 +63,3 @@ func mustBlock(limit Limitation) bool {
 func CanSend(userId, command string) bool {
 	return !Users[userId][command].LimitReached
 }
-

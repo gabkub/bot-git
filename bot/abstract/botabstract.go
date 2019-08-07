@@ -1,9 +1,9 @@
 package abstract
 
 import (
+	"bot-git/bot/messages"
+	"bot-git/logg"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"math/rand"

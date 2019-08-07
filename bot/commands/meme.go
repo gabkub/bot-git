@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/memes"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
+	"bot-git/bot/abstract"
+	"bot-git/bot/limit"
+	"bot-git/bot/memes"
+	"bot-git/bot/messages"
 	"strings"
 )
 
@@ -27,7 +27,7 @@ func (m *meme) Handle(msg string) messages.Message {
 	if strings.Contains(msg, "-h") {
 		return m.GetHelp()
 	}
-	if limit.CanSend(abstract.GetUserId(),"meme") {
+	if limit.CanSend(abstract.GetUserId(), "meme") {
 		messages.Response.IsFunnyMessage = true
 		meme := memes.Fetch()
 		messages.Response.Img = meme

@@ -1,11 +1,11 @@
 package memes
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
+	"bot-git/bot/limit"
+	"bot-git/bot/messages"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 	"math/rand"
 	"reflect"
 	"runtime"
@@ -21,7 +21,7 @@ func Fetch() messages.Image {
 
 	canReturn := false
 	var meme messages.Image
-	for canReturn==false {
+	for canReturn == false {
 		if len(memeList) == 0 {
 			memeFunction = memSources[rand.Intn(len(memSources))]
 			memeList = memeFunction()
@@ -54,7 +54,7 @@ func handleBlacklist(functionReturningJoke getMeme, jokeReturned string) bool {
 }
 
 func removeFromMemeList(meme string) {
-	for i,v := range memeList {
+	for i, v := range memeList {
 		if v.ImageUrl == meme {
 			memeList[i] = memeList[len(memeList)-1]
 			memeList = memeList[:len(memeList)-1]

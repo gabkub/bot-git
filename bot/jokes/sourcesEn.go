@@ -1,9 +1,9 @@
 package jokes
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
 )
 
 //var jokersEn = []getJoke{}
@@ -12,14 +12,14 @@ var jokersEn = []getJoke{
 	rd,
 }
 
-var countersEn = map[string]int {
+var countersEn = map[string]int{
 	"rd": 1,
 }
 
 func iCanHazDadJoke() []string {
 	blacklists.New("DadJokeBL")
 	var jokes []string
-	for i:=0; i<10; i++ {
+	for i := 0; i < 10; i++ {
 		doc := abstract.GetDoc("https://icanhazdadjoke.com/")
 		div := abstract.GetDiv(doc, "div.card-content p")
 		jokes = append(jokes, getJokesList(div)[0])
@@ -34,4 +34,3 @@ func rd() []string {
 	countersEn["rd"]++
 	return getJokesList(div)
 }
-

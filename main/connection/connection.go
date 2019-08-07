@@ -1,10 +1,10 @@
 package connection
 
 import (
+	"bot-git/bot/limit"
+	"bot-git/config"
+	"bot-git/logg"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
 	"strings"
@@ -36,12 +36,12 @@ func Connect() {
 }
 
 func connectServer() {
-		config.ConnectionCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s://%s:%s", protocol, config.BotCfg.Server, config.BotCfg.Port))
-		if config.ConnectionCfg.Client == nil {
-			logg.WriteToFile(fmt.Sprintf("Error while connecting to the Mattermost API. Connecting again."))
-			log.Println(fmt.Sprintf("Error while connecting to the Mattermost API. Connecting again."))
-		}
-		makeSureServerIsRunning()
+	config.ConnectionCfg.Client = model.NewAPIv4Client(fmt.Sprintf("%s://%s:%s", protocol, config.BotCfg.Server, config.BotCfg.Port))
+	if config.ConnectionCfg.Client == nil {
+		logg.WriteToFile(fmt.Sprintf("Error while connecting to the Mattermost API. Connecting again."))
+		log.Println(fmt.Sprintf("Error while connecting to the Mattermost API. Connecting again."))
+	}
+	makeSureServerIsRunning()
 }
 
 func makeSureServerIsRunning() {
@@ -58,7 +58,7 @@ func makeSureServerIsRunning() {
 }
 
 func loginAsTheBotUser() {
-	if 	user,resp := config.ConnectionCfg.Client.Login(config.BotCfg.BotName, config.BotCfg.Password); resp.Error != nil {
+	if user, resp := config.ConnectionCfg.Client.Login(config.BotCfg.BotName, config.BotCfg.Password); resp.Error != nil {
 		logg.WriteToFile("There was a problem logging into the Mattermost server. Details: " + resp.Error.Message)
 		log.Fatal("There was a problem logging into the Mattermost server. Details: " + resp.Error.Message)
 	} else {
@@ -71,8 +71,8 @@ func loginAsTheBotUser() {
 
 func revokePreviousSessions() {
 
-	if sessions,_ := config.ConnectionCfg.Client.GetSessions(config.ConnectionCfg.BotUser.Id,""); sessions != nil {
-		for i,session := range sessions {
+	if sessions, _ := config.ConnectionCfg.Client.GetSessions(config.ConnectionCfg.BotUser.Id, ""); sessions != nil {
+		for i, session := range sessions {
 			if i != 0 {
 				config.ConnectionCfg.Client.RevokeSession(config.ConnectionCfg.BotUser.Id, session.Id)
 			}
@@ -81,9 +81,9 @@ func revokePreviousSessions() {
 }
 
 func setBotTeam() {
-	if team, resp := config.ConnectionCfg.Client.GetTeamByName(config.BotCfg.TeamName,""); resp.Error != nil {
-		logg.WriteToFile(fmt.Sprintf("Team '%s' does not exist.",config.BotCfg.TeamName))
-		log.Fatal(fmt.Sprintf("Team '%s' does not exist.",config.BotCfg.TeamName))
+	if team, resp := config.ConnectionCfg.Client.GetTeamByName(config.BotCfg.TeamName, ""); resp.Error != nil {
+		logg.WriteToFile(fmt.Sprintf("Team '%s' does not exist.", config.BotCfg.TeamName))
+		log.Fatal(fmt.Sprintf("Team '%s' does not exist.", config.BotCfg.TeamName))
 	} else {
 		config.ConnectionCfg.BotTeam = team
 	}

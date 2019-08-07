@@ -1,16 +1,15 @@
 package jokes
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
 )
 
 var jokersHard = []getJoke{
 	suchary,
 }
 
-var countersHard = map[string]int {
-}
+var countersHard = map[string]int{}
 
 func suchary() []string {
 	blacklists.New("sucharyBL")

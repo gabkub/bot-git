@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/jokes"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/limit"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
+	"bot-git/bot/abstract"
+	"bot-git/bot/jokes"
+	"bot-git/bot/limit"
+	"bot-git/bot/messages"
 	"strings"
 )
 
@@ -28,7 +28,7 @@ func (hj *hardJoke) Handle(msg string) messages.Message {
 	if strings.Contains(msg, "-h") {
 		return hj.GetHelp()
 	}
-	if limit.CanSend(abstract.GetUserId(),"joke") {
+	if limit.CanSend(abstract.GetUserId(), "joke") {
 		if abstract.MsgChannel.Type == "D" {
 			messages.Response.IsFunnyMessage = true
 			joke := jokes.Fetch(true)

@@ -1,23 +1,22 @@
 package bot
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/commands"
+	"bot-git/bot/messages"
+	"bot-git/config"
+	"bot-git/logg"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/commands"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"math/rand"
 	"strings"
 )
 
-
 func handleEvent(event *model.WebSocketEvent) {
 	// array of data from the event (user's message)
 	post := model.PostFromJson(strings.NewReader(event.Data["post"].(string)))
 	abstract.SetUserId(post.UserId)
-	abstract.MsgChannel, _ = config.ConnectionCfg.Client.GetChannel(post.ChannelId,"")
+	abstract.MsgChannel, _ = config.ConnectionCfg.Client.GetChannel(post.ChannelId, "")
 
 	// ignore messages that are:
 	// - empty
@@ -41,10 +40,10 @@ func canRespond(post *model.Post, prefix string) bool {
 
 func handleMsg(msg string) messages.Message {
 	messages.Response.New()
-	handlers := []abstract.Handler{commands.AliveHandler.New(), commands.HelloHandler.New(), commands.HelpHandler.New(),  commands.JokeHandler.New(),
+	handlers := []abstract.Handler{commands.AliveHandler.New(), commands.HelloHandler.New(), commands.HelpHandler.New(), commands.JokeHandler.New(),
 		commands.VersionHandler.New(), commands.MemeHandler.New(), commands.SucharHandler.New(), commands.FootballHandler.New(), commands.NewsHandler.New(),
 		commands.HardJokeHandler.New()}
-	if msg == "-h"{
+	if msg == "-h" {
 		return commands.HelpHandler.Handle(msg)
 	}
 	if msg == "" {
@@ -54,7 +53,7 @@ func handleMsg(msg string) messages.Message {
 			"https://media.giphy.com/media/uL0pJDdA6fQ08/giphy.gif",
 			"https://media.giphy.com/media/xzoXvpBoYTSKY/giphy.gif",
 		}
-		messages.Response.Img = messages.Image{Header: "Hello",ImageUrl: gifs[rand.Intn(len(gifs))]}
+		messages.Response.Img = messages.Image{Header: "Hello", ImageUrl: gifs[rand.Intn(len(gifs))]}
 		return messages.Response
 	}
 	for _, handler := range handlers {

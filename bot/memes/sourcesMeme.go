@@ -1,11 +1,11 @@
 package memes
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/blacklists"
+	"bot-git/bot/messages"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/blacklists"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
 )
 
 var memSources = []getMeme{
@@ -13,6 +13,7 @@ var memSources = []getMeme{
 }
 
 var countMemedroid = 1
+
 func memedroid() []messages.Image {
 
 	blacklists.New("getMemedroidBL")
@@ -21,16 +22,16 @@ func memedroid() []messages.Image {
 
 	var memes []messages.Image
 
-	div.Each(func(i int, s *goquery.Selection){
+	div.Each(func(i int, s *goquery.Selection) {
 
-		image,_ := s.Find("a.dyn-link:nth-child(2) img.img-responsive").Attr("src")
+		image, _ := s.Find("a.dyn-link:nth-child(2) img.img-responsive").Attr("src")
 		temp := messages.Image{
-			Header: s.Find("header.item-header h1").Text(),
+			Header:   s.Find("header.item-header h1").Text(),
 			ImageUrl: image,
 		}
 
 		if temp.ImageUrl != "" {
-			memes = append(memes,temp)
+			memes = append(memes, temp)
 		}
 	})
 	countMemedroid++

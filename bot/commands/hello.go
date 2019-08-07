@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
+	"bot-git/bot/abstract"
+	"bot-git/bot/messages"
 	"math/rand"
 	"strings"
 )
@@ -21,7 +21,6 @@ func (h *hello) New() abstract.Handler {
 func (h *hello) CanHandle(msg string) bool {
 	return abstract.FindCommand(h.commands, msg)
 }
-
 
 func (h *hello) Handle(msg string) messages.Message {
 

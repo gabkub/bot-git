@@ -1,11 +1,11 @@
 package commands
 
 import (
+	"bot-git/bot/abstract"
+	"bot-git/bot/messages"
+	"bot-git/config"
+	"bot-git/footballDatabase"
 	"fmt"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/footballDatabase"
 	"strconv"
 	"strings"
 	"time"
@@ -34,7 +34,7 @@ func (f *football) Handle(msg string) messages.Message {
 	if strings.Contains(msg, "-l") {
 		return f.getReservations(bookingTime)
 	}
-	msgSplit := strings.Split(msg,"@")
+	msgSplit := strings.Split(msg, "@")
 	var err string
 	if len(msgSplit) >= 2 {
 		bookingTime, err = setTime(msgSplit[len(msgSplit)-1])
@@ -45,12 +45,12 @@ func (f *football) Handle(msg string) messages.Message {
 	}
 
 	free := footballDatabase.FreeReservation(bookingTime)
-	if free.IsZero(){
+	if free.IsZero() {
 		messages.Response.Text = "Nie można zarezerwować. Spróbuj inną godzinę."
 		return messages.Response
 	}
 	if footballDatabase.TimeToString(free) == footballDatabase.TimeToString(bookingTime) {
-		user, _ := config.ConnectionCfg.Client.GetUser(abstract.GetUserId(),"")
+		user, _ := config.ConnectionCfg.Client.GetUser(abstract.GetUserId(), "")
 		if footballDatabase.SetReservation(user.Username, bookingTime) {
 			messages.Response.Text = "Zarezerwowano piłkarzyki. Miłej gry!"
 		} else {
@@ -59,7 +59,7 @@ func (f *football) Handle(msg string) messages.Message {
 		return messages.Response
 	}
 
-	messages.Response.Text = fmt.Sprintf("Stół zajęty. Stół będzie wolny o: %v:%v",free.Hour(),free.Minute())
+	messages.Response.Text = fmt.Sprintf("Stół zajęty. Stół będzie wolny o: %v:%v", free.Hour(), free.Minute())
 	return messages.Response
 }
 
@@ -87,11 +87,11 @@ func setTime(toConvert string) (time.Time, string) {
 		return time.Time{}, "Zły format godziny."
 	}
 	minute, e := strconv.Atoi(hour_minute[1])
-	if e != nil || minute < 0 || minute >= 60{
-		return time.Time{},"Zły format minut."
+	if e != nil || minute < 0 || minute >= 60 {
+		return time.Time{}, "Zły format minut."
 	}
 
-	result := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0,0, time.UTC)
+	result := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, time.UTC)
 	return result, ""
 }
 
@@ -105,7 +105,7 @@ func (f *football) getReservations(startTime time.Time) messages.Message {
 	}
 	messages.Response.Text = sb.String()
 	y, m, d := time.Now().Date()
-	messages.Response.Title = fmt.Sprintf("%v %v %v",d,m,y)
+	messages.Response.Title = fmt.Sprintf("%v %v %v", d, m, y)
 	messages.Response.ThumbUrl = "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/ESPN-icon-soccer.png&w=288&h=288&transparent=true"
 	return messages.Response
 }

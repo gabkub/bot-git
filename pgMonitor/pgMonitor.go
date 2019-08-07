@@ -1,34 +1,34 @@
 package pgMonitor
 
 import (
+	"bot-git/bot/messages"
+	"bot-git/config"
+	"bot-git/logg"
 	"database/sql"
 	"fmt"
 	"github.com/lib/pq"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
-	"github.com/mattermost/mattermost-bot-sample-golang/config"
-	"github.com/mattermost/mattermost-bot-sample-golang/logg"
 	"github.com/mattermost/mattermost-server/model"
 	"time"
 )
 
 type connection struct {
-	pid           int
-	database      sql.NullString
-	userName      sql.NullString
-	appName       sql.NullString
-	clientAddr    sql.NullString
-	backendStart  pq.NullTime
-	queryStart    pq.NullTime
-	stateChange   pq.NullTime
-	state         sql.NullString
-	query         sql.NullString
+	pid          int
+	database     sql.NullString
+	userName     sql.NullString
+	appName      sql.NullString
+	clientAddr   sql.NullString
+	backendStart pq.NullTime
+	queryStart   pq.NullTime
+	stateChange  pq.NullTime
+	state        sql.NullString
+	query        sql.NullString
 }
 
 type Connections []*connection
 
 var alert messages.Message
 
-func CheckCommand(event *model.WebSocketEvent)  {
+func CheckCommand(event *model.WebSocketEvent) {
 
 }
 
@@ -36,7 +36,7 @@ func CheckConnections() {
 	alert.New()
 	cons, err := getConnections()
 	if err != nil {
-		alert.Text = "Nie udało się pobrać połączeń z bazą. "+ err.Error()
+		alert.Text = "Nie udało się pobrać połączeń z bazą. " + err.Error()
 		//abstract.SendMessage(config.DbCfg.Channel.Id, alert)
 		return
 	}
@@ -51,7 +51,7 @@ func CheckConnections() {
 func LogConnections() {
 	cons, err := getConnections()
 	if err != nil {
-		alert.Text = "Nie udało się pobrać połączeń z bazą. "+ err.Error()
+		alert.Text = "Nie udało się pobrać połączeń z bazą. " + err.Error()
 		//abstract.SendMessage(config.DbCfg.Channel.Id, alert)
 		return
 	}

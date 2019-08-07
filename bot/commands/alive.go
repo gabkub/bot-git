@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/abstract"
-	"github.com/mattermost/mattermost-bot-sample-golang/bot/messages"
+	"bot-git/bot/abstract"
+	"bot-git/bot/messages"
 	"strings"
 )
 
@@ -13,7 +13,7 @@ type alive struct {
 var AliveHandler alive
 
 func (a *alive) New() abstract.Handler {
-	a.commands = []string{"alive","up","running", "żyjesz"}
+	a.commands = []string{"alive", "up", "running", "żyjesz"}
 	return a
 }
 
