@@ -1,8 +1,8 @@
 package newsSrc
 
 import (
+	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
-	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -34,7 +34,7 @@ func voyageMlecznePodroze() []*newsAbstract.News {
 		image, _ := s.Find("div.picture > div.picture-content > a > img").Attr("src")
 		text, _ := s.Find("div.picture > div.picture-content > a").Attr("title")
 		textLink, _ := s.Find("div.picture > div.picture-content > a").Attr("href")
-		img := messages.NewImage(text, image)
+		img := abstract.NewImage(text, image)
 		temp := newsAbstract.NewNews(textLink, img)
 
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {

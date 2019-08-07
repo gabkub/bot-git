@@ -1,7 +1,7 @@
 package newsSrc
 
 import (
-	"bot-git/bot/messages"
+	"bot-git/bot/abstract"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -15,7 +15,7 @@ func getSpider(category string, page int) []*newsAbstract.News {
 	div.Each(func(i int, s *goquery.Selection) {
 		image, _ := s.Find("article.article > div.cover > a.single-permalink > img").Attr("data-src")
 		link, _ := s.Find("article.article > div.cover > a.single-permalink").Attr("href")
-		img := messages.NewImage(s.Find("div.inner h1.title").Text(), image)
+		img := abstract.NewImage(s.Find("div.inner h1.title").Text(), image)
 		message := newsAbstract.NewNews(link, img)
 		if !message.Img.IsEmpty() && message.TitleLink != "" {
 			messagesToReturn = append(messagesToReturn, message)

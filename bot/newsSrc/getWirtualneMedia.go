@@ -1,7 +1,7 @@
 package newsSrc
 
 import (
-	"bot-git/bot/messages"
+	"bot-git/bot/abstract"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -17,7 +17,7 @@ func getWirtualneMedia(category string, page int) []*newsAbstract.News {
 		text := s.Find("div.news-desc-head").Text()
 		textLink, _ := s.Find("div.news-img-wrapper > a").Attr("href")
 		title := fmt.Sprintf("https://www.wirtualnemedia.pl%v", textLink)
-		img := messages.NewImage(text, image)
+		img := abstract.NewImage(text, image)
 		temp := newsAbstract.NewNews(title, img)
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)

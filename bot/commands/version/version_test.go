@@ -2,7 +2,6 @@ package version_test
 
 import (
 	"bot-git/bot/commands/version"
-	"bot-git/bot/messages"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

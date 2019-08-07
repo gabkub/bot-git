@@ -1,8 +1,8 @@
 package newsSrc
 
 import (
+	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
-	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -29,7 +29,7 @@ func motoAutoCentrum() []*newsAbstract.News {
 		text, _ := s.Find("a > div.photo > picture > img.img-responsive").Attr("alt")
 		textLink, _ := s.Find("a.news-box").Attr("href")
 		link := fmt.Sprintf("https://www.autocentrum.pl%v", textLink)
-		img := messages.NewImage(text, fmt.Sprintf("https://www.autocentrum.pl%v", image))
+		img := abstract.NewImage(text, fmt.Sprintf("https://www.autocentrum.pl%v", image))
 		temp := newsAbstract.NewNews(link, img)
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)

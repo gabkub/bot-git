@@ -1,8 +1,8 @@
 package newsSrc
 
 import (
+	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
-	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -34,7 +34,7 @@ func gamePPE() []*newsAbstract.News {
 		text, _ := s.Find("div.txt div.image_big > a.imgholder > img.imgholderimg").Attr("alt")
 		titleLink, _ := s.Find("div.txt > div.image_big > a.imgholder").Attr("href")
 		link := fmt.Sprintf("https://www.ppe.pl%v", titleLink)
-		img := messages.NewImage(text, image)
+		img := abstract.NewImage(text, image)
 		message := newsAbstract.NewNews(link, img)
 		if !message.Img.IsEmpty() && message.TitleLink != "" {
 			messagesToReturn = append(messagesToReturn, message)

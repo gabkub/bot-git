@@ -1,8 +1,8 @@
 package newsSrc
 
 import (
+	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
-	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -36,7 +36,7 @@ func sciencePrzystanek() []*newsAbstract.News {
 		text := s.Find("h3.title").Text()
 		textLink, _ := s.Find("h3.title > a").Attr("href")
 		link := fmt.Sprintf("http://przystaneknauka.us.edu.pl%v", textLink)
-		img := messages.NewImage(text, image)
+		img := abstract.NewImage(text, image)
 		temp := newsAbstract.NewNews(link, img)
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)

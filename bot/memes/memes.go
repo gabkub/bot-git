@@ -4,23 +4,22 @@ import (
 	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
 	"bot-git/bot/limit"
-	"bot-git/bot/messages"
 	"fmt"
 	"math/rand"
 	"reflect"
 	"runtime"
 )
 
-type getMeme func() []messages.Image
+type getMeme func() []abstract.Image
 
-var memeList []messages.Image
+var memeList []abstract.Image
 
-func Fetch() messages.Image {
+func Fetch() abstract.Image {
 	limit.AddRequest(abstract.GetUserId(), "meme")
 	var memeFunction getMeme
 
 	canReturn := false
-	var meme messages.Image
+	var meme abstract.Image
 	for canReturn == false {
 		if len(memeList) == 0 {
 			memeFunction = memSources[rand.Intn(len(memSources))]
@@ -33,7 +32,7 @@ func Fetch() messages.Image {
 	return meme
 }
 
-func getRandomMeme(memeList []messages.Image) messages.Image {
+func getRandomMeme(memeList []abstract.Image) abstract.Image {
 	return memeList[rand.Intn(len(memeList))]
 }
 

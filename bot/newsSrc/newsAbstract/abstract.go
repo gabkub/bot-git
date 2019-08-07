@@ -1,16 +1,14 @@
 package newsAbstract
 
-import (
-	"bot-git/bot/messages"
-)
+import "bot-git/bot/abstract"
 
 type GetNews func() []*News
 
 type News struct {
 	TitleLink string
-	Img       *messages.Image
+	Img       *abstract.Image
 }
 
-func NewNews(titleLink string, img *messages.Image) *News {
+func NewNews(titleLink string, img *abstract.Image) *News {
 	return &News{TitleLink: titleLink, Img: img}
 }
