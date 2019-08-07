@@ -3,9 +3,9 @@ package news
 import (
 	"bot-git/bot/abstract"
 	"bot-git/bot/blacklists"
-	"bot-git/bot/messages"
 	"bot-git/bot/newsSrc"
 	"bot-git/bot/newsSrc/newsAbstract"
+	"bot-git/messageBuilders"
 	"fmt"
 	"math/rand"
 	"reflect"
@@ -17,7 +17,7 @@ type news struct {
 	commands abstract.ReactForMsgs
 }
 
-var resultsNews = make(map[string][]messages.Message)
+var resultsNews = make(map[string][]*newsAbstract.News)
 
 func New() *news {
 	return &news{[]string{"news"}}
@@ -27,9 +27,10 @@ func (n *news) CanHandle(msg string) bool {
 	return n.commands.ContainsMessage(msg)
 }
 
-func (n *news) Handle(msg string) messages.Message {
+func (n *news) Handle(msg string, sender abstract.MessageSender) {
 	if strings.Contains(msg, "-h") {
-		return n.GetHelp()
+		sender.Send(messageBuilders.Text(n.GetHelp()))
+		return
 	}
 	msgSplit := strings.Split(msg, " ")
 	cat := msgSplit[len(msgSplit)-1]
@@ -63,7 +64,7 @@ func (n *news) Handle(msg string) messages.Message {
 
 	functionName := getFunctionName(newsFunction)
 	canReturn := false
-	var news messages.Message
+	var news *newsAbstract.News
 	for canReturn == false {
 		if len(resultsNews[functionName]) == 0 {
 			resultsNews[functionName] = newsFunction()
@@ -71,11 +72,9 @@ func (n *news) Handle(msg string) messages.Message {
 		news = getRandomNews(functionName)
 		canReturn = handleBlacklist(newsFunction, news)
 	}
-	messages.Response = news
-
-	return messages.Response
+	sender.Send(messageBuilders.News(news))
 }
-func getRandomNews(mapName string) messages.Message {
+func getRandomNews(mapName string) *newsAbstract.News {
 	result := resultsNews[mapName][rand.Intn(len(resultsNews[mapName]))]
 	removeFromNewsList(result)
 
@@ -86,7 +85,7 @@ func getFunctionName(functionReturningNews newsAbstract.GetNews) string {
 	return runtime.FuncForPC(reflect.ValueOf(functionReturningNews).Pointer()).Name()
 }
 
-func handleBlacklist(functionReturningNews newsAbstract.GetNews, newsReturned messages.Message) bool {
+func handleBlacklist(functionReturningNews newsAbstract.GetNews, newsReturned *newsAbstract.News) bool {
 	blacklist := blacklists.BlacklistsMap[fmt.Sprintf("%vBL", getFunctionName(functionReturningNews))]
 
 	if blacklist.Contains(newsReturned.TitleLink) {
@@ -98,7 +97,7 @@ func handleBlacklist(functionReturningNews newsAbstract.GetNews, newsReturned me
 	return true
 }
 
-func removeFromNewsList(news messages.Message) {
+func removeFromNewsList(news *newsAbstract.News) {
 	for k, v := range resultsNews {
 		for i, value := range v {
 			if value.TitleLink == news.TitleLink {
@@ -110,7 +109,7 @@ func removeFromNewsList(news messages.Message) {
 		}
 	}
 }
-func (n *news) GetHelp() messages.Message {
+func (n *news) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Losowy news.\n\n")
 	sb.WriteString("Dostępne kategorie:\n")
@@ -122,6 +121,5 @@ func (n *news) GetHelp() messages.Message {
 	sb.WriteString("- podróże/travel\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_news_\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }

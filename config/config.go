@@ -12,23 +12,23 @@ var ConnectionCfg connectionConfig
 var BotCfg *BotConfig
 var DbCfg *DbConfig
 
-type connectionConfig struct{
-	Client           *model.Client4
-	Team 			 *model.Team
-	WebSocketClient  *model.WebSocketClient
-	BotUser          *model.User
-	BotTeam          *model.Team
-	Session			 *model.Session
+type connectionConfig struct {
+	Client          *model.Client4
+	Team            *model.Team
+	WebSocketClient *model.WebSocketClient
+	BotUser         *model.User
+	BotTeam         *model.Team
+	Session         *model.Session
 }
 
 type Data struct {
 	BotConfig *BotConfig `json:"BotConfig"`
-	DbConfig *DbConfig   `json:"DbConfig"`
+	DbConfig  *DbConfig  `json:"DbConfig"`
 }
 
 type BotConfig struct {
-	Server	   string `json:"Server"`
-	Port   	   string `json:"Port"`
+	Server     string `json:"Server"`
+	Port       string `json:"Port"`
 	BotName    string `json:"BotName"`
 	Password   string `json:"Password"`
 	TeamName   string `json:"TeamName"`
@@ -41,11 +41,11 @@ type DbConfig struct {
 	Port                 int    `json:"Port"`
 	User                 string `json:"User"`
 	Password             string `json:"Password"`
-	AlertChannelName	 string `json:"AlertChannel"`
+	AlertChannelName     string `json:"AlertChannel"`
 	ConnectionsWarning   int    `json:"Connections_warning"`
-	ConnectionsCheckCron int 	`json:"Connections_check_cron"`
-	ConnectionsLogCron   int 	`json:"Connections_log_cron"`
-	Channel				 *model.Channel
+	ConnectionsCheckCron int    `json:"Connections_check_cron"`
+	ConnectionsLogCron   int    `json:"Connections_log_cron"`
+	Channel              *model.Channel
 }
 
 func ReadConfig() {
@@ -53,7 +53,7 @@ func ReadConfig() {
 	if len(os.Args) < 2 {
 		path = "./config.json"
 	} else {
-		if os.Args[1]=="-test.v" {
+		if os.Args[1] == "-test.v" {
 			path = "./config.json"
 		} else {
 			path = os.Args[1]
@@ -62,7 +62,7 @@ func ReadConfig() {
 
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
-		log.Fatal("Error while opening the configuration file. Path: "+path)
+		log.Fatal("Error while opening the configuration file. Path: " + path)
 	}
 
 	cfg := &Data{}
@@ -73,5 +73,4 @@ func ReadConfig() {
 
 	BotCfg = cfg.BotConfig
 	DbCfg = cfg.DbConfig
-	//DbCfg.Channel, _ = ConnectionCfg.Client.GetChannelByName(DbCfg.AlertChannelName, ConnectionCfg.Team.Id,"")
 }

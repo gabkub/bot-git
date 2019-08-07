@@ -1,8 +1,6 @@
 package bot
 
 import (
-	"bot-git/bot/commands/suchar"
-	"bot-git/bot/messages"
 	"bot-git/config"
 	"bot-git/footballDatabase"
 	"bot-git/logg"
@@ -53,97 +51,4 @@ func isMessage(eventType string) bool {
 		return true
 	}
 	return false
-}
-
-func SendMessage(channelId string, msg messages.Message) {
-	// create new post
-	var toSend *model.Post
-	switch msg.GetType() {
-	case "Text":
-		toSend = &model.Post{
-			Message: msg.Text,
-		}
-	case "News":
-		toSend = &model.Post{
-			Props: map[string]interface{}{
-				"attachments": []model.SlackAttachment{
-					{
-						ImageURL:  msg.Img.ImageUrl,
-						Title:     msg.Img.Header,
-						TitleLink: msg.TitleLink,
-					},
-				},
-			},
-		}
-	case "Image":
-		toSend = &model.Post{
-			Props: map[string]interface{}{
-				"attachments": []model.SlackAttachment{
-					{
-						ImageURL:  msg.Img.ImageUrl,
-						Title:     msg.Img.Header,
-						TitleLink: msg.Img.ImageUrl,
-					},
-				},
-			},
-		}
-
-	case "Title":
-		toSend = &model.Post{
-			Message: msg.Text,
-			Props: map[string]interface{}{
-				"attachments": []model.SlackAttachment{
-					{
-						Title: msg.Title,
-					},
-				},
-			},
-		}
-
-	case "ThumbUrl":
-		toSend = &model.Post{
-			Message: msg.Text,
-			Props: map[string]interface{}{
-				"attachments": []model.SlackAttachment{
-					{
-						ThumbURL: msg.ThumbUrl,
-					},
-				},
-			},
-		}
-
-	case "TitleThumbUrl":
-		toSend = &model.Post{
-			Props: map[string]interface{}{
-				"attachments": []model.SlackAttachment{
-					{
-						Fields: []*model.SlackAttachmentField{
-							{
-								Short: false,
-								Title: msg.Title,
-								Value: msg.Text,
-							},
-						},
-						ThumbURL: msg.ThumbUrl,
-					},
-				},
-			},
-		}
-	}
-
-	if toSend != nil {
-		toSend.ChannelId = channelId
-
-		sentPost, er := config.ConnectionCfg.Client.CreatePost(toSend)
-		if er.Error != nil {
-			logg.WriteToFile("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
-		}
-
-		if msg.IsFunnyMessage {
-			suchar.SetLast(sentPost.Id)
-		}
-
-	} else {
-		logg.WriteToFile("Error creating the respond message.")
-	}
 }

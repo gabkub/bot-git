@@ -2,7 +2,7 @@ package version
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/messages"
+	"bot-git/messageBuilders"
 	"strings"
 )
 
@@ -20,19 +20,18 @@ func (v *version) CanHandle(msg string) bool {
 	return v.commands.ContainsMessage(msg)
 }
 
-func (v *version) Handle(msg string) messages.Message {
+func (v *version) Handle(msg string, sender abstract.MessageSender) {
 	if strings.Contains(msg, "-h") {
-		return v.GetHelp()
+		sender.Send(messageBuilders.Text(v.GetHelp()))
+		return
 	}
-	messages.Response.Text = VER
-	return messages.Response
+	sender.Send(messageBuilders.Text(VER))
 }
 
-func (v *version) GetHelp() messages.Message {
+func (v *version) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Zwraca aktualną wersję bota.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_wersja, version, ver_\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }

@@ -18,28 +18,24 @@ var GamePage = map[string]int{
 	"PPE":    0,
 }
 
-func gameSpider() []messages.Message {
+func gameSpider() []*newsAbstract.News {
 	blacklists.New("gameSpiderBL")
 	GamePage["Spider"]++
-	return newsAbstract.GetSpider("gry", GamePage["Spider"])
+	return getSpider("gry", GamePage["Spider"])
 }
 
-func gamePPE() []messages.Message {
+func gamePPE() []*newsAbstract.News {
 	blacklists.New("gamePPEBL")
-	var messagesToReturn []messages.Message
+	var messagesToReturn []*newsAbstract.News
 
 	div := contentFetcher.Fetch(fmt.Sprintf("https://www.ppe.pl/news/news.html?page=%v", GamePage["PPE"]), "div.box")
 	div.Each(func(i int, s *goquery.Selection) {
 		image, _ := s.Find("div.txt div.image_big > a.imgholder > img.imgholderimg").Attr("src")
 		text, _ := s.Find("div.txt div.image_big > a.imgholder > img.imgholderimg").Attr("alt")
 		titleLink, _ := s.Find("div.txt > div.image_big > a.imgholder").Attr("href")
-		message := messages.Message{
-			TitleLink: fmt.Sprintf("https://www.ppe.pl%v", titleLink),
-			Img: messages.Image{
-				Header:   text,
-				ImageUrl: image,
-			},
-		}
+		link := fmt.Sprintf("https://www.ppe.pl%v", titleLink)
+		img := messages.NewImage(text, image)
+		message := newsAbstract.NewNews(link, img)
 		if !message.Img.IsEmpty() && message.TitleLink != "" {
 			messagesToReturn = append(messagesToReturn, message)
 		}

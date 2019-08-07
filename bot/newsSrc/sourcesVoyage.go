@@ -19,28 +19,24 @@ var VoyagePage = map[string]int{
 	"MlecznePodroze": 0,
 }
 
-func voyageSpider() []messages.Message {
+func voyageSpider() []*newsAbstract.News {
 	blacklists.New("voyageSpiderBL")
 	VoyagePage["Spider"]++
-	return newsAbstract.GetSpider("podroze", VoyagePage["Spider"])
+	return getSpider("podroze", VoyagePage["Spider"])
 }
 
-func voyageMlecznePodroze() []messages.Message {
+func voyageMlecznePodroze() []*newsAbstract.News {
 	blacklists.New("voyageMlecznePodrozeBL")
 	VoyagePage["MlecznePodroze"]++
-	var news []messages.Message
+	var news []*newsAbstract.News
 	div := contentFetcher.Fetch(fmt.Sprintf("https://mlecznepodroze.pl/tag/news/page/%v/", VoyagePage["MlecznePodroze"]), "div.primary-post-content")
 	div.Each(func(i int, s *goquery.Selection) {
 		image, _ := s.Find("div.picture > div.picture-content > a > img").Attr("src")
 		text, _ := s.Find("div.picture > div.picture-content > a").Attr("title")
-		textlink, _ := s.Find("div.picture > div.picture-content > a").Attr("href")
-		temp := messages.Message{
-			TitleLink: textlink,
-			Img: messages.Image{
-				Header:   text,
-				ImageUrl: image,
-			},
-		}
+		textLink, _ := s.Find("div.picture > div.picture-content > a").Attr("href")
+		img := messages.NewImage(text, image)
+		temp := newsAbstract.NewNews(textLink, img)
+
 		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
 			news = append(news, temp)
 		}

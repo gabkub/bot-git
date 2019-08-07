@@ -1,7 +1,6 @@
 package notNowMsg
 
 import (
-	"bot-git/bot/messages"
 	"math/rand"
 )
 
@@ -36,9 +35,6 @@ var limitMessages = []string{
 	"A może burgerek? :hamburger:",
 }
 
-func Get() messages.Message {
-	var msg messages.Message
-	msg.New()
-	msg.Text = limitMessages[rand.Intn(len(limitMessages))]
-	return msg
+func Get() string {
+	return limitMessages[rand.Intn(len(limitMessages))]
 }

@@ -2,9 +2,9 @@ package football
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/messages"
 	"bot-git/config"
 	"bot-git/footballDatabase"
+	"bot-git/messageBuilders"
 	"fmt"
 	"strconv"
 	"strings"
@@ -23,44 +23,45 @@ func (f *football) CanHandle(msg string) bool {
 	return f.commands.ContainsMessage(msg)
 }
 
-func (f *football) Handle(msg string) messages.Message {
+func (f *football) Handle(msg string, sender abstract.MessageSender) {
 	if strings.Contains(msg, "-h") {
-		return f.GetHelp()
+		sender.Send(messageBuilders.Text(f.GetHelp()))
+		return
 	}
 	bookingTime := time.Now()
 	if strings.Contains(msg, "-l") {
-		return f.getReservations(bookingTime)
+		f.getReservations(bookingTime, sender)
+		return
 	}
+	resp := tryBookTable(msg, bookingTime)
+	sender.Send(messageBuilders.Text(resp))
+}
+
+func tryBookTable(msg string, bookingTime time.Time) string {
 	msgSplit := strings.Split(msg, "@")
 	var err string
 	if len(msgSplit) >= 2 {
 		bookingTime, err = setTime(msgSplit[len(msgSplit)-1])
 		if err != "" {
-			messages.Response.Text = err
-			return messages.Response
+			return err
 		}
 	}
-
 	free := footballDatabase.FreeReservation(bookingTime)
 	if free.IsZero() {
-		messages.Response.Text = "Nie można zarezerwować. Spróbuj inną godzinę."
-		return messages.Response
+		return "Nie można zarezerwować. Spróbuj inną godzinę."
 	}
 	if footballDatabase.TimeToString(free) == footballDatabase.TimeToString(bookingTime) {
 		user, _ := config.ConnectionCfg.Client.GetUser(abstract.GetUserId(), "")
 		if footballDatabase.SetReservation(user.Username, bookingTime) {
-			messages.Response.Text = "Zarezerwowano piłkarzyki. Miłej gry!"
+			return "Zarezerwowano piłkarzyki. Miłej gry!"
 		} else {
-			messages.Response.Text = "Już dzisiaj rezerwowałeś."
+			return "Już dzisiaj rezerwowałeś."
 		}
-		return messages.Response
 	}
-
-	messages.Response.Text = fmt.Sprintf("Stół zajęty. Stół będzie wolny o: %v:%v", free.Hour(), free.Minute())
-	return messages.Response
+	return fmt.Sprintf("Stół zajęty. Stół będzie wolny o: %v:%v", free.Hour(), free.Minute())
 }
 
-func (f *football) GetHelp() messages.Message {
+func (f *football) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Rezerwacja stołu do gry w piłkarzyki na 20 minut. Domyślna godzina rezerwacji to godzina wysłania wiadomości.\n")
 	sb.WriteString("Limit rezerwacji na użytkownika = 1\n")
@@ -68,8 +69,7 @@ func (f *football) GetHelp() messages.Message {
 	sb.WriteString("_<komenda>_ -l - wyświetla wszystkie rezerwacje na dany dzień.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_football, game, gramy, piłkarzyki, play, soccer_\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }
 
 func setTime(toConvert string) (time.Time, string) {
@@ -92,7 +92,9 @@ func setTime(toConvert string) (time.Time, string) {
 	return result, ""
 }
 
-func (f *football) getReservations(startTime time.Time) messages.Message {
+const ballImgUrl = "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/ESPN-icon-soccer.png&w=288&h=288&transparent=true"
+
+func (f *football) getReservations(startTime time.Time, sender abstract.MessageSender) {
 	reservations := footballDatabase.GetAllReservationByStartTime(startTime)
 	var sb strings.Builder
 	for _, reservation := range reservations {
@@ -100,9 +102,7 @@ func (f *football) getReservations(startTime time.Time) messages.Message {
 		endTimes := strings.Split(reservation.EndTime, " ")
 		sb.WriteString(fmt.Sprintf("%v - %v : %v\n", startTimes[1], endTimes[1], reservation.UserName))
 	}
-	messages.Response.Text = sb.String()
 	y, m, d := time.Now().Date()
-	messages.Response.Title = fmt.Sprintf("%v %v %v", d, m, y)
-	messages.Response.ThumbUrl = "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/ESPN-icon-soccer.png&w=288&h=288&transparent=true"
-	return messages.Response
+	title := fmt.Sprintf("%v %v %v", d, m, y)
+	sender.Send(messageBuilders.TitleThumbUrl(title, sb.String(), ballImgUrl))
 }

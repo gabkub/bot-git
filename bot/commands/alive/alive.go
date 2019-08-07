@@ -2,7 +2,7 @@ package alive
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/messages"
+	"bot-git/messageBuilders"
 	"strings"
 )
 
@@ -18,19 +18,18 @@ func (a *alive) CanHandle(msg string) bool {
 	return a.commands.ContainsMessage(msg)
 }
 
-func (a *alive) Handle(msg string) messages.Message {
+func (a *alive) Handle(msg string, sender abstract.MessageSender) {
 	if strings.Contains(msg, "-h") {
-		return a.GetHelp()
+		sender.Send(messageBuilders.Text(a.GetHelp()))
+		return
 	}
-	messages.Response.Text = "Żyję!"
-	return messages.Response
+	sender.Send(messageBuilders.Text("Żyję!"))
 }
 
-func (a *alive) GetHelp() messages.Message {
+func (a *alive) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Informacja, czy bot jest włączony i działa poprawnie.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_alive, up, running, żyjesz_\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }

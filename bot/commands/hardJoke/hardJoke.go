@@ -2,9 +2,10 @@ package hardJoke
 
 import (
 	"bot-git/bot/abstract"
+	"bot-git/bot/commands/suchar"
 	"bot-git/bot/jokes"
 	"bot-git/bot/limit"
-	"bot-git/bot/messages"
+	"bot-git/messageBuilders"
 	"bot-git/notNowMsg"
 	"strings"
 )
@@ -21,29 +22,36 @@ func (hj *hardJoke) CanHandle(msg string) bool {
 	return hj.commands.ContainsMessage(msg)
 }
 
-func (hj *hardJoke) Handle(msg string) messages.Message {
+func (hj *hardJoke) Handle(msg string, sender abstract.MessageSender) {
 	if strings.Contains(msg, "-h") {
-		return hj.GetHelp()
+		sender.Send(messageBuilders.Text(hj.GetHelp()))
+		return
 	}
-	if limit.CanSend(abstract.GetUserId(), "joke") {
-		if abstract.MsgChannel.Type == "D" {
-			messages.Response.IsFunnyMessage = true
-			joke := jokes.Fetch(true)
-			messages.Response.Text = joke
-		} else {
-			messages.Response.Text = "Tylko na priv."
-		}
-		return messages.Response
+	text, ok := getMessage(sender.IsDirectSend())
+	sentPost := sender.Send(messageBuilders.Text(text))
+	if ok && sentPost != nil {
+		suchar.SetLast(sentPost.Id)
 	}
-	return notNowMsg.Get()
 }
 
-func (hj *hardJoke) GetHelp() messages.Message {
+func getMessage(isDirect bool) (string, bool) {
+	const ok = true
+	if limit.CanSend(abstract.GetUserId(), "joke") {
+		if isDirect {
+			joke := jokes.Fetch(true)
+			return joke, ok
+		} else {
+			return "Tylko na priv.", !ok
+		}
+	}
+	return notNowMsg.Get(), !ok
+}
+
+func (hj *hardJoke) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Wysyła losowy dowcip. Możliwe wylosowanie z kategorii **hard**. Komenda dostępna tylko w wiadomościach prywatnych z botem.\n")
 	sb.WriteString("Żart **hard** nalicza się do ogólnego limitu żartów.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_hard_\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }

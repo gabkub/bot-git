@@ -1,7 +1,6 @@
 package abstract
 
 import (
-	"bot-git/bot/messages"
 	"github.com/mattermost/mattermost-server/model"
 	"strings"
 )
@@ -21,8 +20,14 @@ func (r ReactForMsgs) ContainsMessage(msg string) bool {
 
 type Handler interface {
 	CanHandle(msg string) bool
-	Handle(msg string) messages.Message
-	GetHelp() messages.Message
+	Handle(msg string, sender MessageSender)
+	// TODO GetHelp not used but should be
+	GetHelp() string
+}
+
+type MessageSender interface {
+	Send(*model.Post) *model.Post
+	IsDirectSend() bool
 }
 
 var userId string

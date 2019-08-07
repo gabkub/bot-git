@@ -4,7 +4,7 @@ import (
 	"bot-git/bot/abstract"
 	"bot-git/bot/limit"
 	"bot-git/bot/memes"
-	"bot-git/bot/messages"
+	"bot-git/messageBuilders"
 	"bot-git/notNowMsg"
 	"strings"
 )
@@ -21,20 +21,20 @@ func (m *meme) CanHandle(msg string) bool {
 	return m.commands.ContainsMessage(msg)
 }
 
-func (m *meme) Handle(msg string) messages.Message {
+func (m *meme) Handle(msg string, sender abstract.MessageSender) {
 	if strings.Contains(msg, "-h") {
-		return m.GetHelp()
+		sender.Send(messageBuilders.Text(m.GetHelp()))
+		return
 	}
 	if limit.CanSend(abstract.GetUserId(), "meme") {
-		messages.Response.IsFunnyMessage = true
 		meme := memes.Fetch()
-		messages.Response.Img = meme
-		return messages.Response
+		sender.Send(messageBuilders.Image(meme.Header, meme.ImageUrl))
+		return
 	}
-	return notNowMsg.Get()
+	sender.Send(messageBuilders.Text(notNowMsg.Get()))
 }
 
-func (m *meme) GetHelp() messages.Message {
+func (m *meme) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Wysyła losowy śmieszny obrazek. Odnośnik w tytule otwiera obrazek w nowej karcie.\n\n")
 	sb.WriteString("Limity:\n")
@@ -43,6 +43,5 @@ func (m *meme) GetHelp() messages.Message {
 	sb.WriteString("15:00-6:59 - brak limitów\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_meme, mem_\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }

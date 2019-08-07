@@ -2,7 +2,7 @@ package help
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/messages"
+	"bot-git/messageBuilders"
 	"strings"
 )
 
@@ -20,7 +20,7 @@ func (h *help) CanHandle(msg string) bool {
 	return msg == helpFlag || h.commands.ContainsMessage(msg)
 }
 
-func (h *help) Handle(msg string) messages.Message {
+func (h *help) Handle(msg string, sender abstract.MessageSender) {
 	var sb strings.Builder
 	sb.WriteString("LISTA KOMEND:\n")
 	sb.WriteString("- _hard_ (dostępne tylko w wiadomościach prywatnych z botem) - losowy żart w kategorii **hard** (na własną odpowiedzialność!)\n")
@@ -32,15 +32,13 @@ func (h *help) Handle(msg string) messages.Message {
 	sb.WriteString("- _suchar, nie, ..._ - usuwa ostatni dowcip/mem\n")
 	sb.WriteString("- _ver_ - wersja\n\n")
 	sb.WriteString(" _<komenda> -h_ zwraca szczegółowe informacje o komendzie\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	sender.Send(messageBuilders.Text(sb.String()))
 }
 
-func (h *help) GetHelp() messages.Message {
+func (h *help) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Wyświetlenie ogólnej pomocy dla podstawowych komend\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_help, pomoc, pomocy_\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }

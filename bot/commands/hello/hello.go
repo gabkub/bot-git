@@ -2,7 +2,7 @@ package hello
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/messages"
+	"bot-git/messageBuilders"
 	"math/rand"
 	"strings"
 )
@@ -19,20 +19,20 @@ func (h *hello) CanHandle(msg string) bool {
 	return h.commands.ContainsMessage(msg)
 }
 
-func (h *hello) Handle(msg string) messages.Message {
+func (h *hello) Handle(msg string, sender abstract.MessageSender) {
 	if strings.Contains(msg, "-h") {
-		return h.GetHelp()
+		sender.Send(messageBuilders.Text(h.GetHelp()))
+		return
 	}
 	helloMsg := h.commands[rand.Intn(len(h.commands)-1)]
-	messages.Response.Text = strings.ToTitle(string(helloMsg[0])) + helloMsg[1:]
-	return messages.Response
+	text := strings.ToTitle(string(helloMsg[0])) + helloMsg[1:]
+	sender.Send(messageBuilders.Text(text))
 }
 
-func (h *hello) GetHelp() messages.Message {
+func (h *hello) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Przywitanie :)\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_cześć, hej, siema, siemanko, hejo, hejka, elo_\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }

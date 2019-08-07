@@ -12,9 +12,10 @@ import (
 	"bot-git/bot/commands/news"
 	"bot-git/bot/commands/suchar"
 	"bot-git/bot/commands/version"
-	"bot-git/bot/messages"
 	"bot-git/config"
 	"bot-git/logg"
+	"bot-git/messageBuilders"
+	"bot-git/messageSender"
 	"fmt"
 	"github.com/mattermost/mattermost-server/model"
 	"math/rand"
@@ -36,10 +37,19 @@ func handleEvent(event *model.WebSocketEvent) {
 	if !canRespond(post, prefix) {
 		return
 	}
-
-	response := handleMsg(strings.TrimSpace(strings.TrimPrefix(post.Message, prefix)))
-	SendMessage(post.ChannelId, response)
+	m := strings.TrimSpace(strings.TrimPrefix(post.Message, prefix))
+	sender := messageSender.New(post.ChannelId, getChannelType(post.ChannelId))
+	handleMsg(m, sender)
 	logg.WriteToFile("Message sent.")
+}
+
+func getChannelType(channelId string) string {
+	ch, r := config.ConnectionCfg.Client.GetChannel(channelId, "")
+	if r.Error != nil {
+		return ""
+	}
+	return ch.Type
+
 }
 
 func canRespond(post *model.Post, prefix string) bool {
@@ -60,18 +70,17 @@ var gifs = []string{
 	"https://media.giphy.com/media/xzoXvpBoYTSKY/giphy.gif",
 }
 
-func handleMsg(msg string) messages.Message {
-	messages.Response.New()
+func handleMsg(msg string, sender abstract.MessageSender) {
 	if msg == "" {
-
-		messages.Response.Img = messages.Image{Header: "Hello", ImageUrl: gifs[rand.Intn(len(gifs))]}
-		return messages.Response
+		img := gifs[rand.Intn(len(gifs))]
+		sender.Send(messageBuilders.Image("Hello", img))
+		return
 	}
 	for _, handler := range handlers {
 		if handler.CanHandle(msg) {
-			return handler.Handle(msg)
+			handler.Handle(msg, sender)
+			return
 		}
-
 	}
-	return defaultCommand.Handle(msg)
+	defaultCommand.Handle(msg, sender)
 }

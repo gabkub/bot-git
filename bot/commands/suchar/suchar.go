@@ -2,8 +2,8 @@ package suchar
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/messages"
 	"bot-git/config"
+	"bot-git/messageBuilders"
 	"strings"
 )
 
@@ -21,31 +21,29 @@ func (s *suchar) CanHandle(msg string) bool {
 	return s.commands.ContainsMessage(msg)
 }
 
-func (s *suchar) Handle(msg string) messages.Message {
-
+func (s *suchar) Handle(msg string, sender abstract.MessageSender) {
 	if strings.Contains(msg, "-h") {
-		return s.GetHelp()
+		sender.Send(messageBuilders.Text(s.GetHelp()))
+		return
 	}
-	return s.removeLast()
+	text := s.removeLast()
+	sender.Send(messageBuilders.Text(text))
 }
 
-func (s *suchar) GetHelp() messages.Message {
+func (s *suchar) GetHelp() string {
 	var sb strings.Builder
 	sb.WriteString("Usuwa ostatni dowcip lub mem.\n\n")
 	sb.WriteString("Pełna lista komend:\n")
 	sb.WriteString("_suchar, usuń, delete, no, nie, ..._\n")
-	messages.Response.Text = sb.String()
-	return messages.Response
+	return sb.String()
 }
 
-func (s *suchar) removeLast() messages.Message {
+func (s *suchar) removeLast() string {
 	if lastFunnyMessage == "" {
-		messages.Response.Text = "Nie wiem, o co ci chodzi..."
-		return messages.Response
+		return "Nie wiem, o co ci chodzi..."
 	}
 	config.ConnectionCfg.Client.DeletePost(lastFunnyMessage)
-	messages.Response.Text = "ok"
-	return messages.Response
+	return "ok"
 }
 
 func SetLast(last string) {
