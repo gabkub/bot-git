@@ -7,26 +7,22 @@ import (
 	"bot-git/bot/limit"
 	"bot-git/messageBuilders"
 	"bot-git/notNowMsg"
-	"strings"
 )
 
 type hardJoke struct {
-	commands abstract.ReactForMsgs
 }
 
+var commands abstract.ReactForMsgs = []string{"hard"}
+
 func New() abstract.Handler {
-	return &hardJoke{[]string{"hard"}}
+	return &hardJoke{}
 }
 
 func (hj *hardJoke) CanHandle(msg string) bool {
-	return hj.commands.ContainsMessage(msg)
+	return commands.ContainsMessage(msg)
 }
 
 func (hj *hardJoke) Handle(msg string, sender abstract.MessageSender) {
-	if strings.Contains(msg, "-h") {
-		sender.Send(messageBuilders.Text(hj.GetHelp()))
-		return
-	}
 	text, ok := getMessage(sender.IsDirectSend())
 	sentPost := sender.Send(messageBuilders.Text(text))
 	if ok && sentPost != nil {
@@ -45,13 +41,4 @@ func getMessage(isDirect bool) (string, bool) {
 		}
 	}
 	return notNowMsg.Get(), !ok
-}
-
-func (hj *hardJoke) GetHelp() string {
-	var sb strings.Builder
-	sb.WriteString("Wysyła losowy dowcip. Możliwe wylosowanie z kategorii **hard**. Komenda dostępna tylko w wiadomościach prywatnych z botem.\n")
-	sb.WriteString("Żart **hard** nalicza się do ogólnego limitu żartów.\n\n")
-	sb.WriteString("Pełna lista komend:\n")
-	sb.WriteString("_hard_\n")
-	return sb.String()
 }

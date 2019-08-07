@@ -14,24 +14,20 @@ import (
 )
 
 type news struct {
-	commands abstract.ReactForMsgs
 }
 
+var commands abstract.ReactForMsgs = []string{"news"}
 var resultsNews = make(map[string][]*newsAbstract.News)
 
 func New() *news {
-	return &news{[]string{"news"}}
+	return &news{}
 }
 
 func (n *news) CanHandle(msg string) bool {
-	return n.commands.ContainsMessage(msg)
+	return commands.ContainsMessage(msg)
 }
 
 func (n *news) Handle(msg string, sender abstract.MessageSender) {
-	if strings.Contains(msg, "-h") {
-		sender.Send(messageBuilders.Text(n.GetHelp()))
-		return
-	}
 	msgSplit := strings.Split(msg, " ")
 	cat := msgSplit[len(msgSplit)-1]
 	var newsFunction newsAbstract.GetNews
@@ -108,18 +104,4 @@ func removeFromNewsList(news *newsAbstract.News) {
 			}
 		}
 	}
-}
-func (n *news) GetHelp() string {
-	var sb strings.Builder
-	sb.WriteString("Losowy news.\n\n")
-	sb.WriteString("Dostępne kategorie:\n")
-	sb.WriteString("- gry/games\n")
-	sb.WriteString("- media\n")
-	sb.WriteString("- nauka/science\n")
-	sb.WriteString("- tech (domyślna)\n")
-	sb.WriteString("- moto\n")
-	sb.WriteString("- podróże/travel\n")
-	sb.WriteString("Pełna lista komend:\n")
-	sb.WriteString("_news_\n")
-	return sb.String()
 }

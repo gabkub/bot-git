@@ -24,10 +24,6 @@ func (f *football) CanHandle(msg string) bool {
 }
 
 func (f *football) Handle(msg string, sender abstract.MessageSender) {
-	if strings.Contains(msg, "-h") {
-		sender.Send(messageBuilders.Text(f.GetHelp()))
-		return
-	}
 	bookingTime := time.Now()
 	if strings.Contains(msg, "-l") {
 		f.getReservations(bookingTime, sender)
@@ -61,29 +57,18 @@ func tryBookTable(msg string, bookingTime time.Time) string {
 	return fmt.Sprintf("Stół zajęty. Stół będzie wolny o: %v:%v", free.Hour(), free.Minute())
 }
 
-func (f *football) GetHelp() string {
-	var sb strings.Builder
-	sb.WriteString("Rezerwacja stołu do gry w piłkarzyki na 20 minut. Domyślna godzina rezerwacji to godzina wysłania wiadomości.\n")
-	sb.WriteString("Limit rezerwacji na użytkownika = 1\n")
-	sb.WriteString("Szablon: _<komenda>_ (@_<godzinarezerwacji>_) (domyślnie ustawiana jest aktualna godzina)\n")
-	sb.WriteString("_<komenda>_ -l - wyświetla wszystkie rezerwacje na dany dzień.\n\n")
-	sb.WriteString("Pełna lista komend:\n")
-	sb.WriteString("_football, game, gramy, piłkarzyki, play, soccer_\n")
-	return sb.String()
-}
-
 func setTime(toConvert string) (time.Time, string) {
 	now := time.Now()
 	if toConvert == "" {
 		return now, ""
 	}
 
-	hour_minute := strings.Split(toConvert, ":")
-	hour, e := strconv.Atoi(hour_minute[0])
+	hourMinute := strings.Split(toConvert, ":")
+	hour, e := strconv.Atoi(hourMinute[0])
 	if e != nil || hour <= 6 || hour >= 20 {
 		return time.Time{}, "Zły format godziny."
 	}
-	minute, e := strconv.Atoi(hour_minute[1])
+	minute, e := strconv.Atoi(hourMinute[1])
 	if e != nil || minute < 0 || minute >= 60 {
 		return time.Time{}, "Zły format minut."
 	}

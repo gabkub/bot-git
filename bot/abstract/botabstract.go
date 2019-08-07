@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-var MsgChannel *model.Channel
-
 type ReactForMsgs []string
 
 func (r ReactForMsgs) ContainsMessage(msg string) bool {
@@ -18,11 +16,20 @@ func (r ReactForMsgs) ContainsMessage(msg string) bool {
 	return false
 }
 
+type Help struct {
+	Short string
+	Long  string
+}
+
+func NewHelp(short, long string) *Help {
+	return &Help{Short: short, Long: long}
+}
+
 type Handler interface {
 	CanHandle(msg string) bool
 	Handle(msg string, sender MessageSender)
 	// TODO GetHelp not used but should be
-	GetHelp() string
+	GetHelp() *Help
 }
 
 type MessageSender interface {

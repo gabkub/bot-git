@@ -18,6 +18,8 @@ func Start() {
 	logg.WriteToFile("Bot has started.")
 	log.Println("Bot has started.")
 
+	helpHandler.Init(handlers)
+
 	go func() {
 		schedule.Start()
 		footballDatabase.CreateTableDB()
