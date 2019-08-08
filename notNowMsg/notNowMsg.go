@@ -33,6 +33,16 @@ var limitMessages = []string{
 	"niechcem",
 	"muszem?",
 	"A może burgerek? :hamburger:",
+	"Napiłbym się - poczęstujecie mnie czymś?",
+	"Ale tu Hałas w tej piwnicy :scream:",
+	"Lepiej nie pytaj",
+	":face_with_head_bandage: skołowany jestem",
+	"Później, teraz wiersz piszę :writing_hand:",
+	"Czytam Harlequina - @Adrian Dadok mi wypożyczył :reading:",
+	"Jade do dziewczyny! :hearts:",
+	"A piłkarzyki brudne  :angry:",
+	":trollface:",
+	"@joey kawał",
 }
 
 func Get() string {
