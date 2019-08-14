@@ -1,6 +1,7 @@
 package messageSender
 
 import (
+	"bot-git/bot/abstract"
 	"bot-git/config"
 	"bot-git/logg"
 	"github.com/mattermost/mattermost-server/model"
@@ -11,10 +12,15 @@ const directType = "D"
 type sender struct {
 	channelId   string
 	channelType string
+	userId      abstract.UserId
 }
 
-func New(channelId, channelType string) *sender {
-	return &sender{channelId: channelId, channelType: channelType}
+func (s *sender) GetUserId() abstract.UserId {
+	return s.userId
+}
+
+func New(userId abstract.UserId, channelId, channelType string) *sender {
+	return &sender{userId: userId, channelId: channelId, channelType: channelType}
 }
 
 func (s *sender) IsDirectSend() bool {

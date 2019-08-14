@@ -23,8 +23,8 @@ func (j *joke) CanHandle(msg string) bool {
 }
 
 func (j *joke) Handle(msg string, sender abstract.MessageSender) {
-	if limit.CanSend(abstract.GetUserId(), "joke") {
-		joke := jokes.Fetch(false)
+	if limit.CanSend(sender.GetUserId(), "joke") {
+		joke := jokes.Fetch(sender.GetUserId(), false)
 		sentPost := sender.Send(messageBuilders.Text(joke))
 		if sentPost != nil {
 			suchar.SetLast(sentPost.Id)

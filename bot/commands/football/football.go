@@ -29,11 +29,11 @@ func (f *football) Handle(msg string, sender abstract.MessageSender) {
 		f.getReservations(bookingTime, sender)
 		return
 	}
-	resp := tryBookTable(msg, bookingTime)
+	resp := tryBookTable(sender.GetUserId(), msg, bookingTime)
 	sender.Send(messageBuilders.Text(resp))
 }
 
-func tryBookTable(msg string, bookingTime time.Time) string {
+func tryBookTable(userId abstract.UserId, msg string, bookingTime time.Time) string {
 	msgSplit := strings.Split(msg, "@")
 	var err string
 	if len(msgSplit) >= 2 {
@@ -47,7 +47,7 @@ func tryBookTable(msg string, bookingTime time.Time) string {
 		return "Nie można zarezerwować. Spróbuj inną godzinę."
 	}
 	if footballDatabase.TimeToString(free) == footballDatabase.TimeToString(bookingTime) {
-		user, _ := config.ConnectionCfg.Client.GetUser(abstract.GetUserId(), "")
+		user, _ := config.ConnectionCfg.Client.GetUser(string(userId), "")
 		if footballDatabase.SetReservation(user.Username, bookingTime) {
 			return "Zarezerwowano piłkarzyki. Miłej gry!"
 		} else {

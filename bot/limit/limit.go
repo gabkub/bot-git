@@ -1,6 +1,7 @@
 package limit
 
 import (
+	"bot-git/bot/abstract"
 	"bot-git/config"
 	"bot-git/logg"
 	"log"
@@ -14,7 +15,7 @@ type Limitation struct {
 	LimitReached bool
 }
 
-var Users map[string]map[string]*Limitation
+var Users map[abstract.UserId]map[string]*Limitation
 
 func getTeamId() string {
 	team, resp := config.ConnectionCfg.Client.GetTeamByName(config.BotCfg.TeamName, "")
@@ -30,17 +31,17 @@ func SetUsersList() {
 		logg.WriteToFile("Error while getting team members'. Details: " + resp.Error.DetailedError)
 	}
 
-	Users = make(map[string]map[string]*Limitation)
+	Users = make(map[abstract.UserId]map[string]*Limitation)
 
 	for _, user := range teamMembers {
-		Users[user.UserId] = map[string]*Limitation{
+		Users[abstract.UserId(user.UserId)] = map[string]*Limitation{
 			"joke": {0, false},
 			"meme": {0, false},
 		}
 	}
 }
 
-func AddRequest(userId, command string) {
+func AddRequest(userId abstract.UserId, command string) {
 	limit := Users[userId][command]
 	limit.Count++
 	limit.LimitReached = mustBlock(*limit)
@@ -60,6 +61,6 @@ func mustBlock(limit Limitation) bool {
 	return false
 }
 
-func CanSend(userId, command string) bool {
+func CanSend(userId abstract.UserId, command string) bool {
 	return !Users[userId][command].LimitReached
 }

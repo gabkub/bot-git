@@ -14,8 +14,8 @@ type getMeme func() []abstract.Image
 
 var memeList []abstract.Image
 
-func Fetch() abstract.Image {
-	limit.AddRequest(abstract.GetUserId(), "meme")
+func Fetch(userId abstract.UserId) abstract.Image {
+	limit.AddRequest(userId, "meme")
 	var memeFunction getMeme
 
 	canReturn := false

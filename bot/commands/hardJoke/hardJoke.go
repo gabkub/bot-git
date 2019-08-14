@@ -23,18 +23,18 @@ func (hj *hardJoke) CanHandle(msg string) bool {
 }
 
 func (hj *hardJoke) Handle(msg string, sender abstract.MessageSender) {
-	text, ok := getMessage(sender.IsDirectSend())
+	text, ok := getMessage(sender.GetUserId(), sender.IsDirectSend())
 	sentPost := sender.Send(messageBuilders.Text(text))
 	if ok && sentPost != nil {
 		suchar.SetLast(sentPost.Id)
 	}
 }
 
-func getMessage(isDirect bool) (string, bool) {
+func getMessage(userId abstract.UserId, isDirect bool) (string, bool) {
 	const ok = true
-	if limit.CanSend(abstract.GetUserId(), "joke") {
+	if limit.CanSend(userId, "joke") {
 		if isDirect {
-			joke := jokes.Fetch(true)
+			joke := jokes.Fetch(userId, true)
 			return joke, ok
 		} else {
 			return "Tylko na priv.", !ok

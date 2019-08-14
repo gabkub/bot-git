@@ -22,7 +22,6 @@ var gifs = []string{
 func handleEvent(event *model.WebSocketEvent) {
 	// array of data from the event (user's message)
 	post := model.PostFromJson(strings.NewReader(event.Data["post"].(string)))
-	abstract.SetUserId(post.UserId)
 
 	// ignore messages that are:
 	// - empty
@@ -34,7 +33,7 @@ func handleEvent(event *model.WebSocketEvent) {
 		return
 	}
 	m := strings.TrimSpace(strings.TrimPrefix(post.Message, prefix))
-	sender := messageSender.New(post.ChannelId, getChannelType(post.ChannelId))
+	sender := messageSender.New(abstract.UserId(post.UserId), post.ChannelId, getChannelType(post.ChannelId))
 	handleMsg(m, sender)
 	logg.WriteToFile("Message sent.")
 }

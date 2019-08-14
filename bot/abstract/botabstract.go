@@ -35,22 +35,15 @@ type Handler interface {
 type MessageSender interface {
 	Send(*model.Post) *model.Post
 	IsDirectSend() bool
-}
-
-var userId string
-
-func GetUserId() string {
-	return userId
-}
-
-func SetUserId(id string) {
-	userId = id
+	GetUserId() UserId
 }
 
 type Image struct {
 	Header   string
 	ImageUrl string
 }
+
+type UserId string
 
 func NewImage(header, imageUrl string) *Image {
 	return &Image{Header: header, ImageUrl: imageUrl}

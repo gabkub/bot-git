@@ -23,8 +23,8 @@ type getJoke func() []string
 
 var jokeList []string
 
-func Fetch(hard bool) string {
-	limit.AddRequest(abstract.GetUserId(), "joke")
+func Fetch(userId abstract.UserId, hard bool) string {
+	limit.AddRequest(userId, "joke")
 	var jokeSources []getJoke
 
 	if hard {
