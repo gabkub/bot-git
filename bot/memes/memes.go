@@ -2,18 +2,18 @@ package memes
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/blacklists"
+	"bot-git/bot/blacklist"
 	"bot-git/bot/limit"
-	"fmt"
 	"math/rand"
-	"reflect"
-	"runtime"
 )
+
+var Blacklist = blacklist.New(20)
 
 type getMeme func() []abstract.Image
 
 var memeList []abstract.Image
 
+// TODO fix this
 func Fetch(userId abstract.UserId) abstract.Image {
 	limit.AddRequest(userId, "meme")
 	var memeFunction getMeme
@@ -26,7 +26,7 @@ func Fetch(userId abstract.UserId) abstract.Image {
 			memeList = memeFunction()
 		}
 		meme = getRandomMeme(memeList)
-		canReturn = handleBlacklist(memeFunction, meme.ImageUrl)
+		canReturn = handleBlacklist(&meme.ImageUrl)
 	}
 
 	return meme
@@ -36,25 +36,18 @@ func getRandomMeme(memeList []abstract.Image) abstract.Image {
 	return memeList[rand.Intn(len(memeList))]
 }
 
-func getFunctionName(functionReturningMeme getMeme) string {
-	return runtime.FuncForPC(reflect.ValueOf(functionReturningMeme).Pointer()).Name()
-}
-
-func handleBlacklist(functionReturningJoke getMeme, jokeReturned string) bool {
-	blacklist := blacklists.BlacklistsMap[fmt.Sprintf("%vBL", getFunctionName(functionReturningJoke))]
-
-	if blacklist.Contains(jokeReturned) {
-		removeFromMemeList(jokeReturned)
+func handleBlacklist(meme *string) bool {
+	isFresh := Blacklist.IsFresh(meme)
+	if !isFresh {
+		removeFromMemeList(meme)
 		return false
 	}
-
-	blacklist.AddElement(jokeReturned)
 	return true
 }
 
-func removeFromMemeList(meme string) {
+func removeFromMemeList(meme *string) {
 	for i, v := range memeList {
-		if v.ImageUrl == meme {
+		if v.ImageUrl == *meme {
 			memeList[i] = memeList[len(memeList)-1]
 			memeList = memeList[:len(memeList)-1]
 			return

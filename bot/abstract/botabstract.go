@@ -28,7 +28,6 @@ func NewHelp(short, long string) *Help {
 type Handler interface {
 	CanHandle(msg string) bool
 	Handle(msg string, sender MessageSender)
-	// TODO GetHelp not used but should be
 	GetHelp() *Help
 }
 

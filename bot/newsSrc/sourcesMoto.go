@@ -1,8 +1,6 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
-	"bot-git/bot/blacklists"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -13,29 +11,26 @@ var GetMoto = []newsAbstract.GetNews{
 	motoAutoCentrum,
 }
 
-var MotoPage = map[string]int{
-	"AutoCentrum": 0,
-	"Moto":        0,
-}
-
-func motoAutoCentrum() []*newsAbstract.News {
-	blacklists.New("motoAutoCentrumBL")
-	MotoPage["AutoCentrum"]++
-	var news []*newsAbstract.News
-
-	div := contentFetcher.Fetch(fmt.Sprintf("https://www.autocentrum.pl/newsy/strona-%v/", MotoPage["AutoCentrum"]), "div.ac-article-wrapper")
-	div.Each(func(i int, s *goquery.Selection) {
-		image, _ := s.Find("a > div.photo > picture > img.img-responsive").Attr("src")
-		text, _ := s.Find("a > div.photo > picture > img.img-responsive").Attr("alt")
+func motoAutoCentrum() (*newsAbstract.News, bool) {
+	fetch := func(page int) *goquery.Selection {
+		return contentFetcher.Fetch(fmt.Sprintf("https://www.autocentrum.pl/newsy/strona-%v/", page), "div.ac-article-wrapper")
+	}
+	link := func(s *goquery.Selection) string {
 		textLink, _ := s.Find("a.news-box").Attr("href")
-		link := fmt.Sprintf("https://www.autocentrum.pl%v", textLink)
-		img := abstract.NewImage(text, fmt.Sprintf("https://www.autocentrum.pl%v", image))
-		temp := newsAbstract.NewNews(link, img)
-		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
-			news = append(news, temp)
-		}
-	})
-	return news
+		return fmt.Sprintf("https://www.autocentrum.pl%v", textLink)
+	}
+	imgSel := func(s *goquery.Selection) string {
+		image, _ := s.Find("a > div.photo > picture > img.img-responsive").Attr("src")
+		return fmt.Sprintf("https://www.autocentrum.pl%v", image)
+	}
+
+	imgTextSel := func(s *goquery.Selection) string {
+		text, _ := s.Find("a > div.photo > picture > img.img-responsive").Attr("alt")
+		return text
+	}
+
+	sel := newSelectors(link, imgSel, imgTextSel)
+	return getFreshNews(fetch, 5, sel)
 }
 
 // Todo source not used probable scraping needs tuning

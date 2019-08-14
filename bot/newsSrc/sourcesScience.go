@@ -1,8 +1,6 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
-	"bot-git/bot/blacklists"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -19,28 +17,27 @@ var SciencePage = map[string]int{
 	"Przystanek": -1,
 }
 
-func scienceSpider() []*newsAbstract.News {
-	blacklists.New("scienceSpiderBL")
-	SciencePage["Spider"]++
-	return getSpider("nauka", SciencePage["Spider"])
+func scienceSpider() (*newsAbstract.News, bool) {
+	return getSpider("nauka")
 }
 
-func sciencePrzystanek() []*newsAbstract.News {
-	blacklists.New("sciencePrzystanekBL")
-	SciencePage["Przystanek"]++
-	var news []*newsAbstract.News
-
-	div := contentFetcher.Fetch(fmt.Sprintf("http://przystaneknauka.us.edu.pl/news?page=%v", SciencePage["Przystanek"]), "div.views-row")
-	div.Each(func(i int, s *goquery.Selection) {
-		image, _ := s.Find("a > img").Attr("src")
-		text := s.Find("h3.title").Text()
+func sciencePrzystanek() (*newsAbstract.News, bool) {
+	fetch := func(page int) *goquery.Selection {
+		return contentFetcher.Fetch(fmt.Sprintf("http://przystaneknauka.us.edu.pl/news?page=%v", SciencePage["Przystanek"]), "div.views-row")
+	}
+	link := func(s *goquery.Selection) string {
 		textLink, _ := s.Find("h3.title > a").Attr("href")
-		link := fmt.Sprintf("http://przystaneknauka.us.edu.pl%v", textLink)
-		img := abstract.NewImage(text, image)
-		temp := newsAbstract.NewNews(link, img)
-		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
-			news = append(news, temp)
-		}
-	})
-	return news
+		return fmt.Sprintf("http://przystaneknauka.us.edu.pl%v", textLink)
+	}
+	imgSel := func(s *goquery.Selection) string {
+		image, _ := s.Find("a > img").Attr("src")
+		return image
+	}
+
+	imgTextSel := func(s *goquery.Selection) string {
+		return s.Find("h3.title").Text()
+	}
+
+	sel := newSelectors(link, imgSel, imgTextSel)
+	return getFreshNews(fetch, 5, sel)
 }

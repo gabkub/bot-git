@@ -1,34 +1,31 @@
 package jokes
 
 import (
-	"bot-git/bot/blacklists"
+	"bot-git/bot/blacklist"
 	"bot-git/contentFetcher"
 	"fmt"
 )
 
-//var jokersEn = []getJoke{}
+var EnglishJokesBlacklist = blacklist.New(30)
 var jokersEn = []getJoke{
 	iCanHazDadJoke,
 	rd,
 }
 
-var countersEn = map[string]int{
-	"rd": 1,
-}
-
-func iCanHazDadJoke() []string {
-	blacklists.New("DadJokeBL")
-	var jokes []string
+func iCanHazDadJoke() (*string, bool) {
+	var jokes []*string
 	for i := 0; i < 10; i++ {
 		div := contentFetcher.Fetch("https://icanhazdadjoke.com/", "div.card-content p")
 		jokes = append(jokes, getJokesList(div)[0])
 	}
-	return jokes
+	return getFreshJoke(jokes, EnglishJokesBlacklist)
 }
 
-func rd() []string {
-	blacklists.New("rdBL")
-	div := contentFetcher.Fetch(fmt.Sprintf("https://www.rd.com/jokes/page/%v/", countersEn["rd"]), "div.excerpt-wrapper")
-	countersEn["rd"]++
+func rd() (*string, bool) {
+	return getFreshForFetcher(fetchRd, 3, EnglishJokesBlacklist)
+}
+
+func fetchRd(page int) []*string {
+	div := contentFetcher.Fetch(fmt.Sprintf("https://www.rd.com/jokes/page/%v/", page), "div.excerpt-wrapper")
 	return getJokesList(div)
 }

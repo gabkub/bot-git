@@ -1,8 +1,6 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
-	"bot-git/bot/blacklists"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -19,27 +17,27 @@ var VoyagePage = map[string]int{
 	"MlecznePodroze": 0,
 }
 
-func voyageSpider() []*newsAbstract.News {
-	blacklists.New("voyageSpiderBL")
-	VoyagePage["Spider"]++
-	return getSpider("podroze", VoyagePage["Spider"])
+func voyageSpider() (*newsAbstract.News, bool) {
+	return getSpider("podroze")
 }
 
-func voyageMlecznePodroze() []*newsAbstract.News {
-	blacklists.New("voyageMlecznePodrozeBL")
-	VoyagePage["MlecznePodroze"]++
-	var news []*newsAbstract.News
-	div := contentFetcher.Fetch(fmt.Sprintf("https://mlecznepodroze.pl/tag/news/page/%v/", VoyagePage["MlecznePodroze"]), "div.primary-post-content")
-	div.Each(func(i int, s *goquery.Selection) {
-		image, _ := s.Find("div.picture > div.picture-content > a > img").Attr("src")
-		text, _ := s.Find("div.picture > div.picture-content > a").Attr("title")
+func voyageMlecznePodroze() (*newsAbstract.News, bool) {
+	fetch := func(page int) *goquery.Selection {
+		return contentFetcher.Fetch(fmt.Sprintf("https://mlecznepodroze.pl/tag/news/page/%v/", VoyagePage["MlecznePodroze"]), "div.primary-post-content")
+	}
+	link := func(s *goquery.Selection) string {
 		textLink, _ := s.Find("div.picture > div.picture-content > a").Attr("href")
-		img := abstract.NewImage(text, image)
-		temp := newsAbstract.NewNews(textLink, img)
+		return textLink
+	}
+	imgSel := func(s *goquery.Selection) string {
+		image, _ := s.Find("div.picture > div.picture-content > a > img").Attr("src")
+		return image
+	}
 
-		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
-			news = append(news, temp)
-		}
-	})
-	return news
+	imgTextSel := func(s *goquery.Selection) string {
+		text, _ := s.Find("div.picture > div.picture-content > a").Attr("title")
+		return text
+	}
+	sel := newSelectors(link, imgSel, imgTextSel)
+	return getFreshNews(fetch, 5, sel)
 }

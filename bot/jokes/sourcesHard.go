@@ -1,19 +1,18 @@
 package jokes
 
 import (
-	"bot-git/bot/blacklists"
+	"bot-git/bot/blacklist"
 	"bot-git/contentFetcher"
 )
+
+var HardBlacklist = blacklist.New(30)
 
 var jokersHard = []getJoke{
 	suchary,
 }
 
-var countersHard = map[string]int{}
-
-func suchary() []string {
-	blacklists.New("sucharyBL")
+func suchary() (*string, bool) {
 	div := contentFetcher.Fetch("http://suchary.jakubchmura.pl/obcy/random/", "div.panel-body p")
-	countersHard["suchary"]++
-	return getJokesList(div)
+	jokes := getJokesList(div)
+	return getFreshJoke(jokes, HardBlacklist)
 }

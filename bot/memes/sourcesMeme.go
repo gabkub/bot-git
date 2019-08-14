@@ -2,7 +2,6 @@ package memes
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/blacklists"
 	"bot-git/contentFetcher"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
@@ -16,7 +15,6 @@ var countMemedroid = 1
 
 func memedroid() []abstract.Image {
 
-	blacklists.New("getMemedroidBL")
 	var memes []abstract.Image
 
 	div := contentFetcher.Fetch(fmt.Sprintf("https://www.memedroid.com/memes/top/week/%v", countMemedroid), "article.gallery-item")

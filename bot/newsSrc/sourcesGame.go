@@ -1,44 +1,46 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
-	"bot-git/bot/blacklists"
+	"bot-git/bot/blacklist"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 )
 
+var newsBlacklist = blacklist.New(10)
+
+func Clean() {
+	newsBlacklist.Clean()
+}
+
 var GetGame = []newsAbstract.GetNews{
 	gameSpider, gamePPE,
 }
 
-var GamePage = map[string]int{
-	"Spider": 0,
-	"PPE":    0,
+func gameSpider() (*newsAbstract.News, bool) {
+	return getSpider("gry")
 }
 
-func gameSpider() []*newsAbstract.News {
-	blacklists.New("gameSpiderBL")
-	GamePage["Spider"]++
-	return getSpider("gry", GamePage["Spider"])
-}
+func gamePPE() (*newsAbstract.News, bool) {
 
-func gamePPE() []*newsAbstract.News {
-	blacklists.New("gamePPEBL")
-	var messagesToReturn []*newsAbstract.News
-
-	div := contentFetcher.Fetch(fmt.Sprintf("https://www.ppe.pl/news/news.html?page=%v", GamePage["PPE"]), "div.box")
-	div.Each(func(i int, s *goquery.Selection) {
-		image, _ := s.Find("div.txt div.image_big > a.imgholder > img.imgholderimg").Attr("src")
-		text, _ := s.Find("div.txt div.image_big > a.imgholder > img.imgholderimg").Attr("alt")
+	linkBuilder := func(s *goquery.Selection) string {
 		titleLink, _ := s.Find("div.txt > div.image_big > a.imgholder").Attr("href")
-		link := fmt.Sprintf("https://www.ppe.pl%v", titleLink)
-		img := abstract.NewImage(text, image)
-		message := newsAbstract.NewNews(link, img)
-		if !message.Img.IsEmpty() && message.TitleLink != "" {
-			messagesToReturn = append(messagesToReturn, message)
-		}
-	})
-	return messagesToReturn
+		return fmt.Sprintf("https://www.ppe.pl%v", titleLink)
+	}
+
+	fetch := func(page int) *goquery.Selection {
+		return contentFetcher.Fetch(fmt.Sprintf("https://www.ppe.pl/news/news.html?page=%v", page), "div.box")
+	}
+
+	imgSel := func(s *goquery.Selection) string {
+		i, _ := s.Find("div.txt div.image_big > a.imgholder > img.imgholderimg").Attr("src")
+		return i
+	}
+	imgTextSel := func(s *goquery.Selection) string {
+		t, _ := s.Find("div.txt div.image_big > a.imgholder > img.imgholderimg").Attr("alt")
+		return t
+	}
+	sel := newSelectors(linkBuilder, imgSel, imgTextSel)
+	return getFreshNews(fetch, 5, sel)
 }

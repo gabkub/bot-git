@@ -2,14 +2,11 @@ package news
 
 import (
 	"bot-git/bot/abstract"
-	"bot-git/bot/blacklists"
 	"bot-git/bot/newsSrc"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/messageBuilders"
 	"fmt"
 	"math/rand"
-	"reflect"
-	"runtime"
 	"strings"
 )
 
@@ -17,7 +14,6 @@ type news struct {
 }
 
 var commands abstract.ReactForMsgs = []string{"news"}
-var resultsNews = make(map[string][]*newsAbstract.News)
 
 func New() *news {
 	return &news{}
@@ -27,81 +23,51 @@ func (n *news) CanHandle(msg string) bool {
 	return commands.ContainsMessage(msg)
 }
 
+var newsFeedsMap = map[string][]newsAbstract.GetNews{
+	"games":   newsSrc.GetGame,
+	"gry":     newsSrc.GetGame,
+	"media":   newsSrc.GetMedia,
+	"science": newsSrc.GetScience,
+	"nauka":   newsSrc.GetScience,
+	"tech":    newsSrc.GetTech,
+	"news":    newsSrc.GetTech,
+	"travel":  newsSrc.GetVoyage,
+	"podróże": newsSrc.GetVoyage,
+	"moto":    newsSrc.GetMoto,
+}
+
 func (n *news) Handle(msg string, sender abstract.MessageSender) {
 	msgSplit := strings.Split(msg, " ")
 	cat := msgSplit[len(msgSplit)-1]
-	var newsFunction newsAbstract.GetNews
-	switch cat {
-	case "games":
-		newsFunction = newsSrc.GetGame[rand.Intn(len(newsSrc.GetGame))]
-	case "gry":
-		newsFunction = newsSrc.GetGame[rand.Intn(len(newsSrc.GetGame))]
-	case "media":
-		newsFunction = newsSrc.GetMedia[rand.Intn(len(newsSrc.GetMedia))]
-	case "science":
-		newsFunction = newsSrc.GetScience[rand.Intn(len(newsSrc.GetScience))]
-	case "nauka":
-		newsFunction = newsSrc.GetScience[rand.Intn(len(newsSrc.GetScience))]
-	case "tech":
-		newsFunction = newsSrc.GetTech[rand.Intn(len(newsSrc.GetTech))]
-	case "news":
-		newsFunction = newsSrc.GetTech[rand.Intn(len(newsSrc.GetTech))]
-	case "travel":
-		newsFunction = newsSrc.GetVoyage[rand.Intn(len(newsSrc.GetVoyage))]
-	case "podróże":
-		newsFunction = newsSrc.GetVoyage[rand.Intn(len(newsSrc.GetVoyage))]
-	case "moto":
-		newsFunction = newsSrc.GetMoto[(rand.Intn(len(newsSrc.GetMoto)))]
-	}
 
-	if newsFunction == nil {
-		newsFunction = newsSrc.GetTech[rand.Intn(len(newsSrc.GetTech))]
-	}
+	news := getFreshNews(cat)
 
-	functionName := getFunctionName(newsFunction)
-	canReturn := false
-	var news *newsAbstract.News
-	for canReturn == false {
-		if len(resultsNews[functionName]) == 0 {
-			resultsNews[functionName] = newsFunction()
-		}
-		news = getRandomNews(functionName)
-		canReturn = handleBlacklist(newsFunction, news)
-	}
 	sender.Send(messageBuilders.News(news))
 }
-func getRandomNews(mapName string) *newsAbstract.News {
-	result := resultsNews[mapName][rand.Intn(len(resultsNews[mapName]))]
-	removeFromNewsList(result)
 
-	return result
-}
-
-func getFunctionName(functionReturningNews newsAbstract.GetNews) string {
-	return runtime.FuncForPC(reflect.ValueOf(functionReturningNews).Pointer()).Name()
-}
-
-func handleBlacklist(functionReturningNews newsAbstract.GetNews, newsReturned *newsAbstract.News) bool {
-	blacklist := blacklists.BlacklistsMap[fmt.Sprintf("%vBL", getFunctionName(functionReturningNews))]
-
-	if blacklist.Contains(newsReturned.TitleLink) {
-		removeFromNewsList(newsReturned)
-		return false
+func getFreshNews(cat string) *newsAbstract.News {
+	newsFunctions, ok := newsFeedsMap[cat]
+	if !ok {
+		newsFunctions = newsSrc.GetTech
 	}
 
-	blacklist.AddElement(newsReturned.TitleLink)
-	return true
-}
+	tmp := make([]newsAbstract.GetNews, len(newsFunctions))
+	copy(tmp, newsFunctions)
 
-func removeFromNewsList(news *newsAbstract.News) {
-	for k, v := range resultsNews {
-		for i, value := range v {
-			if value.TitleLink == news.TitleLink {
-				v[i] = v[len(v)-1]
-				v = v[:len(v)-1]
-				resultsNews[k] = v
-				return
-			}
+	for len(tmp) > 0 {
+		i := rand.Intn(len(tmp))
+		getNews := tmp[i]
+		n, ok := getNews()
+		if ok {
+			return n
 		}
+		tmp = append(tmp[:i], tmp[i+1:]...)
 	}
+	return notFoundNews(cat)
+}
+
+func notFoundNews(cat string) *newsAbstract.News {
+	text := fmt.Sprintf("Nie mam nic nowego w katergori: _%s_", cat)
+	img := abstract.NewImage(text, "https://png.pngtree.com/svg/20170217/7c2ce8d09c.svg")
+	return newsAbstract.NewNews(text, img)
 }

@@ -1,8 +1,6 @@
 package newsSrc
 
 import (
-	"bot-git/bot/abstract"
-	"bot-git/bot/blacklists"
 	"bot-git/bot/newsSrc/newsAbstract"
 	"bot-git/contentFetcher"
 	"fmt"
@@ -21,33 +19,31 @@ var TechPage = map[string]int{
 	"WirtualneMedia": 0,
 }
 
-func techSpider() []*newsAbstract.News {
-	blacklists.New("techSpiderBL")
-	TechPage["Spider"]++
-	return getSpider("nowe-technologie", TechPage["Spider"])
+func techSpider() (*newsAbstract.News, bool) {
+	return getSpider("nowe-technologie")
 }
 
-func techWirtualneMedia() []*newsAbstract.News {
-	blacklists.New("techWirtualneMediaBL")
-	TechPage["WirtualneMedia"]++
-	return getWirtualneMedia("technologie", TechPage["WirtualneMedia"])
+func techWirtualneMedia() (*newsAbstract.News, bool) {
+	return getWirtualneMedia("technologie")
 }
 
-func techComputerWorld() []*newsAbstract.News {
-	blacklists.New("techComputerWorldBL")
-	TechPage["ComputerWorld"]++
-	var news []*newsAbstract.News
-	div := contentFetcher.Fetch(fmt.Sprintf("https://www.computerworld.pl/news/archiwum-%v.html", TechPage["ComputerWorld"]), "div.row-list-item")
-	div.Each(func(i int, s *goquery.Selection) {
-		image, _ := s.Find("div.row-item-icon > a > figure.frame-responsive img.img-responsive").Attr("src")
-		text := s.Find("div.col-lg-9 > a > span.title").Text()
+func techComputerWorld() (*newsAbstract.News, bool) {
+	fetch := func(page int) *goquery.Selection {
+		return contentFetcher.Fetch(fmt.Sprintf("https://www.computerworld.pl/news/archiwum-%v.html", TechPage["ComputerWorld"]), "div.row-list-item")
+	}
+	link := func(s *goquery.Selection) string {
 		textLink, _ := s.Find("div.row-item-icon > a").Attr("href")
-		link := fmt.Sprintf("https://www.computerworld.pl/%v", textLink)
-		img := abstract.NewImage(text, image)
-		temp := newsAbstract.NewNews(link, img)
-		if !temp.Img.IsEmpty() && temp.TitleLink != "" {
-			news = append(news, temp)
-		}
-	})
-	return news
+		return fmt.Sprintf("https://www.computerworld.pl/%v", textLink)
+	}
+	imgSel := func(s *goquery.Selection) string {
+		image, _ := s.Find("div.row-item-icon > a > figure.frame-responsive img.img-responsive").Attr("src")
+		return image
+	}
+
+	imgTextSel := func(s *goquery.Selection) string {
+		return s.Find("div.col-lg-9 > a > span.title").Text()
+	}
+
+	sel := newSelectors(link, imgSel, imgTextSel)
+	return getFreshNews(fetch, 5, sel)
 }

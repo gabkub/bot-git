@@ -1,8 +1,10 @@
 package newsAbstract
 
-import "bot-git/bot/abstract"
+import (
+	"bot-git/bot/abstract"
+)
 
-type GetNews func() []*News
+type GetNews func() (*News, bool)
 
 type News struct {
 	TitleLink string

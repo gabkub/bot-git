@@ -8,7 +8,9 @@ import (
 	"bot-git/schedule"
 	"github.com/mattermost/mattermost-server/model"
 	"log"
+	"math/rand"
 	"sync"
+	"time"
 )
 
 var mux = &sync.Mutex{}
@@ -17,6 +19,7 @@ func Start() {
 
 	logg.WriteToFile("Bot has started.")
 	log.Println("Bot has started.")
+	seedRand()
 
 	helpHandler.Init(handlers)
 
@@ -46,6 +49,10 @@ func Start() {
 	}()
 	// block to the go function
 	select {}
+}
+
+func seedRand() {
+	rand.Seed(time.Now().UnixNano())
 }
 
 func isMessage(eventType string) bool {
