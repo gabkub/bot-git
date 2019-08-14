@@ -26,12 +26,7 @@ func Start() {
 }
 
 func resetRequests() {
-	for _, user := range limit.Users {
-		for _, userLimit := range user {
-			userLimit.Count = 0
-			userLimit.LimitReached = false
-		}
-	}
+	limit.Reset()
 }
 
 var pagesList = []map[string]int{

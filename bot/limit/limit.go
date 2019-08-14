@@ -10,12 +10,11 @@ import (
 
 const maxRequestsMorning = 3
 
-type Limitation struct {
-	Count        int
-	LimitReached bool
+type limitation struct {
+	count int
 }
 
-var Users map[abstract.UserId]map[string]*Limitation
+var users map[abstract.UserId]map[string]*limitation
 
 func getTeamId() string {
 	team, resp := config.ConnectionCfg.Client.GetTeamByName(config.BotCfg.TeamName, "")
@@ -25,33 +24,30 @@ func getTeamId() string {
 	return team.Id
 }
 
-func SetUsersList() {
+func setUsersList() {
 	teamMembers, resp := config.ConnectionCfg.Client.GetTeamMembers(getTeamId(), 0, 150, "")
 	if resp.Error != nil {
 		logg.WriteToFile("Error while getting team members'. Details: " + resp.Error.DetailedError)
 	}
 
-	Users = make(map[abstract.UserId]map[string]*Limitation)
+	users = make(map[abstract.UserId]map[string]*limitation)
 
 	for _, user := range teamMembers {
-		Users[abstract.UserId(user.UserId)] = map[string]*Limitation{
-			"joke": {0, false},
-			"meme": {0, false},
+		users[abstract.UserId(user.UserId)] = map[string]*limitation{
+			"joke": {0},
+			"meme": {0},
 		}
 	}
 }
 
 func AddRequest(userId abstract.UserId, command string) {
-	limit := Users[userId][command]
-	limit.Count++
-	limit.LimitReached = mustBlock(*limit)
-	Users[userId][command] = limit
+	users[userId][command].count++
 }
 
-func mustBlock(limit Limitation) bool {
+func (l *limitation) LimitReached() bool {
 	hour := time.Now().Hour()
 	if hour >= 7 && hour < 9 {
-		if limit.Count >= maxRequestsMorning {
+		if l.count >= maxRequestsMorning {
 			return true
 		}
 	}
@@ -62,5 +58,19 @@ func mustBlock(limit Limitation) bool {
 }
 
 func CanSend(userId abstract.UserId, command string) bool {
-	return !Users[userId][command].LimitReached
+	return !users[userId][command].LimitReached()
+}
+
+func Reset() {
+	for _, user := range users {
+		for _, userLimit := range user {
+			userLimit.count = 0
+		}
+	}
+}
+
+func InitUser() {
+	if users == nil {
+		setUsersList()
+	}
 }

@@ -27,9 +27,7 @@ func Connect() {
 	loginAsTheBotUser()
 	setBotTeam()
 
-	if limit.Users == nil {
-		limit.SetUsersList()
-	}
+	limit.InitUser()
 
 	connectWebsocket()
 	Websocket.Listen()
