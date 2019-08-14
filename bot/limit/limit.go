@@ -9,6 +9,7 @@ import (
 )
 
 const maxRequestsMorning = 3
+const maxRequestsDuringDay = 1
 
 type limitation struct {
 	count int
@@ -52,7 +53,7 @@ func (l *limitation) LimitReached() bool {
 		}
 	}
 	if hour >= 9 && hour < 15 {
-		return true
+		return l.count >= maxRequestsDuringDay
 	}
 	return false
 }
