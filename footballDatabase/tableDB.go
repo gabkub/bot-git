@@ -16,6 +16,8 @@ type TimeReservation struct {
 	EndTime   string
 }
 
+const gameDuration = 20
+
 func CreateTableDB() {
 	db, err := bolt.Open("./footballTable.db", 0600, nil)
 	if err != nil {
@@ -115,11 +117,11 @@ func GetAllReservationByStartTime(startTime time.Time) []TimeReservation {
 		searchingError := bucket.ForEach(func(start, username []byte) error {
 
 			if strings.Compare(startTimeAsString, string(start)) == -1 ||
-				strings.Compare(startTimeAsString, TimeToString(convertStringToTime(string(start)).Add(time.Minute*20))) == -1 {
+				strings.Compare(startTimeAsString, TimeToString(convertStringToTime(string(start)).Add(time.Minute*gameDuration))) == -1 {
 				reservation := TimeReservation{
 					UserName:  string(username),
 					StartTime: string(start),
-					EndTime:   TimeToString(convertStringToTime(string(start)).Add(time.Minute * 20)),
+					EndTime:   TimeToString(convertStringToTime(string(start)).Add(time.Minute * gameDuration)),
 				}
 				reservations = append(reservations, reservation)
 				return nil
@@ -155,7 +157,7 @@ func FreeReservation(paramTime time.Time) time.Time {
 		}
 		timeStamp := convertStringToTime(reservation.StartTime).Sub(convertStringToTime(TimeToString(paramTime))).Minutes()
 
-		if timeStamp < 20 {
+		if timeStamp < gameDuration {
 			return time.Time{}
 		}
 	}
@@ -167,7 +169,7 @@ func FreeReservation(paramTime time.Time) time.Time {
 		if lastEndTimeReservation != "" {
 			timeStamp := convertStringToTime(reservation.StartTime).Sub(convertStringToTime(lastEndTimeReservation)).Minutes()
 
-			if timeStamp >= 20 {
+			if timeStamp >= gameDuration {
 				return convertStringToTime(lastEndTimeReservation)
 			}
 		}
@@ -176,7 +178,7 @@ func FreeReservation(paramTime time.Time) time.Time {
 
 	timeStamp := convertStringToTime(lastEndTimeReservation).Sub(convertStringToTime(paramTimeAsString)).Minutes()
 
-	if timeStamp >= 20 {
+	if timeStamp >= gameDuration {
 		return paramTime
 	}
 
