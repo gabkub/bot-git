@@ -12,10 +12,13 @@ import (
 	"bot-git/bot/commands/news"
 	"bot-git/bot/commands/suchar"
 	"bot-git/bot/commands/version"
+	"bot-git/footballDatabase"
 )
 
 var handlers = []abstract.Handler{alive.New(), hello.New(), helpHandler, defaultCommand,
-	version.New(), meme.New(), suchar.New(), football.New(), news.New(),
+	version.New(), meme.New(), suchar.New(),
+	football.New(footballDatabase.NewFootballDb("./footballTable.db")),
+	news.New(),
 	hardJoke.New(),
 }
 

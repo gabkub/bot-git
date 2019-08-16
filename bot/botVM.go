@@ -2,7 +2,6 @@ package bot
 
 import (
 	"bot-git/config"
-	"bot-git/footballDatabase"
 	"bot-git/logg"
 	"bot-git/main/connection"
 	"bot-git/schedule"
@@ -25,7 +24,6 @@ func Start() {
 
 	go func() {
 		schedule.Start()
-		footballDatabase.CreateTableDB()
 		for {
 			select {
 

@@ -5,53 +5,55 @@ import (
 	"fmt"
 	bolt "go.etcd.io/bbolt"
 	"log"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
 
-type TimeReservation struct {
-	UserName  string
-	StartTime string
-	EndTime   string
+var bucketName = []byte("RESERVATION")
+
+type FootballDb struct {
+	dbPath string
 }
 
-const gameDuration = 20
+func NewFootballDb(dbPath string) *FootballDb {
+	db := &FootballDb{dbPath: dbPath}
+	db.createTableDB()
+	return db
+}
 
-func CreateTableDB() {
-	db, err := bolt.Open("./footballTable.db", 0600, nil)
-	if err != nil {
-		logg.WriteToFile("Error opening or creating database.")
-		log.Fatal("Error opening or creating database.")
+func (f *FootballDb) readDb(function func(b *bolt.Bucket) error) {
+	db := f.openDb(true)
+	if db == nil {
+		return
 	}
-
 	defer db.Close()
-
-	createError := db.Update(func(tx *bolt.Tx) error {
-		_, err = tx.CreateBucketIfNotExists([]byte(strings.TrimSpace("RESERVATION")))
-
-		if err != nil {
-			return fmt.Errorf("create bucket error: %s", err)
-		}
-
-		return nil
+	viewError := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(bucketName)
+		return function(b)
 	})
-
-	if createError != nil {
-		logg.WriteToFile("Error creating the table. " + createError.Error())
-		log.Println("Error creating the table. " + createError.Error())
+	if viewError != nil {
+		log.Println(viewError)
 	}
-	logg.WriteToFile("Created database table for booking.")
 }
-func SetReservation(userName string, startTime time.Time) bool {
+func (f *FootballDb) writeDb(function func(b *bolt.Bucket) error) {
+	db := f.openDb(false)
+	if db == nil {
+		return
+	}
+	defer db.Close()
+	updateError := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket(bucketName)
+		return function(b)
+	})
+	if updateError != nil {
+		log.Fatal(fmt.Sprintf("Unable to update. Error: %s", updateError))
+	}
+}
 
-	tempTime := TimeToString(roundToMinute(startTime))
-	//if TimeToString(roundToMinute(time.Now())) > tempTime{
-	//	return
-	//}
-
-	db, err := bolt.Open("./footballTable.db", 0600, &bolt.Options{ReadOnly: false, Timeout: 1 * time.Second})
-
+func (f *FootballDb) openDb(readOnly bool) *bolt.DB {
+	db, err := bolt.Open(f.dbPath, 0600, &bolt.Options{ReadOnly: readOnly})
 	if err != nil {
 		if err.Error() == "timeout" {
 			log.Fatal("Database already opened.")
@@ -59,130 +61,124 @@ func SetReservation(userName string, startTime time.Time) bool {
 			log.Fatal("Error opening the database. " + err.Error())
 		}
 	}
+	return db
+}
 
+func (f *FootballDb) createTableDB() {
+	db, err := bolt.Open(f.dbPath, 0600, nil)
+	if err != nil {
+		logg.WriteToFile("Error opening or creating database.")
+		log.Fatal("Error opening or creating database.")
+	}
 	defer db.Close()
 
-	canAddUser := true
+	createError := db.Update(func(tx *bolt.Tx) error {
+		_, err = tx.CreateBucketIfNotExists(bucketName)
+		if err != nil {
+			return fmt.Errorf("create bucket error: %s", err)
+		}
+		return nil
+	})
+	if createError != nil {
+		logg.WriteToFile("Error creating the table. " + createError.Error())
+		log.Println("Error creating the table. " + createError.Error())
+	}
+	logg.WriteToFile("Created database table for booking.")
+}
 
-	viewError := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte(strings.TrimSpace("RESERVATION")))
+func (f *FootballDb) IsBooked(newResUserName string, newResStartTime NormalizeDate) bool {
+	var result bool
+
+	f.readDb(func(b *bolt.Bucket) error {
 		err := b.ForEach(func(start, user []byte) error {
-			year, month, day := convertStringToTime(string(start)).Date()
-
-			if year == startTime.Year() && month == startTime.Month() && day == startTime.Day() {
-				if userName == string(user) {
-					canAddUser = false
-					//limit.AddRequest()
-				}
+			resStart := convertToTime(start)
+			if userAlreadyBookedToday(resStart, newResStartTime, string(user), newResUserName) {
+				result = true
 			}
 			return nil
-
 		})
-
 		if err != nil {
 			log.Println(err)
 		}
 		return nil
 	})
-
-	if viewError != nil {
-		log.Println(viewError)
-	}
-
-	if canAddUser {
-		updateError := db.Update(func(tx *bolt.Tx) error {
-			b := tx.Bucket([]byte(strings.TrimSpace("RESERVATION")))
-
-			err := b.Put([]byte(strings.TrimSpace(tempTime)), []byte(strings.TrimSpace(userName)))
-			return err
-		})
-
-		if updateError != nil {
-			log.Fatal(fmt.Sprintf("Unable to update. Error: %s", updateError))
-		}
-	}
-	return canAddUser
+	return result
 }
-func GetAllReservationByStartTime(startTime time.Time) []TimeReservation {
-	db, _ := bolt.Open("footballTable.db", 0600, &bolt.Options{ReadOnly: true})
 
-	defer db.Close()
+func (f *FootballDb) SetReservation(newResUserName string, newResStartTime NormalizeDate) {
+	tempTime := timeToString(newResStartTime)
+	f.writeDb(func(b *bolt.Bucket) error {
+		return addNewReservation(tempTime, newResUserName, b)
+	})
+}
 
-	startTime = roundToMinute(startTime)
-	startTimeAsString := TimeToString(startTime)
-	var reservations []TimeReservation
-	err := db.View(func(tx *bolt.Tx) error {
-		bucket := tx.Bucket([]byte("RESERVATION"))
+func userAlreadyBookedToday(start NormalizeDate, newResStart NormalizeDate, userName, newResUserName string) bool {
+	year, month, day := start.Date()
+	return year == newResStart.Year() && month == newResStart.Month() &&
+		day == newResStart.Day() && userName == newResUserName
+}
 
-		searchingError := bucket.ForEach(func(start, username []byte) error {
-
-			if strings.Compare(startTimeAsString, string(start)) == -1 ||
-				strings.Compare(startTimeAsString, TimeToString(convertStringToTime(string(start)).Add(time.Minute*gameDuration))) == -1 {
-				reservation := TimeReservation{
+func addNewReservation(tempTime, userName string, b *bolt.Bucket) error {
+	return b.Put([]byte(strings.TrimSpace(tempTime)), []byte(strings.TrimSpace(userName)))
+}
+func (f *FootballDb) GetAllReservationByStartTime(startTime NormalizeDate) TimeReservations {
+	var reservations TimeReservations
+	f.readDb(func(b *bolt.Bucket) error {
+		searchingError := b.ForEach(func(start, username []byte) error {
+			dbResStart := convertToTime(start)
+			if isReservationAfterSearchingDate(dbResStart, startTime) {
+				reservation := &TimeReservation{
 					UserName:  string(username),
-					StartTime: string(start),
-					EndTime:   TimeToString(convertStringToTime(string(start)).Add(time.Minute * gameDuration)),
+					StartTime: dbResStart.Raw(),
 				}
 				reservations = append(reservations, reservation)
 				return nil
 			}
 			return nil
 		})
-
 		if searchingError != nil {
 			return searchingError
 		}
-
 		return nil
 	})
-
-	if err != nil {
-		logg.WriteToFile("Error reading the football reservations. " + err.Error())
-		log.Println("Error reading the football reservations. " + err.Error())
-	}
-
+	sort.Sort(reservations)
 	return reservations
 }
-func FreeReservation(paramTime time.Time) time.Time {
-	reservations := GetAllReservationByStartTime(paramTime)
-	paramTimeAsString := TimeToString(paramTime)
+func isReservationAfterSearchingDate(dbResStart, startTime NormalizeDate) bool {
+	endTime := dbResStart.Add(gameDuration)
+	return startTime.Equal(dbResStart.Raw()) || dbResStart.After(startTime.Raw()) ||
+		endTime.Equal(startTime.Raw()) || endTime.After(startTime.Raw())
+}
 
+func (f *FootballDb) IsFree(paramTime NormalizeDate) bool {
+	const isFree = true
+	possibleEndTime := NewNormalizeDate(paramTime.Add(gameDuration))
+	reservations := f.GetAllReservationByStartTime(paramTime)
+	for _, reservation := range reservations {
+		if reservation.IsBetween(paramTime) || reservation.IsBetween(possibleEndTime) {
+			return !isFree
+		}
+	}
+	return isFree
+}
+
+func (f *FootballDb) FirstFreeTimeFor(paramTime NormalizeDate) time.Time {
+	reservations := f.GetAllReservationByStartTime(paramTime)
 	if len(reservations) == 0 {
-		return paramTime
+		return paramTime.Raw()
 	}
-
-	for _, reservation := range reservations {
-		if reservation.StartTime <= paramTimeAsString && paramTimeAsString <= reservation.EndTime {
-			continue
+	if len(reservations) == 1 {
+		return reservations[0].EndTime()
+	}
+	for i := 1; i < len(reservations); i++ {
+		previousEnd := reservations[i-1].EndTime()
+		currentStart := reservations[i].StartTime
+		span := currentStart.Sub(previousEnd)
+		if span == gameDuration || span > gameDuration {
+			return previousEnd
 		}
-		timeStamp := convertStringToTime(reservation.StartTime).Sub(convertStringToTime(TimeToString(paramTime))).Minutes()
-
-		if timeStamp < gameDuration {
-			return time.Time{}
-		}
 	}
-
-	var lastEndTimeReservation string
-
-	for _, reservation := range reservations {
-
-		if lastEndTimeReservation != "" {
-			timeStamp := convertStringToTime(reservation.StartTime).Sub(convertStringToTime(lastEndTimeReservation)).Minutes()
-
-			if timeStamp >= gameDuration {
-				return convertStringToTime(lastEndTimeReservation)
-			}
-		}
-		lastEndTimeReservation = reservation.EndTime
-	}
-
-	timeStamp := convertStringToTime(lastEndTimeReservation).Sub(convertStringToTime(paramTimeAsString)).Minutes()
-
-	if timeStamp >= gameDuration {
-		return paramTime
-	}
-
-	return convertStringToTime(lastEndTimeReservation)
+	return reservations[len(reservations)-1].EndTime()
 }
 
 func appendZero(value int) string {
@@ -192,10 +188,7 @@ func appendZero(value int) string {
 	return strconv.Itoa(value)
 }
 
-func TimeToString(param time.Time) string {
-
-	//hours, minutes, seconds := param.Clock()
-
+func timeToString(param NormalizeDate) string {
 	convertedTime := fmt.Sprintf("%v-%v-%v %v:%v:%v",
 		param.Year(),
 		appendZero(int(param.Month())),
@@ -205,19 +198,12 @@ func TimeToString(param time.Time) string {
 		appendZero(param.Second()))
 	return convertedTime
 }
-func convertStringToTime(paramTime string) time.Time {
-	resultTime, timeParseError := time.Parse("2006-01-02 15:04:05", strings.TrimSpace(paramTime))
+func convertToTime(paramTime []byte) NormalizeDate {
+	resultTime, timeParseError := time.Parse("2006-01-02 15:04:05", strings.TrimSpace(string(paramTime)))
 
 	if timeParseError != nil {
 		logg.WriteToFile(fmt.Sprintf("Error occured during parsing: %s", timeParseError))
 	}
 
-	return resultTime
-}
-func roundToMinute(paramTime time.Time) time.Time {
-	hour, minute, _ := paramTime.Clock()
-
-	newTime := time.Date(paramTime.Year(), paramTime.Month(), paramTime.Day(), hour, minute, 0, 0, paramTime.Location())
-
-	return newTime
+	return NewNormalizeDate(resultTime)
 }

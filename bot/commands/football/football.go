@@ -13,10 +13,11 @@ import (
 
 type football struct {
 	commands abstract.ReactForMsgs
+	db       *footballDatabase.FootballDb
 }
 
-func New() *football {
-	return &football{[]string{"gramy", "play", "game", "football", "soccer", "piłkarzyki"}}
+func New(db *footballDatabase.FootballDb) *football {
+	return &football{[]string{"gramy", "play", "game", "football", "soccer", "piłkarzyki"}, db}
 }
 
 func (f *football) CanHandle(msg string) bool {
@@ -29,11 +30,11 @@ func (f *football) Handle(msg string, sender abstract.MessageSender) {
 		f.getReservations(bookingTime, sender)
 		return
 	}
-	resp := tryBookTable(sender.GetUserId(), msg, bookingTime)
+	resp := f.tryBookTable(sender.GetUserId(), msg, bookingTime)
 	sender.Send(messageBuilders.Text(resp))
 }
 
-func tryBookTable(userId abstract.UserId, msg string, bookingTime time.Time) string {
+func (f *football) tryBookTable(userId abstract.UserId, msg string, bookingTime time.Time) string {
 	msgSplit := strings.Split(msg, "@")
 	var err string
 	if len(msgSplit) >= 2 {
@@ -42,19 +43,18 @@ func tryBookTable(userId abstract.UserId, msg string, bookingTime time.Time) str
 			return err
 		}
 	}
-	free := footballDatabase.FreeReservation(bookingTime)
-	if free.IsZero() {
-		return "Nie można zarezerwować. Spróbuj inną godzinę."
-	}
-	if footballDatabase.TimeToString(free) == footballDatabase.TimeToString(bookingTime) {
+	normDate := footballDatabase.NewNormalizeDate(bookingTime)
+	isFree := f.db.IsFree(normDate)
+	if isFree {
 		user, _ := config.ConnectionCfg.Client.GetUser(string(userId), "")
-		if footballDatabase.SetReservation(user.Username, bookingTime) {
-			return "Zarezerwowano piłkarzyki. Miłej gry!"
-		} else {
+		if f.db.IsBooked(user.Username, normDate) {
 			return "Już dzisiaj rezerwowałeś."
 		}
+		f.db.SetReservation(user.Username, normDate)
+		return "Zarezerwowano piłkarzyki. Miłej gry!"
 	}
-	return fmt.Sprintf("Stół zajęty. Stół będzie wolny o: %v:%v", free.Hour(), free.Minute())
+	freeTime := f.db.FirstFreeTimeFor(normDate)
+	return fmt.Sprintf("Stół zajęty. Stół będzie wolny o: %v:%v", freeTime.Hour(), freeTime.Minute())
 }
 
 func setTime(toConvert string) (time.Time, string) {
@@ -80,12 +80,11 @@ func setTime(toConvert string) (time.Time, string) {
 const ballImgUrl = "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/ESPN-icon-soccer.png&w=288&h=288&transparent=true"
 
 func (f *football) getReservations(startTime time.Time, sender abstract.MessageSender) {
-	reservations := footballDatabase.GetAllReservationByStartTime(startTime)
+	reservations := f.db.GetAllReservationByStartTime(footballDatabase.NewNormalizeDate(startTime))
 	var sb strings.Builder
 	for _, reservation := range reservations {
-		startTimes := strings.Split(reservation.StartTime, " ")
-		endTimes := strings.Split(reservation.EndTime, " ")
-		sb.WriteString(fmt.Sprintf("%v - %v : %v\n", startTimes[1], endTimes[1], reservation.UserName))
+		sb.WriteString(fmt.Sprintf("%v - %v : %v\n",
+			reservation.StartTime.Format("15:04:05"), reservation.EndTime().Format("15:04:05"), reservation.UserName))
 	}
 	y, m, d := time.Now().Date()
 	title := fmt.Sprintf("%v %v %v", d, m, y)
