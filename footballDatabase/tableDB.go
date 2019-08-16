@@ -106,7 +106,7 @@ func (f *FootballDb) IsBooked(newResUserName string, newResStartTime NormalizeDa
 }
 
 func (f *FootballDb) SetReservation(newResUserName string, newResStartTime NormalizeDate) {
-	tempTime := timeToString(newResStartTime)
+	tempTime := timeToKey(newResStartTime)
 	f.writeDb(func(b *bolt.Bucket) error {
 		return addNewReservation(tempTime, newResUserName, b)
 	})
@@ -181,29 +181,12 @@ func (f *FootballDb) FirstFreeTimeFor(paramTime NormalizeDate) time.Time {
 	return reservations[len(reservations)-1].EndTime()
 }
 
-func appendZero(value int) string {
-	if len(strconv.Itoa(value)) < 2 {
-		return fmt.Sprintf("0%v", value)
-	}
-	return strconv.Itoa(value)
-}
-
-func timeToString(param NormalizeDate) string {
-	convertedTime := fmt.Sprintf("%v-%v-%v %v:%v:%v",
-		param.Year(),
-		appendZero(int(param.Month())),
-		appendZero(param.Day()),
-		appendZero(param.Hour()),
-		appendZero(param.Minute()),
-		appendZero(param.Second()))
-	return convertedTime
+func timeToKey(param NormalizeDate) string {
+	ticks := param.UTC().Unix()
+	return strconv.FormatInt(ticks, 10)
 }
 func convertToTime(paramTime []byte) NormalizeDate {
-	resultTime, timeParseError := time.Parse("2006-01-02 15:04:05", strings.TrimSpace(string(paramTime)))
-
-	if timeParseError != nil {
-		logg.WriteToFile(fmt.Sprintf("Error occured during parsing: %s", timeParseError))
-	}
-
-	return NewNormalizeDate(resultTime)
+	ticks, _ := strconv.ParseInt(string(paramTime), 10, strconv.IntSize)
+	t := time.Unix(ticks, 0)
+	return NewNormalizeDate(t)
 }

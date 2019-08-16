@@ -3,7 +3,7 @@ package footballDatabase
 import "time"
 
 const (
-	gameDuration = 20 * time.Minute
+	gameDuration = 25 * time.Minute
 )
 
 type NormalizeDate struct {
@@ -15,8 +15,9 @@ func (d NormalizeDate) Raw() time.Time {
 }
 
 func NewNormalizeDate(t time.Time) NormalizeDate {
-	t = time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, t.Location())
-	return NormalizeDate{t}
+	loc, _ := time.LoadLocation("Local")
+	t = time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, loc).UTC()
+	return NormalizeDate{t.In(loc)}
 }
 
 type TimeReservation struct {

@@ -64,7 +64,7 @@ func TestIsFreeReturnsCorrectResult(t *testing.T) {
 	result1 := db.IsFree(check1)
 	assert.True(t, result1)
 
-	check2 := testDate(13, 39)
+	check2 := testDate(13, 34)
 	result2 := db.IsFree(check2)
 	assert.True(t, result2)
 
@@ -83,7 +83,7 @@ func TestIsFreeReturnsCorrectResult(t *testing.T) {
 	result6 := db.IsFree(res1)
 	assert.False(t, result6)
 
-	check7 := testDate(14, 45)
+	check7 := testDate(14, 50)
 	result7 := db.IsFree(check7)
 	assert.True(t, result7)
 }
@@ -98,7 +98,7 @@ func TestFirstFreeTimeForReturnsTime(t *testing.T) {
 	res1 := testDate(14, 0)
 	db.SetReservation("test", res1)
 
-	assertIsFree(t, db, 14, 5, 14, 20)
+	assertIsFree(t, db, 14, 5, 14, 25)
 
 	res2 := testDate(14, 25)
 	db.SetReservation("test", res2)
@@ -106,11 +106,11 @@ func TestFirstFreeTimeForReturnsTime(t *testing.T) {
 	res3 := testDate(15, 25)
 	db.SetReservation("test", res3)
 
-	assertIsFree(t, db, 14, 10, 14, 45)
+	assertIsFree(t, db, 14, 10, 14, 50)
 
-	assertIsFree(t, db, 14, 45, 14, 45)
+	assertIsFree(t, db, 14, 50, 14, 50)
 
-	assertIsFree(t, db, 14, 55, 15, 45)
+	assertIsFree(t, db, 14, 55, 15, 50)
 }
 
 func assertIsFree(t *testing.T, db *footballDatabase.FootballDb, hCh, mCh, hExp, minExp int) {
