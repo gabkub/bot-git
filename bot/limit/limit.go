@@ -41,7 +41,15 @@ func setUsersList() {
 	}
 }
 
-func AddRequest(userId abstract.UserId, command string) {
+func AddJoke(userId abstract.UserId) {
+	addRequest(userId, "joke")
+}
+
+func AddMeme(userId abstract.UserId) {
+	addRequest(userId, "meme")
+}
+
+func addRequest(userId abstract.UserId, command string) {
 	users[userId][command].count++
 }
 
@@ -59,7 +67,9 @@ func (l *limitation) LimitReached() bool {
 }
 
 func CanSend(userId abstract.UserId, command string) bool {
-	return !users[userId][command].LimitReached()
+	// TODO get back
+	return true
+	//return !users[userId][command].LimitReached()
 }
 
 func Reset() {

@@ -11,7 +11,7 @@ import (
 type getJoke func() (*string, bool)
 
 func Fetch(userId abstract.UserId, hard bool) string {
-	limit.AddRequest(userId, "joke")
+	limit.AddJoke(userId)
 	var jokeSources []getJoke
 
 	if hard {
