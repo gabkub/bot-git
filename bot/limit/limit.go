@@ -8,8 +8,12 @@ import (
 	"time"
 )
 
-const maxRequestsMorning = 3
-const maxRequestsDuringDay = 1
+const (
+	maxRequestsMorning   = 3
+	maxRequestsDuringDay = 1
+	meme                 = "meme"
+	joke                 = "joke"
+)
 
 type limitation struct {
 	count int
@@ -35,18 +39,18 @@ func setUsersList() {
 
 	for _, user := range teamMembers {
 		users[abstract.UserId(user.UserId)] = map[string]*limitation{
-			"joke": {0},
-			"meme": {0},
+			joke: {0},
+			meme: {0},
 		}
 	}
 }
 
 func AddJoke(userId abstract.UserId) {
-	addRequest(userId, "joke")
+	addRequest(userId, joke)
 }
 
 func AddMeme(userId abstract.UserId) {
-	addRequest(userId, "meme")
+	addRequest(userId, meme)
 }
 
 func addRequest(userId abstract.UserId, command string) {
@@ -66,10 +70,16 @@ func (l *limitation) LimitReached() bool {
 	return false
 }
 
-func CanSend(userId abstract.UserId, command string) bool {
-	// TODO get back
-	return true
-	//return !users[userId][command].LimitReached()
+func CanGetMeme(userId abstract.UserId) bool {
+	return canSend(userId, meme)
+}
+
+func CanGetJoke(userId abstract.UserId) bool {
+	return canSend(userId, joke)
+}
+
+func canSend(userId abstract.UserId, command string) bool {
+	return !users[userId][command].LimitReached()
 }
 
 func Reset() {

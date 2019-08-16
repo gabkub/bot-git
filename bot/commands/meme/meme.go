@@ -22,7 +22,7 @@ func (m *meme) CanHandle(msg string) bool {
 }
 
 func (m *meme) Handle(msg string, sender abstract.MessageSender) {
-	if limit.CanSend(sender.GetUserId(), "meme") {
+	if limit.CanGetMeme(sender.GetUserId()) {
 		meme := memes.Fetch(sender.GetUserId())
 		sender.Send(messageBuilders.Image(meme.Header, meme.ImageUrl))
 		return

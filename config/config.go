@@ -6,6 +6,11 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
+)
+
+const (
+	NothingNewImageUrl = "https://png.pngtree.com/svg/20170217/7c2ce8d09c.svg"
 )
 
 var ConnectionCfg connectionConfig
@@ -73,4 +78,8 @@ func ReadConfig() {
 
 	BotCfg = cfg.BotConfig
 	DbCfg = cfg.DbConfig
+}
+
+func IsEnglishDay() bool {
+	return time.Now().Weekday().String() == BotCfg.EnglishDay
 }

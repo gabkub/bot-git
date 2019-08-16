@@ -4,52 +4,39 @@ import (
 	"bot-git/bot/abstract"
 	"bot-git/bot/blacklist"
 	"bot-git/bot/limit"
+	"bot-git/config"
 	"math/rand"
 )
 
 var Blacklist = blacklist.New(20)
 
-type getMeme func() []abstract.Image
+type getMeme func() (*abstract.Image, bool)
 
-var memeList []abstract.Image
-
-func Fetch(userId abstract.UserId) abstract.Image {
+func Fetch(userId abstract.UserId) *abstract.Image {
 	limit.AddMeme(userId)
-	var memeFunction getMeme
 
-	canReturn := false
-	var meme abstract.Image
-	for canReturn == false {
-		if len(memeList) == 0 {
-			memeFunction = memSources[rand.Intn(len(memSources))]
-			memeList = memeFunction()
+	tmp := make([]getMeme, len(memSources))
+	copy(tmp, memSources)
+
+	for len(tmp) > 0 {
+		i := rand.Intn(len(tmp))
+		getMeme := tmp[i]
+		meme, ok := getMeme()
+		if ok {
+			return meme
 		}
-		meme = getRandomMeme(memeList)
-		canReturn = handleBlacklist(&meme.ImageUrl)
+		tmp = append(tmp[:i], tmp[i+1:]...)
 	}
-
-	return meme
+	return notFoundImage()
 }
 
-func getRandomMeme(memeList []abstract.Image) abstract.Image {
-	return memeList[rand.Intn(len(memeList))]
-}
-
-func handleBlacklist(meme *string) bool {
-	isFresh := Blacklist.IsFresh(meme)
-	if !isFresh {
-		removeFromMemeList(meme)
-		return false
+func notFoundImage() *abstract.Image {
+	title := "Nic nowego"
+	if config.IsEnglishDay() {
+		title = "Nothing new"
 	}
-	return true
-}
-
-func removeFromMemeList(meme *string) {
-	for i, v := range memeList {
-		if v.ImageUrl == *meme {
-			memeList[i] = memeList[len(memeList)-1]
-			memeList = memeList[:len(memeList)-1]
-			return
-		}
+	return &abstract.Image{
+		Header:   title,
+		ImageUrl: config.NothingNewImageUrl,
 	}
 }

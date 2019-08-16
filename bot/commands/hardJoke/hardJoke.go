@@ -32,7 +32,7 @@ func (hj *hardJoke) Handle(msg string, sender abstract.MessageSender) {
 
 func getMessage(userId abstract.UserId, isDirect bool) (string, bool) {
 	const ok = true
-	if limit.CanSend(userId, "joke") {
+	if limit.CanGetJoke(userId) {
 		if isDirect {
 			joke := jokes.Fetch(userId, true)
 			return joke, ok

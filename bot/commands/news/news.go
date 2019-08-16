@@ -4,6 +4,7 @@ import (
 	"bot-git/bot/abstract"
 	"bot-git/bot/newsSrc"
 	"bot-git/bot/newsSrc/newsAbstract"
+	"bot-git/config"
 	"bot-git/messageBuilders"
 	"fmt"
 	"math/rand"
@@ -68,6 +69,6 @@ func getFreshNews(cat string) *newsAbstract.News {
 
 func notFoundNews(cat string) *newsAbstract.News {
 	text := fmt.Sprintf("Nie mam nic nowego w katergori: _%s_", cat)
-	img := abstract.NewImage(text, "https://png.pngtree.com/svg/20170217/7c2ce8d09c.svg")
+	img := abstract.NewImage(text, config.NothingNewImageUrl)
 	return newsAbstract.NewNews(text, img)
 }

@@ -5,7 +5,6 @@ import (
 	"bot-git/bot/limit"
 	"bot-git/config"
 	"math/rand"
-	"time"
 )
 
 type getJoke func() (*string, bool)
@@ -18,7 +17,7 @@ func Fetch(userId abstract.UserId, hard bool) string {
 		jokeSources = jokersHard
 	} else {
 		jokeSources = jokersPl
-		if isEnglishDay() {
+		if config.IsEnglishDay() {
 			jokeSources = jokersEn
 		}
 	}
@@ -39,12 +38,8 @@ func Fetch(userId abstract.UserId, hard bool) string {
 }
 
 func notFoundText() string {
-	if isEnglishDay() {
+	if config.IsEnglishDay() {
 		return "Nothing new"
 	}
 	return "Nie mam nic nowego"
-}
-
-func isEnglishDay() bool {
-	return time.Now().Weekday().String() == config.BotCfg.EnglishDay
 }
