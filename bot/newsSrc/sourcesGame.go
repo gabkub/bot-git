@@ -8,7 +8,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-var newsBlacklist = blacklist.New(10)
+var newsBlacklist = blacklist.New(10, "news")
 
 func Clean() {
 	newsBlacklist.Clean()

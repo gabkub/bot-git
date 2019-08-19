@@ -8,7 +8,7 @@ import (
 	"math/rand"
 )
 
-var Blacklist = blacklist.New(20)
+var Blacklist = blacklist.New(20, "memes")
 
 type getMeme func() (*abstract.Image, bool)
 

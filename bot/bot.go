@@ -3,11 +3,11 @@ package bot
 import (
 	"bot-git/bot/abstract"
 	"bot-git/config"
-	"bot-git/logg"
 	"bot-git/messageBuilders"
 	"bot-git/messageSender"
 	"fmt"
 	"github.com/mattermost/mattermost-server/model"
+	"log"
 	"math/rand"
 	"strings"
 )
@@ -35,7 +35,7 @@ func handleEvent(event *model.WebSocketEvent) {
 	m := strings.TrimSpace(strings.TrimPrefix(post.Message, prefix))
 	sender := messageSender.New(abstract.UserId(post.UserId), post.ChannelId, getChannelType(post.ChannelId))
 	handleMsg(m, sender)
-	logg.WriteToFile("Message sent.")
+	log.Println("Message sent.")
 }
 
 func getChannelType(channelId string) string {

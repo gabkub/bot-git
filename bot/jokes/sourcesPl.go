@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-var PolishBlacklist = blacklist.New(30)
+var PolishJokesBlacklist = blacklist.New(30, "polish_jokes")
 var jokersPl = []getJoke{
 	jeja,
 	gomeo,
@@ -14,11 +14,11 @@ var jokersPl = []getJoke{
 
 func jeja() (*string, bool) {
 	div := contentFetcher.Fetch("https://dowcipy.jeja.pl/losowe", "div.dow-left-text p")
-	return getFreshJoke(getJokesList(div), PolishBlacklist)
+	return getFreshJoke(getJokesList(div), PolishJokesBlacklist)
 }
 
 func gomeo() (*string, bool) {
-	return getFreshForFetcher(gomeoFetch, 4, PolishBlacklist)
+	return getFreshForFetcher(gomeoFetch, 4, PolishJokesBlacklist)
 }
 
 func gomeoFetch(page int) []*string {

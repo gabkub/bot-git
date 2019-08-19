@@ -5,6 +5,7 @@ import (
 	"bot-git/config"
 	"bot-git/footballDatabase"
 	"bot-git/messageBuilders"
+	"bot-git/normalizedDate"
 	"fmt"
 	"strconv"
 	"strings"
@@ -43,7 +44,7 @@ func (f *football) tryBookTable(userId abstract.UserId, msg string, bookingTime 
 			return err
 		}
 	}
-	normDate := footballDatabase.NewNormalizeDate(bookingTime)
+	normDate := normalizedDate.NewNormalizeDate(bookingTime)
 	isFree := f.db.IsFree(normDate)
 	if isFree {
 		user, _ := config.ConnectionCfg.Client.GetUser(string(userId), "")
@@ -80,7 +81,7 @@ func setTime(toConvert string) (time.Time, string) {
 const ballImgUrl = "https://a.espncdn.com/combiner/i?img=/redesign/assets/img/icons/ESPN-icon-soccer.png&w=288&h=288&transparent=true"
 
 func (f *football) getReservations(startTime time.Time, sender abstract.MessageSender) {
-	reservations := f.db.GetAllReservationByStartTime(footballDatabase.NewNormalizeDate(startTime))
+	reservations := f.db.GetAllReservationByStartTime(normalizedDate.NewNormalizeDate(startTime))
 	var sb strings.Builder
 	for _, reservation := range reservations {
 		sb.WriteString(fmt.Sprintf("%v - %v : %v\n",

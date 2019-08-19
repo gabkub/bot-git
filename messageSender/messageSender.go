@@ -3,8 +3,8 @@ package messageSender
 import (
 	"bot-git/bot/abstract"
 	"bot-git/config"
-	"bot-git/logg"
 	"github.com/mattermost/mattermost-server/model"
+	"log"
 )
 
 const directType = "D"
@@ -33,12 +33,12 @@ func (s *sender) Send(toSend *model.Post) *model.Post {
 
 		sentPost, er := config.ConnectionCfg.Client.CreatePost(toSend)
 		if er.Error != nil {
-			logg.WriteToFile("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
+			log.Println("We failed to send a message to the logging channel. Details: " + er.Error.DetailedError)
 			return nil
 		}
 		return sentPost
 	} else {
-		logg.WriteToFile("Error creating the respond message.")
+		log.Println("Error creating the respond message.")
 	}
 	return nil
 }

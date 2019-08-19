@@ -1,24 +1,13 @@
 package footballDatabase
 
-import "time"
+import (
+	"bot-git/normalizedDate"
+	"time"
+)
 
 const (
 	gameDuration = 25 * time.Minute
 )
-
-type NormalizeDate struct {
-	time.Time
-}
-
-func (d NormalizeDate) Raw() time.Time {
-	return d.Time
-}
-
-func NewNormalizeDate(t time.Time) NormalizeDate {
-	loc, _ := time.LoadLocation("Local")
-	t = time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, loc).UTC()
-	return NormalizeDate{t.In(loc)}
-}
 
 type TimeReservation struct {
 	UserName  string
@@ -38,7 +27,7 @@ func (t TimeReservations) Less(i, j int) bool { return t[i].StartTime.Before(t[j
 func (t *TimeReservation) EndTime() time.Time {
 	return t.StartTime.Add(gameDuration)
 }
-func (t *TimeReservation) IsBetween(d NormalizeDate) bool {
+func (t *TimeReservation) IsBetween(d normalizedDate.NormalizeDate) bool {
 	return (t.StartTime.Equal(d.Raw()) || t.StartTime.Before(d.Raw())) &&
 		(t.EndTime().After(d.Raw()))
 }

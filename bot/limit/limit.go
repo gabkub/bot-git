@@ -3,7 +3,6 @@ package limit
 import (
 	"bot-git/bot/abstract"
 	"bot-git/config"
-	"bot-git/logg"
 	"log"
 	"time"
 )
@@ -32,7 +31,7 @@ func getTeamId() string {
 func setUsersList() {
 	teamMembers, resp := config.ConnectionCfg.Client.GetTeamMembers(getTeamId(), 0, 150, "")
 	if resp.Error != nil {
-		logg.WriteToFile("Error while getting team members'. Details: " + resp.Error.DetailedError)
+		log.Println("Error while getting team members'. Details: " + resp.Error.DetailedError)
 	}
 
 	users = make(map[abstract.UserId]map[string]*limitation)

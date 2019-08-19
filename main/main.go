@@ -4,12 +4,14 @@ import (
 	"bot-git/bot"
 	"bot-git/bot/commands/version"
 	"bot-git/config"
-	"bot-git/logg"
 	"bot-git/main/connection"
 	"fmt"
+	"gopkg.in/natefinch/lumberjack.v2"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 // Documentation for the Go driver can be found
@@ -17,11 +19,9 @@ import (
 
 func main() {
 	setGracefulShutdown()
-	logg.SetOutPut()
 	config.ReadConfig()
 
-	os.Remove("./logg.log")
-	logg.WriteToFile(fmt.Sprintf("Starting bot v.%v...\n", version.VER))
+	log.Println(fmt.Sprintf("Starting bot v.%v...\n", version.VER))
 
 	connection.Connect()
 	bot.Start()
@@ -35,8 +35,25 @@ func setGracefulShutdown() {
 			if connection.Websocket != nil {
 				connection.Websocket.Close()
 			}
-			logg.WriteToFile("Bot has exited the chat.")
+			log.Println("Bot has exited the chat.")
 			os.Exit(0)
 		}
 	}()
+}
+
+func init() {
+	fileName := fmt.Sprintf("./log_%s.log", time.Now().Format("2019-06-12"))
+	createFile(fileName)
+	log.SetOutput(&lumberjack.Logger{
+		Filename: fileName,
+		MaxSize:  1000,
+		MaxAge:   7,
+	})
+}
+func createFile(fileName string) {
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Println(err)
+	}
+	defer f.Close()
 }

@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-var EnglishJokesBlacklist = blacklist.New(30)
+var EnglishJokesBlacklist = blacklist.New(30, "english_jokes")
 var jokersEn = []getJoke{
 	iCanHazDadJoke,
 	rd,

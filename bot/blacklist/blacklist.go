@@ -1,23 +1,31 @@
 package blacklist
 
 import (
+	"bot-git/normalizedDate"
+	"bot-git/persistence"
 	"crypto/md5"
+	"go.etcd.io/bbolt"
 	"io"
+	"log"
 	"sync"
 	"time"
 )
 
+const blackListDbPath = "./blacklist.db"
+
 type BlackList struct {
 	mtx         sync.Mutex
-	list        map[string]time.Time
 	daysToClean int
+	name        string
+	db          *persistence.Persistence
 }
 
-func New(daysToClean int) *BlackList {
+func New(daysToClean int, name string) *BlackList {
 	return &BlackList{
 		mtx:         sync.Mutex{},
-		list:        map[string]time.Time{},
+		db:          persistence.NewPersistence(blackListDbPath, name),
 		daysToClean: daysToClean,
+		name:        name,
 	}
 }
 func (b *BlackList) getMd5(content *string) string {
@@ -31,22 +39,33 @@ func (b *BlackList) IsFresh(content *string) bool {
 	defer b.mtx.Unlock()
 
 	hash := b.getMd5(content)
-	_, ok := b.list[hash]
-	const wasSent = false
-	if ok {
-		return wasSent
+	exists := b.db.HasKey(&hash)
+	if exists {
+		return false
 	}
-	b.list[hash] = time.Now()
+	b.db.WriteDb(func(bucket *bbolt.Bucket) error {
+		d := normalizedDate.NewNormalizeDate(time.Now())
+		err := bucket.Put([]byte(hash), d.AsString())
+		if err != nil {
+			log.Println(err)
+		}
+		return nil
+	})
 	return true
 }
 
 func (b *BlackList) Clean() {
 	b.mtx.Lock()
 	defer b.mtx.Unlock()
-	monthFromNow := time.Now().AddDate(0, 0, -b.daysToClean)
-	for key, val := range b.list {
-		if val.Before(monthFromNow) {
-			delete(b.list, key)
-		}
-	}
+	apartFromNow := time.Now().AddDate(0, 0, -b.daysToClean)
+	b.db.WriteDb(func(bucket *bbolt.Bucket) error {
+		bucket.ForEach(func(k, v []byte) error {
+			t := normalizedDate.ConvertToTime(v)
+			if t.Before(apartFromNow) {
+				bucket.Delete(k)
+			}
+			return nil
+		})
+		return nil
+	})
 }

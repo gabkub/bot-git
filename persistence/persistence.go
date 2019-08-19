@@ -1,7 +1,6 @@
 package persistence
 
 import (
-	"bot-git/logg"
 	"fmt"
 	bolt "go.etcd.io/bbolt"
 	"log"
@@ -62,7 +61,6 @@ func (p *Persistence) openDb(readOnly bool) *bolt.DB {
 func (p *Persistence) createTableDB() {
 	db, err := bolt.Open(p.dbPath, 0600, nil)
 	if err != nil {
-		logg.WriteToFile("Error opening or creating database.")
 		log.Fatal("Error opening or creating database.")
 	}
 	defer db.Close()
@@ -75,8 +73,19 @@ func (p *Persistence) createTableDB() {
 		return nil
 	})
 	if createError != nil {
-		logg.WriteToFile("Error creating the table. " + createError.Error())
 		log.Println("Error creating the table. " + createError.Error())
 	}
-	logg.WriteToFile("Created database table for booking.")
+	log.Printf("Created database table for booking %s\n", p.bucketName)
+}
+
+func (p *Persistence) HasKey(key *string) bool {
+	var exists bool
+	p.ReadDb(func(b *bolt.Bucket) error {
+		res := b.Get([]byte(*key))
+		if res != nil {
+			exists = true
+		}
+		return nil
+	})
+	return exists
 }

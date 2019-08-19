@@ -2,6 +2,7 @@ package footballDatabase_test
 
 import (
 	"bot-git/footballDatabase"
+	"bot-git/normalizedDate"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -118,11 +119,11 @@ func assertIsFree(t *testing.T, db *footballDatabase.FootballDb, hCh, mCh, hExp,
 	res := db.FirstFreeTimeFor(check)
 	exp := testDate(hExp, minExp)
 	assert.Equal(t, exp.Raw(), res)
-	resFree := db.IsFree(footballDatabase.NewNormalizeDate(res))
+	resFree := db.IsFree(normalizedDate.NewNormalizeDate(res))
 	assert.True(t, resFree)
 }
 
-func roundToMinute(t footballDatabase.NormalizeDate) time.Time {
+func roundToMinute(t normalizedDate.NormalizeDate) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), 0, 0, t.Location())
 }
 
@@ -136,7 +137,7 @@ func teardown(dbPath string) {
 	}
 }
 
-func testDate(hour, min int) footballDatabase.NormalizeDate {
+func testDate(hour, min int) normalizedDate.NormalizeDate {
 	t := time.Date(2019, 8, 16, hour, min, 34, 134, time.UTC)
-	return footballDatabase.NewNormalizeDate(t)
+	return normalizedDate.NewNormalizeDate(t)
 }

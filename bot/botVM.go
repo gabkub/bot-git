@@ -2,7 +2,6 @@ package bot
 
 import (
 	"bot-git/config"
-	"bot-git/logg"
 	"bot-git/main/connection"
 	"bot-git/schedule"
 	"github.com/mattermost/mattermost-server/model"
@@ -16,7 +15,6 @@ var mux = &sync.Mutex{}
 
 func Start() {
 
-	logg.WriteToFile("Bot has started.")
 	log.Println("Bot has started.")
 	seedRand()
 
@@ -29,7 +27,7 @@ func Start() {
 
 			case <-connection.Websocket.PingTimeoutChannel:
 				mux.Lock()
-				logg.WriteToFile("Websocket PingTimeout.")
+				log.Println("Websocket PingTimeout.")
 				config.ConnectionCfg.Client.Logout()
 				connection.Connect()
 				mux.Unlock()
