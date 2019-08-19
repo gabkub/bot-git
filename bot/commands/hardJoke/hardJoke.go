@@ -31,14 +31,13 @@ func (hj *hardJoke) Handle(msg string, sender abstract.MessageSender) {
 }
 
 func getMessage(userId abstract.UserId, isDirect bool) (string, bool) {
-	const ok = true
 	if limit.CanGetJoke(userId) {
 		if isDirect {
 			joke := jokes.Fetch(userId, true)
-			return joke, ok
+			return joke, true
 		} else {
-			return "Tylko na priv.", !ok
+			return "Tylko na priv.", false
 		}
 	}
-	return notNowMsg.Get(), !ok
+	return notNowMsg.Get(), false
 }

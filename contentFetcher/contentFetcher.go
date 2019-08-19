@@ -11,10 +11,15 @@ func getDoc(url string) *goquery.Document {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		err := resp.Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		log.Fatal("Error while opening the website. Error: " + err.Error())
+		log.Println("Error while opening the website. Error: " + err.Error())
 	}
 	return doc
 }
@@ -28,7 +33,7 @@ func getDiv(d *goquery.Document, container string) *goquery.Selection {
 	// get the random joke website shows
 	div := d.Find(container)
 	if div == nil {
-		log.Fatal("Error scraping the jokes/memes.")
+		log.Println("Error scraping the jokes/memes.")
 	}
 	return div
 }

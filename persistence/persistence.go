@@ -22,7 +22,12 @@ func (p *Persistence) ReadDb(function func(b *bolt.Bucket) error) {
 	if db == nil {
 		return
 	}
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 	viewError := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(p.bucketName)
 		return function(b)
@@ -36,7 +41,12 @@ func (p *Persistence) WriteDb(function func(b *bolt.Bucket) error) {
 	if db == nil {
 		return
 	}
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 	updateError := db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(p.bucketName)
 		return function(b)
@@ -63,7 +73,12 @@ func (p *Persistence) createTableDB() {
 	if err != nil {
 		log.Fatal("Error opening or creating database.")
 	}
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
 	createError := db.Update(func(tx *bolt.Tx) error {
 		_, err = tx.CreateBucketIfNotExists(p.bucketName)

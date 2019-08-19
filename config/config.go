@@ -71,7 +71,7 @@ func ReadConfig() {
 	}
 
 	cfg := &Data{}
-	e = json.Unmarshal([]byte(file), cfg)
+	e = json.Unmarshal(file, cfg)
 	if e != nil {
 		log.Fatal("Error while reading the configuration file.")
 	}

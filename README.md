@@ -27,7 +27,7 @@ mattermost user verify bot_username
 ```
 5 - Ask colleagues when they want the English Day to be or just choose a random one.
 
-6 - modify the [configuration file](bin/config.json) following the template below
+6 - modify the [configuration file](bin/windows/config.json) following the template below
 ```
 {
     "BotConfig": {

@@ -55,5 +55,10 @@ func createFile(fileName string) {
 	if err != nil {
 		log.Println(err)
 	}
-	defer f.Close()
+	defer func() {
+		err := f.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 }

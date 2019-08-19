@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 )
 
 const (
@@ -19,7 +20,12 @@ func getConnections() (Connections, error) {
 	if err != nil {
 		return nil, newError("Błąd połączenia z %s : %s", config.DbCfg.Name, err.Error())
 	}
-	defer db.Close()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 	rows, err := db.Query(getConnectionsSql)
 	if err != nil {
 		return nil, newError("Błąd połączenia z %s : %s", config.DbCfg.Name, err.Error())

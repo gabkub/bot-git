@@ -30,7 +30,10 @@ func New(daysToClean int, name string) *BlackList {
 }
 func (b *BlackList) getMd5(content *string) string {
 	h := md5.New()
-	io.WriteString(h, *content)
+	_, err := io.WriteString(h, *content)
+	if err != nil {
+		log.Println(err)
+	}
 	return string(h.Sum(nil))
 }
 
@@ -59,13 +62,19 @@ func (b *BlackList) Clean() {
 	defer b.mtx.Unlock()
 	apartFromNow := time.Now().AddDate(0, 0, -b.daysToClean)
 	b.db.WriteDb(func(bucket *bbolt.Bucket) error {
-		bucket.ForEach(func(k, v []byte) error {
+		err := bucket.ForEach(func(k, v []byte) error {
 			t := normalizedDate.ConvertToTime(v)
 			if t.Before(apartFromNow) {
-				bucket.Delete(k)
+				err := bucket.Delete(k)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 			return nil
 		})
+		if err != nil {
+			log.Println(err)
+		}
 		return nil
 	})
 }
