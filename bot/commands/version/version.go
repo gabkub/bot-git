@@ -5,7 +5,7 @@ import (
 	"bot-git/messageBuilders"
 )
 
-const VER = "1.4.5"
+const VER = "1.5.0"
 
 type version struct {
 }

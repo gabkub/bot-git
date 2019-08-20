@@ -1,0 +1,1 @@
+scp ./linux/MattermostBot root@zos-erm01:/joey-app/MattermostBot
