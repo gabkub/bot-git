@@ -43,6 +43,7 @@ var limitMessages = []string{
 	"A piłkarzyki brudne  :angry:",
 	":trollface:",
 	"@joey kawał",
+	"Dzisiaj słuchajcie mnie lewo po prawo",
 }
 
 func Get() string {
